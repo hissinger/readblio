@@ -17,7 +17,7 @@ BASE = "https://readblio.github.io/"
 REPO = "https://github.com/hissinger/readblio"
 OLD_NAME = "Pebble Desk"  # 1.8.1 까지의 이름
 # Cloudflare Web Analytics(쿠키 없음): 방문 수·페이지·들어온 곳·나라·기기 종류. 토큰은 공개 값(페이지에 그대로 실린다)
-CF_BEACON = "1896b35940664abaa335017941fc327d"
+CF_BEACON = "5c96e192fbe9450a8ab2f5bb8f2502ae"  # readblio.github.io 용(옛 pebbledesk.github.io 는 1896b359…)
 RELEASES = REPO + "/releases/latest"
 LICENSE = REPO + "/blob/main/LICENSE"
 
