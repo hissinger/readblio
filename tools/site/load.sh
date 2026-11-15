@@ -9,13 +9,20 @@ D=/data/user_de/0/$P
 adb shell rm -rf /data/local/tmp/mock </dev/null
 adb push "$1" /data/local/tmp/mock </dev/null >/dev/null
 adb shell chmod -R a+rX /data/local/tmp/mock </dev/null
-# 설정: 올해 읽은 책 격자. SITE_LANG=en 이면 앱을 영어로, 자주 쓰는 앱은 영어 이름 앱 넷, 아니면 이북 앱 여덟(둘 다 격자)
+# 설정: 올해 읽은 책 격자. 자주 쓰는 앱은 격자 한 줄(`줄` 낮춤, 앱 넷). SITE_LANG=en 이면 앱을 영어로 영어 이름 앱 넷, 아니면 mock 책의 이북 앱 넷.
+# HIDDEN="패키지/화면 …" 이면 그 앱들을 숨긴 앱으로(README 의 숨긴 앱 화면)
 if [ "$SITE_LANG" = en ]; then
   english=true; grid=true
   favs='["com.amazon.kindle/.UpgradePage","com.overdrive.mobile.android.libby/com.overdrive.mobile.android.nautilus.ui.Activity_Main","org.koreader.launcher/.MainActivity","com.flyersoft.moonreader/.ActivityMain"]'
 else
   english=false; grid=true
-  favs='["kr.co.kyobobook.KEL/com.kyobo.ebook.kel.ui.intro.IntroActivity","kr.co.millie.eink/.SplashActivity","com.initialcoms.ridi/com.ridi.books.viewer.main.activity.SplashActivity","kr.co.aladin.ebook/.SplashActivity","com.yes24.library.eink/com.yes24.library.MainActivity","com.amazon.kindle/.UpgradePage","org.koreader.launcher/.MainActivity","com.flyersoft.moonreader/.ActivityMain"]'
+  favs='["kr.co.kyobobook.KEL/com.kyobo.ebook.kel.ui.intro.IntroActivity","kr.co.millie.eink/.SplashActivity","com.initialcoms.ridi/com.ridi.books.viewer.main.activity.SplashActivity","kr.co.aladin.ebook/.SplashActivity"]'
+fi
+hidden=""
+if [ -n "$HIDDEN" ]; then
+  hidden="    <set name=\"hidden\">"
+  for k in $HIDDEN; do hidden="$hidden<string>$k</string>"; done
+  hidden="$hidden</set>"
 fi
 cat > /tmp/pebble-home.xml <<EOF
 <?xml version='1.0' encoding='utf-8' standalone='yes' ?>
@@ -23,7 +30,8 @@ cat > /tmp/pebble-home.xml <<EOF
     <boolean name="onboarded" value="true" />
     <boolean name="english" value="$english" />
     <boolean name="fav_grid" value="$grid" />
-    <boolean name="year_grid" value="true" />
+    <boolean name="fav_short" value="true" />
+$hidden    <boolean name="year_grid" value="true" />
     <string name="favorite_list">$favs</string>
     <string name="update_skip">9.9.9</string>
 </map>
