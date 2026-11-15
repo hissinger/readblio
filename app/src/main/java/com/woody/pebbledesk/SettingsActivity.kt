@@ -83,7 +83,7 @@ class SettingsActivity : EinkActivity() {
             root.addView(list, lp(MATCH, 0, 1f))
         }
         // 맨 아래 지금 판, 늘 보인다(업데이트 줄은 새 판이 있으면 새 판 번호를 보여 지금 판이 안 보인다)
-        if (page == null) root.addView(text("Pebble Desk ${appVersion()}", 15f, color = Ui.LIGHT_GRAY).apply {
+        if (page == null) root.addView(text("${getString(R.string.app_name)} ${appVersion()}", 15f, color = Ui.LIGHT_GRAY).apply {
             gravity = Gravity.CENTER
         }, lp(MATCH, dp(44)))
         setContentView(root)
@@ -218,7 +218,7 @@ class SettingsActivity : EinkActivity() {
         val s = Update.state
         if (!announceLatest || s == Update.State.Checking) return
         announceLatest = false
-        if (s == Update.State.Latest) Sheet(this).header("Pebble Desk ${appVersion()}", getString(R.string.update_is_latest)).show()
+        if (s == Update.State.Latest) Sheet(this).header("${getString(R.string.app_name)} ${appVersion()}", getString(R.string.update_is_latest)).show()
     }
 
     private fun open(page: String) = startActivity(Intent(this, SettingsActivity::class.java).putExtra(EXTRA_PAGE, page))

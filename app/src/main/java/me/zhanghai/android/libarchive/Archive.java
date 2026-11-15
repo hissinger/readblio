@@ -92,7 +92,7 @@ public class Archive {
     private static final String ENV_TMPDIR = "TMPDIR";
     private static final String PROPERTY_TMPDIR = "java.io.tmpdir";
 
-    // Pebble Desk: the native library is not in the APK. It is downloaded on demand and loaded with
+    // Readblio: the native library is not in the APK. It is downloaded on demand and loaded with
     // System.load() (com.woody.pebbledesk.readers.ArchiveLib) before this class is used, so the
     // original System.loadLibrary("archive-jni") here is removed.
     static {

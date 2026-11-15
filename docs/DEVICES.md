@@ -1,6 +1,6 @@
 # 기기 호환 노트
 
-Pebble Desk 를 크레마 페블 말고 다른 전자잉크 기기에서 쓸 수 있는지 조사한 기록이다. 새 기기를 조사하면 **한눈에** 표에 열을 더하고 기기 절을 하나 더 쓴다. 댓글로 들어온 문제의 진행 상태는 **docs/ISSUES.md** 에서 따라간다.
+Readblio 를 크레마 페블 말고 다른 전자잉크 기기에서 쓸 수 있는지 조사한 기록이다. 새 기기를 조사하면 **한눈에** 표에 열을 더하고 기기 절을 하나 더 쓴다. 댓글로 들어온 문제의 진행 상태는 **docs/ISSUES.md** 에서 따라간다.
 방법: 기기에서 `getprop`·`settings`·`adb pull` 한 시스템 파일, 제조사 OTA 펌웨어를 풀어 jadx 로 디컴파일, 리뷰 영상·설명서.
 2026-10 기준. 실제 기기에서 확인하지 않은 것은 **(미확인)**, 같은 회사 다른 기종에서 미루어 본 것은 **(추정)** 으로 표시했다.
 
@@ -21,9 +21,9 @@ Pebble Desk 를 크레마 페블 말고 다른 전자잉크 기기에서 쓸 수
 | 빠른 설정 여는 방송 | `com.epd.drop_down` | `com.haoqing.action.QUICK_SETTINGS`. `메이북 ›` 로 열림(2026-10-07 사용자 확인). `크레마 ›` 는 아무 일 없음 | 없음. 크레마·메이북 방송으로는 안 열리고 안드로이드 기본 펼치기로 열린다 | **(미확인)**. 크레마·메이북 방송으로는 안 열릴 것 **(추정)** | 없음 **(추정)**. 기기 정보 사진에 `크레마 ›`·`메이북 ›` 결과 글자가 없다 | **(미확인)**. `크레마 ›`·`메이북 ›` 결과 글자 없음 | **(미확인)** | **(미확인)**. 펼칠 패널이 없어 아무 일도 없을 것 **(추정)** | **(미확인)** | **(미확인)** | **(미확인)** | **(미확인)** |
 | 안드로이드 기본 펼치기(`expandSettingsPanel`) | 열림: 크레마식 시스템 알림창(밝기·음량·대비) | 열림. 메이북 방송과 같은 패널 | 열림: Viwoods 제어 센터(기기 정보 `안드로이드 ›`, 사용자 확인) | **(미확인)** | `보냄`(함수는 불렸다). 패널이 열렸는지 **(미확인)** | `보냄`. 열렸는지 **(미확인)** | **(미확인)** | **(미확인)** | **(미확인)** | **(미확인)** | **(미확인)** | **(미확인)** |
 | 화면 대비 | `hq_contrast`(기본 56), 앱 화면을 밝기^(1/s) 로 어둡게, s = 1 − c×90/8000 | `Settings.System hq_contrast` 키가 **없다**(기기 정보에 `-`). 다른 곳에 두는 듯 **(미확인)** | 제어 센터의 대비 + 펌웨어 3.12(2026-01)부터 앱별 `App Display`(대비·연한 색 지우기). 키 **(미확인)** | 앱별 표시 최적화(대비·선명도·전체 새로고침 간격·다크 모드). 키 **(미확인)** | **(미확인)** | **(미확인)** | `persist.sys.eink.contrast=6`·`persist.sys.eink.regal=1`·`persist.eink.dither256.disable=0` 등 `persist.sys.eink.*` 속성(기기 정보) | `Settings.System hq_contrast=35` | **(미확인)** | **(미확인)** | **(미확인)**. 속성 `persist.sys.eink.contrast=30` | **(미확인)** |
-| 페이지 버튼 | 없음 | 2개 + 화면 아래 정전식 버튼. `persist.haoqing.pagekeys=41`. 키 코드 **(미확인)** | 없음. 정전식 뒤로·홈·AI 버튼, 전원 겸 지문 버튼. AI 버튼 키 코드 **(미확인)** | 오른쪽 손잡이에 2개. 페이지 넘김이 필요 없는 앱에서는 **음량 키**로 동작(Musnap 리뷰) → 기기 정보에서 `24 KEYCODE_VOLUME_UP`(scan 115) 확인. Pebble Desk 목록은 설정 › 화면 › 페이지 버튼에서 음량 키를 정하면 넘어간다(기본은 안 넘어간다) | 없음. 물리 QWERTY 키보드(35키, 단축키 1개), 왼쪽 옆 음량·새로고침, 오른쪽 전원 겸 지문. 아래 물리 뒤로 = `4 KEYCODE_BACK`(scan 158, 리눅스 `KEY_BACK`) 확인 | 있음 → 기기 정보에서 `25 KEYCODE_VOLUME_DOWN`(scan 0). iReader 처럼 **음량 키**로 들어와 Pebble Desk 목록은 페이지 버튼에서 음량 키를 정해야 넘어간다. 설정 값 `long_side_key_a=0`·`long_side_key_b=5`(옆 버튼 배정으로 보인다 **(추정)**) | 오른쪽 옆에 버튼 2개(사진). 키 코드 **(미확인)** | 오른쪽 옆 2개. `persist.haoqing.pag…`(잘림). 키 코드 **(미확인)** | 있음(옆 버튼 2개, 판매 사양). 키 코드 **(미확인)**(기기 정보에서 누르지 않음) | 없음(판매 사양) | **(미확인)**. 설정 값 `down_key_long_function=7`(Ocean 에도 있는 키) | 있음(출시 기사). 키 코드 **(미확인)**(기기 정보에서 누르지 않음) |
-| 기본 홈 바꾸기 | 됨 (지금 쓰는 중) | 됨 (기기 정보 `기본 홈 켜짐`, 홈 화면 사진) | 됨 (Pebble Desk 홈 사진. 리뷰에서도 Nova·inkOS 를 안드로이드 설정 › 앱 › 기본 앱 › 홈 으로 씀) | 됨 (기기 정보 `기본 홈 켜짐`) | 아직 안 함 (기기 정보 `기본 홈 꺼짐`. 원래 홈은 Minimal 런처) | 됨 (기기 정보 `기본 홈 켜짐`) | 됨 (기기 정보 `기본 홈 켜짐`, 홈 화면 사진) | 됨 (기기 정보 `기본 홈 켜짐`) | 됨 (기기 정보 `기본 홈 켜짐`) | 됨 (기기 정보 `기본 홈 켜짐`) | 됨 (기기 정보 `기본 홈 켜짐`) | 아직 안 함 (기기 정보 `기본 홈 꺼짐`) |
-| Pebble Desk 판정 `Device.kind` | `CREMA` (`Build.DEVICE` 가 `CREMA` 로 시작) | `MEEBOOK` (기기 정보 `메이북`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `MEEBOOK` (기기 정보 `메이북`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) |
+| 페이지 버튼 | 없음 | 2개 + 화면 아래 정전식 버튼. `persist.haoqing.pagekeys=41`. 키 코드 **(미확인)** | 없음. 정전식 뒤로·홈·AI 버튼, 전원 겸 지문 버튼. AI 버튼 키 코드 **(미확인)** | 오른쪽 손잡이에 2개. 페이지 넘김이 필요 없는 앱에서는 **음량 키**로 동작(Musnap 리뷰) → 기기 정보에서 `24 KEYCODE_VOLUME_UP`(scan 115) 확인. Readblio 목록은 설정 › 화면 › 페이지 버튼에서 음량 키를 정하면 넘어간다(기본은 안 넘어간다) | 없음. 물리 QWERTY 키보드(35키, 단축키 1개), 왼쪽 옆 음량·새로고침, 오른쪽 전원 겸 지문. 아래 물리 뒤로 = `4 KEYCODE_BACK`(scan 158, 리눅스 `KEY_BACK`) 확인 | 있음 → 기기 정보에서 `25 KEYCODE_VOLUME_DOWN`(scan 0). iReader 처럼 **음량 키**로 들어와 Readblio 목록은 페이지 버튼에서 음량 키를 정해야 넘어간다. 설정 값 `long_side_key_a=0`·`long_side_key_b=5`(옆 버튼 배정으로 보인다 **(추정)**) | 오른쪽 옆에 버튼 2개(사진). 키 코드 **(미확인)** | 오른쪽 옆 2개. `persist.haoqing.pag…`(잘림). 키 코드 **(미확인)** | 있음(옆 버튼 2개, 판매 사양). 키 코드 **(미확인)**(기기 정보에서 누르지 않음) | 없음(판매 사양) | **(미확인)**. 설정 값 `down_key_long_function=7`(Ocean 에도 있는 키) | 있음(출시 기사). 키 코드 **(미확인)**(기기 정보에서 누르지 않음) |
+| 기본 홈 바꾸기 | 됨 (지금 쓰는 중) | 됨 (기기 정보 `기본 홈 켜짐`, 홈 화면 사진) | 됨 (Readblio 홈 사진. 리뷰에서도 Nova·inkOS 를 안드로이드 설정 › 앱 › 기본 앱 › 홈 으로 씀) | 됨 (기기 정보 `기본 홈 켜짐`) | 아직 안 함 (기기 정보 `기본 홈 꺼짐`. 원래 홈은 Minimal 런처) | 됨 (기기 정보 `기본 홈 켜짐`) | 됨 (기기 정보 `기본 홈 켜짐`, 홈 화면 사진) | 됨 (기기 정보 `기본 홈 켜짐`) | 됨 (기기 정보 `기본 홈 켜짐`) | 됨 (기기 정보 `기본 홈 켜짐`) | 됨 (기기 정보 `기본 홈 켜짐`) | 아직 안 함 (기기 정보 `기본 홈 꺼짐`) |
+| Readblio 판정 `Device.kind` | `CREMA` (`Build.DEVICE` 가 `CREMA` 로 시작) | `MEEBOOK` (기기 정보 `메이북`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `MEEBOOK` (기기 정보 `메이북`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) | `OTHER` (기기 정보 `기타`) |
 
 - 크레마와 메이북은 둘 다 **Rockchip 전자잉크 개발 키트**에서 나왔다(Viwoods 는 MediaTek 이라 다르다). 안드로이드 빌드 기반(`RQ2A.210505.003`), `android.os.EinkManager`, SystemUI 의 `EinkSettingsManager`·`EinkSettingsProvider`(`content://com.android.systemui.eink/einksettings`) 이름이 같다. 그 위를 회사마다 따로 고쳤다.
 - `Build.DEVICE` 는 기기 코드명(`ro.product.device`)이다. 안드로이드 11 은 `ro.product.device` 가 직접 설정돼 있지 않으면 `ro.product.property_source_order`(기본 product, odm, vendor, system_ext, system) 순서로 `ro.product.<파티션>.device` 중 처음 비어 있지 않은 값을 쓴다(`init/property_service.cpp`). `MODEL`·`MANUFACTURER`·`BRAND` 도 같다.
@@ -83,7 +83,7 @@ jadx --no-res -d src/SystemUI fs/system_ext/priv-app/SystemUI/SystemUI.apk
 - **앱별 전자잉크 설정** (`android.util.haoqing.PaintConf`, `/data/haoqing/paint.conf`): 앱마다 DPI, 전체 화면, 대비, 밝게 바꾸기(bleach), 갱신 모드, 페이지 버튼을 음량 키로 바꾸기. `Canvas` 의 그림 감마 보정(`ImageProcesser.gammaCorrection`)은 앱별 설정이 있을 때만 돈다.
 - **페이지 키**: `KeyEvent.KEYCODE_HAOQING_PAGE_UP = 291`, `KEYCODE_HAOQING_PAGE_DOWN = 292`(키 배치 파일에서 스캔 코드 603·604).
 - **앱을 강제 종료하는 경로** (`forceStopPackage`. 크레마에서는 이러면 접근성 서비스가 꺼진다):
-  - 떠 있는 버튼의 메모리 정리: 최근 앱 목록의 시스템 앱 아닌 앱(맨 앞 하나 빼고). Pebble Desk 화면은 모두 `excludeFromRecents` 라 대상이 될 가능성이 낮다.
+  - 떠 있는 버튼의 메모리 정리: 최근 앱 목록의 시스템 앱 아닌 앱(맨 앞 하나 빼고). Readblio 화면은 모두 `excludeFromRecents` 라 대상이 될 가능성이 낮다.
   - 앱별 전자잉크 설정을 바꿀 때(`com.haoqing.action.clearapp` → `Haoqing-Settings` 의 `HaoqingReceiver`), 시스템 글꼴을 바꿀 때.
   - 접근성 서비스 목록을 지우는 코드는 못 찾았다.
 - **기본 홈**: 표준 `RoleManager`(`android.app.role.HOME`)·권한 관리 앱 경로 그대로. 메이북 런처로 되돌리는 코드는 못 찾았다.
@@ -128,7 +128,7 @@ Pebble Desk 1.2.0 을 기본 홈으로 쓰는 E6 의 홈·설정·기기 정보 
   - 화면 전체가 아니라 **오른쪽 절반쯤의 세로 패널**이 위에서 내려온다(왼쪽에 굵은 테두리, 뒤 화면은 그대로 보인다).
   - 위에서부터: 배터리% · 날짜·요일·시각 · 톱니(설정) / 큰 버튼 `WLAN` · `Bluetooth`(짧게 = 켜고 끄기, 길게 = 그 설정 화면) / 원형 버튼 `Refresh` · `WLAN Cast` · `Contrast` · `Button Lock`(아래 정전식 버튼 끄기) · `WLAN Transfer` · `Memo` (+ 캡처·비행기 모드·Picking 켜기) / `Refresh mode`: `Auto Ghosting Removal` 스위치, `Best Display` · `Fast Mode` · `Ultra-fast Mode` / **미니만** `Brightness` 0~20 막대(헤드폰을 꽂으면 음량도).
   - 안드로이드 알림창은 없고, 기본 런처에서는 위에서 끌어내려도 알림이 아니라 이 패널이나 새로고침이 된다(inkBell 설명).
-  - Pebble Desk 와의 관계: 기기 정보의 `안드로이드 ›`(`expandSettingsPanel`)로 이 제어 센터가 열린다(사용자 확인). 크레마·메이북 방송으로는 안 열려 홈 상단 줄 누르기는 아무 일도 하지 않지만, 원래 기기처럼 끌어내리기로 열면 되므로 따로 맞추지 않는다. Pebble Desk 홈 위에서 끌어내리기가 한 번에 여는지는 **(미확인)**.
+  - Readblio 와의 관계: 기기 정보의 `안드로이드 ›`(`expandSettingsPanel`)로 이 제어 센터가 열린다(사용자 확인). 크레마·메이북 방송으로는 안 열려 홈 상단 줄 누르기는 아무 일도 하지 않지만, 원래 기기처럼 끌어내리기로 열면 되므로 따로 맞추지 않는다. Readblio 홈 위에서 끌어내리기가 한 번에 여는지는 **(미확인)**.
 - 다른 런처: Nova Launcher·inkOS 를 안드로이드 설정 › 앱 › 기본 앱 › 홈 으로 바꿔 쓰는 사용자 글이 있다(svartling.net, inkOS).
 
 ### 시스템 (다른 개발자들이 미니 실기기에서 본 것)
@@ -138,10 +138,10 @@ Pebble Desk 1.2.0 을 기본 홈으로 쓰는 E6 의 홈·설정·기기 정보 
 - **ODM 은 Wisky**: `ro.build.user=wisky`, `ro.build.host=wisky3`, Viwoods 시스템 앱은 모두 `com.wisky.*`(메모 `com.wisky.notewriter`, AI `com.wisky.wiskyai`, OCR `com.wisky.ocr` 등). 커널 4.19, MediaTek.
 - **속성**: `ro.eink.model=SE05`, `ro.eink.type=SoftSolution`, `ro.wisky.has_backlight=true`, `persist.eink.mode_default`(기본 갱신 모드, GL16=3). → `Device.kind` 를 나눈다면 `Build.MANUFACTURER == "Viwoods"` 나 `ro.wisky.*` 가 쓸 만하다.
 - **시스템 앱**: 런처 `WiskyLauncher`(`/product/priv-app/`, 패키지 이름은 **(미확인)**. AiPaper Reader 는 `com.viwoods.launcher`), 설정 `setting`(Viwoods 설정. 안드로이드 기본 설정 `com.android.settings` 도 남아 있어 직접 열면 뜬다), 메모 `WiNote`·`Wmemo`, 손글씨 키보드 `WSmartIME`, AI `wiskyAi`.
-- **전자잉크 API**: 숨은 `android.os.enote.ENoteSetting`(바인더 서비스 `ENoteSetting`). 갱신 모드 `setPictureMode`(3 GL16 · 4 FAST · 17 GC 등), 감마·앱별 연한 색 지우기, T1000 빠른 펜(AutoDraw). 일반 앱도 리플렉션·`service call` 로 부를 수 있다고 한다. Pebble Desk 는 쓰지 않는다.
-- **접근성**: Viwoods 의 `FocusMonitorService` 가 접근성으로 원노트·킵 등의 화면을 보고 빠른 펜을 켠다(`persist.sys.focusmonitor.config=1`). 접근성 서비스 자체는 일반 앱도 쓸 수 있다. Pebble Desk 의 자동 추가도 켜졌다(기기 정보 사진).
+- **전자잉크 API**: 숨은 `android.os.enote.ENoteSetting`(바인더 서비스 `ENoteSetting`). 갱신 모드 `setPictureMode`(3 GL16 · 4 FAST · 17 GC 등), 감마·앱별 연한 색 지우기, T1000 빠른 펜(AutoDraw). 일반 앱도 리플렉션·`service call` 로 부를 수 있다고 한다. Readblio 는 쓰지 않는다.
+- **접근성**: Viwoods 의 `FocusMonitorService` 가 접근성으로 원노트·킵 등의 화면을 보고 빠른 펜을 켠다(`persist.sys.focusmonitor.config=1`). 접근성 서비스 자체는 일반 앱도 쓸 수 있다. Readblio 의 자동 추가도 켜졌다(기기 정보 사진).
 - **기본 홈**: 안드로이드 설정 › 앱 › 기본 앱 › 홈 으로 바꾼다. Viwoods 설정 화면에는 이 메뉴가 없어 안드로이드 설정을 따로 열어야 한다(Margin 은 `RoleManager.ROLE_HOME` 요청 → `ACTION_HOME_SETTINGS` 순으로 연다).
-- **상단 바와 제어 센터**: Margin 은 모든 화면에서 상단 바를 숨기는데, 위에서 끌어내리면 바가 잠깐 나오고 "조명·Wi-Fi 패널이 그 바에 달려 있다"고 적었다. 즉 제어 센터는 SystemUI 상단 바 쪽 동작으로 보인다 **(추정)**. Pebble Desk 홈도 `BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE` 로 상단 바를 숨기므로 **첫 끌어내리기는 바만 꺼내고, 한 번 더 끌어내려야 패널이 열릴 수 있다** **(미확인)**.
+- **상단 바와 제어 센터**: Margin 은 모든 화면에서 상단 바를 숨기는데, 위에서 끌어내리면 바가 잠깐 나오고 "조명·Wi-Fi 패널이 그 바에 달려 있다"고 적었다. 즉 제어 센터는 SystemUI 상단 바 쪽 동작으로 보인다 **(추정)**. Readblio 홈도 `BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE` 로 상단 바를 숨기므로 **첫 끌어내리기는 바만 꺼내고, 한 번 더 끌어내려야 패널이 열릴 수 있다** **(미확인)**.
 - **adb**: 미니도 `adb shell`·`install`·`pull`·`logcat` 이 막혀 있다(`error: not support command`). `adb forward` 와 앱 안의 `service call` 은 된다. AiPaper Reader 에서는 Viwoods 디버그 도구가 쓰는 `persist.wisky.hold_enable_adb` 속성으로 잠금을 푸는 방법이 공개됐다(yowmamasita 블로그 "Bypassing ADB Restrictions"). 키 앞부분이 10.65" AiPaper 모델 번호(`SE03`)라 미니에도 통할 수 있다 **(미확인)**.
 - **AI 버튼**(AiPaper Reader, `equwal/assistkey`): 입력 장치 `AI KEY`, 키 `KEY_F1`. 펌웨어가 `Settings.System CustomAiKey` 에 정한 화면을 띄우고 앱에는 잘 안 온다. 미니도 같은지 **(미확인)**.
 
@@ -155,17 +155,17 @@ Pebble Desk 1.2.0 을 기본 홈으로 쓰는 E6 의 홈·설정·기기 정보 
 
 AiPaper Reader(7.8", MediaTek Helio G99 MT8781, 펌웨어 1.x · 안드로이드 16)를 루팅해 고친 사람들의 기록(GitHub `magcrider/Viwoods-Notification-Unlocker`, MobileRead).
 
-- **알림 막기**: `services.jar` 의 `NotificationManagerService.enqueueNotificationInternal` 에 허용 목록(`ALLOWED_PKGS`)이 박혀 있어 목록 밖 앱 알림을 버린다(로그 `eink project,Blocked notification from package:`). Pebble Desk 는 알림을 쓰지 않아 상관없다.
+- **알림 막기**: `services.jar` 의 `NotificationManagerService.enqueueNotificationInternal` 에 허용 목록(`ALLOWED_PKGS`)이 박혀 있어 목록 밖 앱 알림을 버린다(로그 `eink project,Blocked notification from package:`). Readblio 는 알림을 쓰지 않아 상관없다.
 - **백그라운드 앱 정리**: `com.viwoods.refresh.service` 가 백그라운드 프로세스를 세게 죽인다. 접근성 서비스(읽는 책 자동 추가)가 꺼지거나 멈출 수 있다 **(미확인)**. 대응은 배터리 최적화 제외(`cmd deviceidle whitelist +패키지`).
 - **adb 제한**: 1.3.4 에서 adb 와 버튼 바꾸기(Keymapper)를 막았다가 1.3.8 에서 Viwoods 인증 도구(PC 프로그램)로 기기를 매번 승인해야 쓰게 했다. 접근성 서비스도 중간 베타에서 막혔다가 1.3.8 에서 돌아왔다.
 - 부트로더 잠김, AVB 강제. 펌웨어 백업·쓰기는 `mtkclient`(BROM 모드).
-- **Pebble Desk 사용자 보고**: AiPaper Reader C(컬러 판으로 보인다 **(추정)**)에서 읽는 책 자동 추가가 된다(2026-10-25 Reddit 댓글, KOReader 책 두 권이 홈에 나옴). 펌웨어 판은 모른다. 접근성이 막히는 펌웨어가 있어 댓글에서 `앱 정보 › 오른쪽 위 메뉴 › 제한된 설정 허용` 을 먼저 안내했다.
+- **Readblio 사용자 보고**: AiPaper Reader C(컬러 판으로 보인다 **(추정)**)에서 읽는 책 자동 추가가 된다(2026-10-25 Reddit 댓글, KOReader 책 두 권이 홈에 나옴). 펌웨어 판은 모른다. 접근성이 막히는 펌웨어가 있어 댓글에서 `앱 정보 › 오른쪽 위 메뉴 › 제한된 설정 허용` 을 먼저 안내했다.
 
 ### 실기기 사진에서 본 것 (2026-10-07, 홈 화면 1장)
 
-Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서재 E ink `독서의 기술`), 자주 쓰는 앱 3개(밀리의서재 E ink · 윌라 · Kindle).
+Readblio(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서재 E ink `독서의 기술`), 자주 쓰는 앱 3개(밀리의서재 E ink · 윌라 · Kindle).
 
-- **기본 홈**: 됨. 홈을 누른 뒤 Pebble Desk 가 뜬 것으로 보인다. 시스템 상단 바는 `hideStatusBar()` 로 숨겨지고 자체 상단(시계·`10월 7일 수요일 · 83% · Wi-Fi · BT`)이 나온다. 크레마 로고 자리는 비어 있다(크레마 런처 없음, 예상대로).
+- **기본 홈**: 됨. 홈을 누른 뒤 Readblio 가 뜬 것으로 보인다. 시스템 상단 바는 `hideStatusBar()` 로 숨겨지고 자체 상단(시계·`10월 7일 수요일 · 83% · Wi-Fi · BT`)이 나온다. 크레마 로고 자리는 비어 있다(크레마 런처 없음, 예상대로).
 - **내비게이션 바 없음**: 앱이 화면 맨 아래까지 쓰고 하단 줄(`모든 앱 › · 오늘 2분 · 4일째 · 톱니`)이 다 보인다. 크레마처럼 아래가 가려지는 일은 없어 보인다.
 - **밀도 맞춤**: 기기는 320dpi(720×960dp)인데 짧은 변 1440px → 앱 밀도 403dpi(1dp ≈ 2.52px), 572×762dp 로 페블(572×777dp)과 거의 같은 배치가 그대로 들어간다. 다만 화면이 커서 1dp 가 페블의 약 1.37배(0.21mm, 페블 0.16mm) 크기로 보인다. 글자·줄이 큼직하다.
 - **글꼴**: 시스템 기본 글꼴이 고딕 계열로, E6(명조 계열)처럼 줄이 넘치는 일은 없다.
@@ -197,7 +197,7 @@ Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서�
 ### 다음에 받을 것
 
 1. 기기 정보 사진은 받았다(위). 기기 정보가 기기 고유 값을 찾아 보이게 고친 뒤, 조명을 켠 채·끈 채 한 장씩 더.
-2. Pebble Desk 홈에서 오른쪽 위 끌어내리기가 제어 센터를 여는지(한 번에 열리는지, 상단 바가 먼저 나오고 두 번째에 열리는지). 빠른 설정 시험은 `안드로이드 ›` 로 열림을 확인했다.
+2. Readblio 홈에서 오른쪽 위 끌어내리기가 제어 센터를 여는지(한 번에 열리는지, 상단 바가 먼저 나오고 두 번째에 열리는지). 빠른 설정 시험은 `안드로이드 ›` 로 열림을 확인했다.
 3. 정전식 AI 버튼(·뒤로·홈)을 누른 뒤 기기 정보의 키 번호·스캔 코드.
 4. 제어 센터를 열었다 돌아온 뒤 `최근에 뜬 다른 화면`(따로 된 Activity 인지).
 5. **자동 추가 기록 사진**(1.4.1, 기기 정보 › `기록 보기 ›`): `기록 지우기` → 밀리 E ink 에서 책 열기 → 돌아와 찍기. 요약의 `첫 알림`·`받은 알림` 이 없으면 시스템이 알림을 보내지 않는 것(Viwoods 접근성 잠금 의심), 알림은 오는데 `화면 못 읽음`·`창 … (화면 아님)` 뿐이면 화면을 못 읽는 것이다. adb 가 되는지.
@@ -226,12 +226,12 @@ Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서�
 - 오른쪽 위 **모서리**에서 끌어내리면 캡처·노트·작업 전환 패널(Musnap 리뷰). 아래 가장자리에서 끌어올리면 왼쪽 = 작업 관리자, 가운데 = 홈, 오른쪽 = 표시 최적화.
 - 손동작은 7방향 + 오른쪽 위 대각선, 모두 8방향을 설정 › 보조 기능 › 전역 손동작(Global Gestures)에서 바꿀 수 있다(클리앙). SmartOS 2.1·2.2 에서 들어온 기능이다.
 - 시스템 상단 바(시각 · BT · 조명 · 배터리 · `···`)가 모든 화면 위에 있다(설명서 그림). 그래서 제어 패널은 SystemUI 상단 바의 끌어내리기 동작으로 보인다 **(추정)**. 그렇다면 `expandSettingsPanel` 로도 열릴 수 있다 **(미확인)**.
-- Pebble Desk 와의 관계: 홈 상단 줄 누르기는 크레마·메이북 방송만 보내므로 아무 일도 하지 않을 것이다 **(추정)**. 홈은 상단 바를 숨기니(`BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE`) 첫 끌어내리기는 바만 꺼내고 두 번째에 패널이 열릴 수 있다 **(미확인)**. Viwoods 처럼 원래 기기의 끌어내리기에 맡길지, `expandSettingsPanel` 이 열리면 상단 줄 누르기에 쓸지는 기기 정보 사진을 받고 정한다.
+- Readblio 와의 관계: 홈 상단 줄 누르기는 크레마·메이북 방송만 보내므로 아무 일도 하지 않을 것이다 **(추정)**. 홈은 상단 바를 숨기니(`BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE`) 첫 끌어내리기는 바만 꺼내고 두 번째에 패널이 열릴 수 있다 **(미확인)**. Viwoods 처럼 원래 기기의 끌어내리기에 맡길지, `expandSettingsPanel` 이 열리면 상단 줄 누르기에 쓸지는 기기 정보 사진을 받고 정한다.
 
 ### 페이지 버튼
 
 - 오른쪽(돌리면 왼쪽) 손잡이에 2개. "페이지를 넘기는 앱이 아닐 때는 **음량**을 바꾼다"(Musnap 리뷰). 그렇다면 키는 `VOLUME_UP`·`VOLUME_DOWN` 이고, 읽는 앱에서만 펌웨어가 넘김으로 바꿔 주는 것이다 **(추정)**.
-- Ocean 5 Pro 기기 정보의 `마지막으로 누른 버튼`: `24 KEYCODE_VOLUME_UP`(scan 115). 아래 버튼은 `VOLUME_DOWN` **(추정)**. Pebble Desk 는 1.5.5 부터 기기 버튼으로 쪽을 넘기지 않았고(키 처리를 지움), 이제 설정 › 화면 › 페이지 버튼에서 사용자가 음량 키를 정하면 넘긴다(이슈 #9). 음량 조절을 빼앗지 않게 넘길 목록이 없는 화면과 소리가 나는 동안에는 음량 키를 그대로 둔다. 실기기 확인은 아직.
+- Ocean 5 Pro 기기 정보의 `마지막으로 누른 버튼`: `24 KEYCODE_VOLUME_UP`(scan 115). 아래 버튼은 `VOLUME_DOWN` **(추정)**. Readblio 는 1.5.5 부터 기기 버튼으로 쪽을 넘기지 않았고(키 처리를 지움), 이제 설정 › 화면 › 페이지 버튼에서 사용자가 음량 키를 정하면 넘긴다(이슈 #9). 음량 조절을 빼앗지 않게 넘길 목록이 없는 화면과 소리가 나는 동안에는 음량 키를 그대로 둔다. 실기기 확인은 아직.
 - 짧게·길게 누르기 동작을 각각 정할 수 있다(Ocean C 사용기: 짧게 = 다음/이전, 길게 = 새로고침/뒤로).
 
 ### 시스템 (다른 사람들이 본 것)
@@ -248,8 +248,8 @@ Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서�
   - 권한: `자동 추가 꺼짐 · 오늘 읽은 시간 켜짐 · 기본 홈 켜짐`.
   - 하위 화면 위에 SmartOS 시스템 상단 바(왼쪽 시각 `오전 12:16`, 오른쪽 Wi-Fi · `75%` · 배터리)가 얇게 있다. 그래도 기기 정보는 빠른 설정 시험 줄까지 다 들어간다.
 - **오늘 읽은 시간**: 켜짐(사용 기록 권한 됨). 최근 화면에 `kr.co.millie.millieshelf/MillieViewerActivity`, `kr.co.kyobobook.KEL/B2BViewerEpubMainActivity` 가 잡혔다. 둘 다 `READER` 정규식에 맞으니 읽은 시간은 쌓인다.
-- **읽는 책 자동 추가가 켜지지 않는다**: 접근성 › 다운로드한 앱 › Pebble Desk 가 흐리게 `사용 안함`, 누르면 `제한된 설정 — 보안을 위해 이 설정은 현재 사용할 수 없습니다`. iReader 고유 제한이 아니라 **안드로이드 13+ 의 제한된 설정**이다: 파일(APK)로 직접 깐 앱은 접근성·알림 접근 같은 권한을 켜지 못하게 막는다(앱 장터의 세션 설치는 해당 없음). 같은 화면의 Smart Launcher Gestures 는 흐리지 않다(Play 로 깐 것으로 보인다).
-  - 푸는 법: 접근성에서 Pebble Desk 를 한 번 눌러 `제한된 설정` 창을 본 뒤(그래야 `⋮` 에 항목이 생긴다. 에뮬레이터 API 33 에서 확인: 창을 보면 `ACCESS_RESTRICTED_SETTINGS` 가 `deny` → `ignore`), 설정 › 앱 › Pebble Desk › 앱 정보 오른쪽 위 `⋮` › **제한된 설정 허용** → 다시 접근성에서 켠다. SmartOS 앱 정보 화면에 `⋮` 가 있는지는 **(미확인)**.
+- **읽는 책 자동 추가가 켜지지 않는다**: 접근성 › 다운로드한 앱 › Readblio 가 흐리게 `사용 안함`, 누르면 `제한된 설정 — 보안을 위해 이 설정은 현재 사용할 수 없습니다`. iReader 고유 제한이 아니라 **안드로이드 13+ 의 제한된 설정**이다: 파일(APK)로 직접 깐 앱은 접근성·알림 접근 같은 권한을 켜지 못하게 막는다(앱 장터의 세션 설치는 해당 없음). 같은 화면의 Smart Launcher Gestures 는 흐리지 않다(Play 로 깐 것으로 보인다).
+  - 푸는 법: 접근성에서 Readblio 를 한 번 눌러 `제한된 설정` 창을 본 뒤(그래야 `⋮` 에 항목이 생긴다. 에뮬레이터 API 33 에서 확인: 창을 보면 `ACCESS_RESTRICTED_SETTINGS` 가 `deny` → `ignore`), 설정 › 앱 › Readblio › 앱 정보 오른쪽 위 `⋮` › **제한된 설정 허용** → 다시 접근성에서 켠다. SmartOS 앱 정보 화면에 `⋮` 가 있는지는 **(미확인)**.
   - Pebble Desk 1.3.2 는 ⑭ 시작하기 1쪽에 이 순서를 단계로 보이고 `앱 정보 열기 ›` 로 앱 정보를 직접 연다(기기 설정 아이콘을 숨긴 SmartOS 에서도 열릴 것 **(추정)**. 안드로이드 13 설정 앱은 extra `uId` 가 있어야 직접 연 앱 정보에 `⋮` 를 만든다. 14 도 같은지 **(미확인)**). 설정 › 독서 › 읽는 책 자동 추가 창에도 같은 안내와 버튼이 있다.
   - 안 되면 PC 에서 `adb shell appops set com.woody.pebbledesk ACCESS_RESTRICTED_SETTINGS allow`(adb 가 되는 경우) 또는 adb 로 다시 설치(`adb install` 은 제한이 걸리지 않는다).
   - 페블·메이북(안드로이드 11)에는 이 제한이 없다. AiPaper Mini(안드로이드 13)는 같은 제한이 있을 텐데 보고가 없었다 **(미확인)**.
@@ -278,7 +278,7 @@ Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서�
   - 설정 값: `screen_brightness=103` · `EinkLightStep=31`(조명 켜짐, 30단계 기기에서 31) · `clock_wallpaper_lock_screen_refresh_interval=300000` · `down_key_long_functio…`(잘림).
   - 권한: `자동 추가 켜짐 · 오늘 읽은 시간 켜짐 · 기본 홈 꺼짐`. `와이파이 꺼짐 · 블루투스 켜짐 A2DP? HFP? HID?`.
   - 자동 추가 서비스: `연결 10/31 02:02 · 끊김 - · 끊긴 횟수 0`, `앱 종료 10/31 02:02 PKG_UPDATED · 10/29 23:59 OTHER · 23:55 PKG_UPDATED`, 마지막 앱 오류 없음, `배터리 최적화 제외 꺼짐 · 대기 그룹 EXEMPTED · 백그라운드 제한 꺼짐`.
-  - 최근 화면: `com.szzy.ireader.ink.launcher / LauncherActivity`(iReader 홈), `com.zhangyue.iReader.Eink / ActivityRead`(기본 리더 읽는 화면). 기본 홈이 꺼져 있어 iReader 홈을 쓰며 Pebble Desk 는 앱으로 연다.
+  - 최근 화면: `com.szzy.ireader.ink.launcher / LauncherActivity`(iReader 홈), `com.zhangyue.iReader.Eink / ActivityRead`(기본 리더 읽는 화면). 기본 홈이 꺼져 있어 iReader 홈을 쓰며 Readblio 는 앱으로 연다.
 - **Tango**(1세대): `PM06A-CKD`, `ro.build.versionCode=4.1.0.215.0`, 화면 824×1648 · **320dpi** · 412×824dp → 앱 기준 230dpi(2026-10-13 사진은 400dpi · 330×659dp 였다. 사용자가 화면 크기를 바꿨는지 펌웨어가 바뀐 것인지 **(미확인)**. 앱 기준 230dpi 는 그대로). `persist.eink.dither256.disable=0` · `persist.sys.eink.color.filter=10` · `persist.sys.eink.contrast=6` · `screen_brightness=103` · `EinkLightStep=20` · `down_key_long_function=7` · `eink_wallpaper_name=系统日历` · `ireader_systemui_shutdown_pending=0`. 권한 `자동 추가 켜짐 · 오늘 읽은 시간 켜짐 · 기본 홈 꺼짐`, `와이파이 켜짐·연결됨 · 블루투스 켜짐`. 서비스 `연결 10/31 01:29 · 끊긴 횟수 0`, `앱 종료 10/31 01:29 PKG_UPDATED · 10/30 01:13 PKG_UPDATED`. 최근 화면 `com.szzy.ireader.ink.launcher / LauncherActivity`, `com.zhangyue.iReader.Eink / RecentTaskListActivity`(최근 작업), `com.zhangyue.iReader.Eink / ActivityRead`.
 
 ### 배경 사진 고르기가 안 됨 (2026-11-14, Pebble Desk 1.8.0, 카페 댓글)
@@ -293,7 +293,7 @@ Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서�
 1. ~~설정 › 기기 정보 사진~~ 받음(2026-10-10). 빠른 설정 시험 결과는 아직.
 2. 기기 정보의 빠른 설정 시험 세 버튼(`크레마 ›` · `메이북 ›` · `안드로이드 ›`) 가운데 무엇이 제어 패널을 여는지.
 3. ~~페이지 버튼 키 번호~~ 위 버튼 = `VOLUME_UP`(scan 115). 아래 버튼은 `VOLUME_DOWN` **(추정)**.
-4. Pebble Desk 홈에서 위에서 끌어내리기가 제어 패널을 한 번에 여는지.
+4. Readblio 홈에서 위에서 끌어내리기가 제어 패널을 한 번에 여는지.
 5. ~~접근성(읽는 책 자동 추가): 제한된 설정을 푼 뒤 켜지는지~~ 풀어서 켰다(2026-10-10 댓글). 2026-10-14 에도 켜져 있다(1.5.2 기기 정보). 1.3.2 의 `앱 정보 열기` 로 연 화면에 `⋮` 가 나왔는지는 아직.
 6. ~~사진의 기기 정보 화면 아래쪽~~ 받음(2026-10-14, 1.4.0 부터 빠른 설정 시험은 없다). 홈 화면은 아직.
 
@@ -365,7 +365,7 @@ Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서�
 2. ~~기기 정보의 잡음 줄이기~~ 고침(1.3.2): 제조사·브랜드 낱말에서 `phone`·`mobile`·`tech` 같은 흔한 낱말(`COMMON_WORDS`)을 빼고, `warm` 은 `warm_reset`·`warmboot` 를 뺀다. 고친 판의 기기 정보 사진을 다시 받는다.
 3. `안드로이드 ›` 를 눌렀을 때 알림창이 열렸는지. 홈 상단 줄 누르기에 쓸지 정한다.
 4. 새로고침 버튼(짧게·길게)·키보드 단축키의 키 번호. 새로고침 길게로 뜨는 설정 창을 열었다 돌아온 뒤 `최근에 뜬 다른 화면`.
-5. 물리 키보드로 홈·목록에서 글자를 치면 어떻게 되는지(Pebble Desk 는 키보드 입력을 받지 않는다).
+5. 물리 키보드로 홈·목록에서 글자를 치면 어떻게 되는지(Readblio 는 키보드 입력을 받지 않는다).
 6. 기본 홈으로 바꿨을 때 홈 버튼·최근 버튼이 그대로 동작하는지.
 
 ## Moaan MIX7S
@@ -397,13 +397,13 @@ Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서�
 
 ### 사용자가 알려 준 문제 (2026-10-10 댓글, 1.3.0)
 
-1. **설정 › 독서 › 오늘 읽은 시간을 누르면 `설정이(가) 계속 중단됨`**: 앱이 여는 사용 기록 액세스 화면(`Settings.ACTION_USAGE_ACCESS_SETTINGS`)에서 **시스템 설정 앱이 멈춘다**(사진). Pebble Desk 쪽은 화면을 열었을 뿐이라 실패를 알 수 없다. 그래서 오늘 읽은 시간을 켤 수 없다.
+1. **설정 › 독서 › 오늘 읽은 시간을 누르면 `설정이(가) 계속 중단됨`**: 앱이 여는 사용 기록 액세스 화면(`Settings.ACTION_USAGE_ACCESS_SETTINGS`)에서 **시스템 설정 앱이 멈춘다**(사진). Readblio 쪽은 화면을 열었을 뿐이라 실패를 알 수 없다. 그래서 오늘 읽은 시간을 켤 수 없다.
    - 1.4.0 기기 정보의 시스템 화면 시험으로 확인(2026-10-10 19:10 댓글): `사용 기록 ›`(목록)은 그대로 멈추고, **`이 앱 기록 ›`(이 앱만의 사용 기록 화면, 같은 동작 + `package:` 주소)은 열려** 거기서 허용하니 오늘 읽은 시간이 켜졌다.
    - → 1.4.1 부터 앱이 처음부터 이 앱만의 화면을 연다(그 화면이 없는 기기는 목록, `ReadingLog.openAccessSettings`).
    - PC 우회(필요 없어짐): `adb shell appops set com.woody.pebbledesk GET_USAGE_STATS allow`.
 2. **읽는 책 자동 추가를 켰는데 다시 꺼지는 때가 있다**: 1.3.0 은 앱 안의 켜짐 값과 접근성이 따로라(1.3.1 에서 하나로 함) 어긋나 보였을 수 있다. 실제로 접근성 서비스가 꺼진다면, 백그라운드 정리로 앱이 강제 종료돼 시스템이 서비스를 끄는 것으로 보인다(`APPS_WHITE_LIST_KEY` 에 없는 앱) **(추정)**.
    - 2026-10-10 18:25 기준: 지금은 켜져 있고, 사용자가 메모리 정리를 한 적은 없다고 한다. 꺼진다면 사용자 정리가 아니라 시스템의 자동 정리일 것이다 **(추정)**.
-   - 사용자 답(2026-10-10 19:10): 재부팅하면서 백그라운드에서 앱이 꺼진 것 같다. **Moaan 설정에서 Pebble Desk 를 백그라운드에서 꺼지지 않게 바꾼 뒤로는 괜찮다**. 어느 화면의 어떤 설정인지는 **(미확인)**(`APPS_WHITE_LIST_KEY` 에 들어가는지는 다음 기기 정보 사진의 자동 추가 서비스 기록 끝에 보인다).
+   - 사용자 답(2026-10-10 19:10): 재부팅하면서 백그라운드에서 앱이 꺼진 것 같다. **Moaan 설정에서 Readblio 를 백그라운드에서 꺼지지 않게 바꾼 뒤로는 괜찮다**. 어느 화면의 어떤 설정인지는 **(미확인)**(`APPS_WHITE_LIST_KEY` 에 들어가는지는 다음 기기 정보 사진의 자동 추가 서비스 기록 끝에 보인다).
 
 ### 다음에 받을 것
 
@@ -411,7 +411,7 @@ Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서�
    - (받음) 시스템 화면 시험: 목록은 멈추고 이 앱만의 화면은 열린다 → 앱이 그 화면을 열게 바꿨다.
 2. 자동 추가가 또 꺼지면 그때의 기기 정보 `자동 추가 서비스 기록`(끊긴 때·앱 종료 까닭·배터리 최적화·대기 그룹·백그라운드 제한, `APPS_WHITE_LIST_KEY` 에 들었는지).
 3. 사용자가 바꾼 '백그라운드에서 꺼지지 않게' 설정 화면 사진(README·안내에 쓸 경로).
-4. 자동 추가가 꺼졌을 때 안드로이드 접근성 화면에서 Pebble Desk 가 꺼져 있는지(앱 표시만 꺼진 것인지).
+4. 자동 추가가 꺼졌을 때 안드로이드 접근성 화면에서 Readblio 가 꺼져 있는지(앱 표시만 꺼진 것인지).
 5. 옆 페이지 버튼 두 개의 키 번호(위·아래), `long_side_key` 설정 화면.
 
 ## 교보 sam 7 mono
@@ -429,7 +429,7 @@ Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서�
 - **화면**: `1264×1680 · 320dpi · 632×840dp → 앱 기준 354dpi · 571×759dp · 1264×1680 로 셈`. 밀도 맞춤이 그대로 됐다. 하위 화면 위에 상단 바가 있어도 기기 정보는 시스템 화면 시험 줄까지 다 들어가고 아래가 남는다.
 - **시스템 속성·설정 값**: `ro.haoqing.brand=haoqing-meebook` · `persist.haoqing.updatemodel=Kyobo-G7-RK3576` · `persist.haoqing.pag…`(잘림, 페이지 키 값) · `screen_brightness=0` · `isLightOn=true` · `light_mode=4` · `haoqing_warm_light=0` · `hq_contrast=35` · `brightness_start_bar=6` · `brig…`(잘림).
   - 교보 안의 기종 이름은 **G7** 이다. 칩은 RK3576.
-  - 조명: `isLightOn=true` 인데 백색·온색 값이 모두 0 이다. `light_mode=4` 는 조명 팝업의 프리셋(꺼짐·차가운·따뜻한·은은한·내 설정) 번호로 보이고, 실제 밝기는 잘린 `brightness_*` 키에 있을 수 있다 **(미확인)**. Pebble Desk 는 `isLightOn` 만 보므로 홈 상태 줄에 조명 아이콘이 나올 것이다.
+  - 조명: `isLightOn=true` 인데 백색·온색 값이 모두 0 이다. `light_mode=4` 는 조명 팝업의 프리셋(꺼짐·차가운·따뜻한·은은한·내 설정) 번호로 보이고, 실제 밝기는 잘린 `brightness_*` 키에 있을 수 있다 **(미확인)**. Readblio 는 `isLightOn` 만 보므로 홈 상태 줄에 조명 아이콘이 나올 것이다.
 - **권한**: `자동 추가 켜짐 · 오늘 읽은 시간 켜짐 · 기본 홈 켜짐`.
 - **자동 추가 서비스 기록**: 연결 10/13 21:28, 끊긴 횟수 0. 앱 종료 `PKG_UPDATED`(덮어 설치). 배터리 최적화 제외 꺼짐 · 대기 그룹 ACTIVE · 백그라운드 제한 꺼짐.
 - **마지막으로 누른 버튼**: `4 KEYCODE_BACK · scan 0`. 스캔 코드가 0 이라 상단 바의 뒤로 아이콘(소프트 키)으로 보인다 **(추정)**. 옆 페이지 버튼 키 번호는 아직.
@@ -440,14 +440,14 @@ Pebble Desk(1.2.x)를 기본 홈으로 쓰는 홈 화면. 책 1권(밀리의서�
 
 - **끌어내리는 알림창·빠른 설정이 없다**(사용자). 상단 바 아이콘을 하나씩 누르면 팝업이나 설정 화면이 뜨는 방식이다.
 - 교보 안내 그림: 왼쪽 **홈 · 뒤로 · 새로고침(디스플레이) · 조명(소리) · 사용자 설정(톱니)**, 오른쪽 **블루투스 · Wi-Fi · 파일 관리자 · 배터리 · 시각**. 메이북 M6C 상단 바(왼쪽 홈·뒤로·새로고침·조명, 오른쪽 최근 앱)에 교보가 더한 모양이다.
-  - 사용자 사진(Pebble Desk 설정 화면 위)에서는 블루투스·Wi-Fi 가 왼쪽 톱니 앞에 있고, 오른쪽은 파일 관리자 · `75%` · 시각이다. 펌웨어 판에 따라 배치가 다른 듯하다 **(추정)**.
+  - 사용자 사진(Readblio 설정 화면 위)에서는 블루투스·Wi-Fi 가 왼쪽 톱니 앞에 있고, 오른쪽은 파일 관리자 · `75%` · 시각이다. 펌웨어 판에 따라 배치가 다른 듯하다 **(추정)**.
 - 새로고침·조명은 **팝업**, Wi-Fi·블루투스는 **설정 화면**으로 간다(사용자).
   - 새로고침 팝업은 `새로 고침 | 디스플레이` 두 탭. 새로 고침 탭은 갱신 모드 `고화질 · 기본 · A2 · 스크롤` 과 고른 모드 설명(교보 안내 그림). 메이북 새로고침 설정 창(Regal·Normal·Fast·A2, 대비)을 고친 것으로 보인다 **(추정)**.
   - 조명 팝업은 `꺼짐 · 차가운 · 따뜻한 · 은은한 · 내 설정` 버튼과 슬라이더 3개(달: 따뜻한 빛, 해: 차가운 빛, 스피커: 소리). 메이북 조명 창(`haoqing_brightness`: 꺼짐/차가운/따뜻한/은은한/수동 + 슬라이더 2개)과 버튼까지 같고 소리 슬라이더만 더했다 → **Haoqing 펌웨어로 거의 확실**하다.
   - 블루투스 아이콘은 `‹ 블루투스` 화면(켜기 스위치 · 검색 · 기기 이름 `sam 7 mono` · 사용할 수 있는 기기 · `태블릿 블루투스 주소`)을 띄운다. 안내 그림에서는 상단 바 아래 앱 화면이 흐리게 비쳐, 전체 화면이 아니라 위에 겹친 창으로 보인다 **(추정)**. 상단 바는 그대로 보인다.
   - Wi-Fi 아이콘도 같은 모양의 `‹ Wi-Fi` 화면(추가 `+` · 켜기 스위치 · `⋮` · 네트워크 목록, 연결·해제는 거기서). 안드로이드 설정의 블루투스·Wi-Fi 화면을 띄우는 것으로 보인다 **(추정)**.
 - 오른쪽 옆에 페이지 버튼 두 개(안내 그림·사진).
-- Pebble Desk 홈은 시스템 상단 바를 숨기므로(`hideStatusBar`) 홈에서는 이 아이콘들이 안 보인다. 위에서 아래로 쓸면 잠깐 나온다. `Device.kind` 가 `MEEBOOK` 이라 홈 상단 줄을 누르면 `com.haoqing.action.QUICK_SETTINGS`(→ `instantExpandNotificationsPanel`)를 보내는데, 펼칠 패널이 없어 아무 일도 없을 것이다 **(미확인)**. → 다음 판에 설정 › 화면 › `기기 상단 바 · 홈에서도 보이기`(처음은 꺼짐)를 넣었다. 켜면 홈에서도 상단 바가 보여 아이콘을 바로 누를 수 있다(홈 상단 두 줄은 뺀다).
+- Readblio 홈은 시스템 상단 바를 숨기므로(`hideStatusBar`) 홈에서는 이 아이콘들이 안 보인다. 위에서 아래로 쓸면 잠깐 나온다. `Device.kind` 가 `MEEBOOK` 이라 홈 상단 줄을 누르면 `com.haoqing.action.QUICK_SETTINGS`(→ `instantExpandNotificationsPanel`)를 보내는데, 펼칠 패널이 없어 아무 일도 없을 것이다 **(미확인)**. → 다음 판에 설정 › 화면 › `기기 상단 바 · 홈에서도 보이기`(처음은 꺼짐)를 넣었다. 켜면 홈에서도 상단 바가 보여 아이콘을 바로 누를 수 있다(홈 상단 두 줄은 뺀다).
 
 ### 다음에 받을 것
 
@@ -511,15 +511,15 @@ Leaf(7인치 1264×1680, 2021)·Poke3(6인치 1072×1448, 2020). 사용자가 �
 
 ### 사용자가 알려 준 문제 (2026-10-10 댓글 2개, 사진 1장)
 
-- 시작하기·설정에서 접근성을 켜려 하면(시스템 접근성 › Pebble Desk › `Use Pebble Desk`) 안드로이드의 확인 창 **`Allow Pebble Desk to have full control of your device?`** 가 뜨는데, 설명과 두 권한(`View and control screen`, `View and perform actions`) 아래에 **`Allow`·`Deny` 단추가 보이지 않는다**(창 아래쪽이 비어 있다). 그래서 켤 수 없다.
+- 시작하기·설정에서 접근성을 켜려 하면(시스템 접근성 › Readblio › `Use Readblio`) 안드로이드의 확인 창 **`Allow Readblio to have full control of your device?`** 가 뜨는데, 설명과 두 권한(`View and control screen`, `View and perform actions`) 아래에 **`Allow`·`Deny` 단추가 보이지 않는다**(창 아래쪽이 비어 있다). 그래서 켤 수 없다.
 - 이 창은 안드로이드 설정 앱의 것(안드로이드 11 `AccessibilityServiceWarning`)이다. 단추가 그 빈자리에 있는데 글자색(테마의 강조색)이 전자잉크에서 흰색에 가깝게 그려져 안 보이는 것으로 보인다 **(추정)**. 제한된 설정(안드로이드 13+)과는 다르다(Leaf2 는 11).
-- Pebble Desk 가 고칠 수 있는 화면이 아니다. 해 볼 것:
+- Readblio 가 고칠 수 있는 화면이 아니다. 해 볼 것:
   1. 권한 목록 바로 아래 빈 곳(첫 단추 `Allow` 자리)을 눌러 본다. 그 아래가 `Deny` 라 잘못 눌러도 창이 닫힐 뿐이다 **(미확인)**.
   2. BOOX 앱 최적화(설정 앱에 대비·진하게)로 단추 글자가 보이게 한다 **(미확인)**.
   3. PC 에서 켠다: `adb shell settings put secure enabled_accessibility_services com.woody.pebbledesk/com.woody.pebbledesk.ReaderWatchService` 와 `adb shell settings put secure accessibility_enabled 1`.
 - 처음 보고(15:42)에서 "권한을 아무리 주고 싶어도 안 된다"고 한 것이 이것이다. 시작하기에서 켜지 못해 나갈 수 없던 문제는 1.4.0 의 `나중에 하기` 로 풀었다.
 - 2026-10-10 18:25 기준: 위 1 을 해 봤는데 **빈자리를 다 눌러도 반응이 없다**. 단추가 안 보일 뿐 아니라 눌러도 안 되므로, 창 아래가 잘려 단추가 화면 밖에 있거나 창이 터치를 받지 않는 것일 수 있다 **(추정)**. 남은 길은 2(앱 최적화)·3(adb).
-- **해결(2026-10-11 21:41 답글)**: "allow 는 안 보이지만 아래 shortcut 인가 그걸 켜면 위에도 켜지더라". 접근성 › Pebble Desk 화면의 아래 스위치(`Pebble Desk shortcut`, 한국어 11·12 `단축키`·13+ `바로가기`)를 켜면 서비스도 켜진다. 이때 확인 창이 떴는지, 왜 되는지는 **(미확인)**. 앱 안내 창(꺼져 있을 때 설명 아래 단락)과 TROUBLESHOOTING.md 에 이 방법을 적었다. 에뮬레이터(안드로이드 11, 영어)에서 위 스위치 `Use Pebble Desk` 를 누르면 `Allow`/`Deny` 확인 창이 뜨는 것을 봤다. 아래 스위치로 켜는 것은 Leaf2 사용자 확인뿐이다.
+- **해결(2026-10-11 21:41 답글)**: "allow 는 안 보이지만 아래 shortcut 인가 그걸 켜면 위에도 켜지더라". 접근성 › Readblio 화면의 아래 스위치(`Readblio shortcut`, 한국어 11·12 `단축키`·13+ `바로가기`)를 켜면 서비스도 켜진다. 이때 확인 창이 떴는지, 왜 되는지는 **(미확인)**. 앱 안내 창(꺼져 있을 때 설명 아래 단락)과 TROUBLESHOOTING.md 에 이 방법을 적었다. 에뮬레이터(안드로이드 11, 영어)에서 위 스위치 `Use Readblio` 를 누르면 `Allow`/`Deny` 확인 창이 뜨는 것을 봤다. 아래 스위치로 켜는 것은 Leaf2 사용자 확인뿐이다.
 - 같은 사용자의 **BOOX Poke6 에서는 된다**. 다른 오닉스 기기(Go 10.3 Lumi)도 된다는 보고가 있다. Leaf2 의 펌웨어(또는 화면 크기·회전)에서만 생기는 문제로 보인다 **(추정)**.
 
 ### 다음에 받을 것
@@ -537,7 +537,7 @@ Leaf(7인치 1264×1680, 2021)·Poke3(6인치 1072×1448, 2020). 사용자가 �
   - 2026-10-10 에 본 다른 기종(모두 `BooxKeys.csv` 에 키 있음): Poke5·Leaf3C 3.5.4(`zh_CN`), Page·Tab Mini C 4.0, Palma 4.0.2, Note Air3 4.1.1, Go 10.3·Go Color 7·Go6·Note Air4 C 4.2, Palma2 4.2(2026-08), Tab Ultra C Pro 4.2.1(2026-08).
   - Palma(1): 4.0.2(`2025-06-17_20-38_4.0.2-rel_0617_d4b9d37036`, 안드로이드 11, 1.82GB, `en_US`, `firmware-us.boox.com`). 2026-10-20 에 받아 얼리기를 풀어 봤다(아래 앱 얼리기).
   - `firmware.boox.com`(중국 CDN) 주소는 연결이 멈추곤 한다. `curl -C - --speed-limit 30000 --speed-time 30` 으로 이어받기를 되풀이하면 받아진다. `firmware-us.boox.com` 에는 같은 파일이 없다(404).
-- 받은 파일은 `~/Downloads/Pebble Desk/boox/<기종>/update.upx`(+ `source.txt`: 주소·md5). 푼 것은 분석 뒤 지웠다.
+- 받은 파일은 `~/Downloads/Readblio/boox/<기종>/update.upx`(+ `source.txt`: 주소·md5). 푼 것은 분석 뒤 지웠다.
 - 파일 `update.upx` 는 AES-128-CFB 로 암호화돼 있다. 기종별 키·IV 는 GitHub `Hagb/decryptBooxUpdateUpx` 의 `BooxKeys.csv`(Leaf2·Poke6 둘 다 있다). 푼 결과는 A/B 전체 OTA(`payload.bin`)라 메이북과 같은 순서로 푼다.
 
 ```bash
@@ -565,21 +565,21 @@ jadx --no-res -d src/framework fs/system/system/framework/framework.jar
 
 ### 앱 얼리기 (2026-10-10 댓글: 자주 쓰는 앱·책의 앱이 사라진다, Leaf2·Poke6)
 
-- 얼리기 = 앱을 **꺼 둔다**(`setApplicationEnabledSettingAsUser(pkg, COMPONENT_ENABLED_STATE_DISABLED_USER)`, `android.onyx.utils.ApplicationFreezeHelper`). 숨김(hidden)·정지(suspend)가 아니다. Onyx·시스템 앱과 `appFreezeWhiteList` 는 얼리지 않는다. 단 Google Play 끄기(`disableGooglePlay`, Play 스토어·GMS·GSF)도 같은 `DISABLED_USER` 라, Pebble Desk 는 시스템 앱을 얼린 앱으로 보지 않는다.
+- 얼리기 = 앱을 **꺼 둔다**(`setApplicationEnabledSettingAsUser(pkg, COMPONENT_ENABLED_STATE_DISABLED_USER)`, `android.onyx.utils.ApplicationFreezeHelper`). 숨김(hidden)·정지(suspend)가 아니다. Onyx·시스템 앱과 `appFreezeWhiteList` 는 얼리지 않는다. 단 Google Play 끄기(`disableGooglePlay`, Play 스토어·GMS·GSF)도 같은 `DISABLED_USER` 라, Readblio 는 시스템 앱을 얼린 앱으로 보지 않는다.
 - 언제: 앱마다 `autoFreeze` 설정(BOOX 설정의 얼리기 관리). 그 앱에서 다른 앱으로 넘어가면 얼릴 차례에 넣고, 약 30초마다 보다가 그 앱이 화면 맨 위가 아니고 포그라운드 서비스도 없으면 작업을 지우고 끈다(`ApplicationFreezeController`). `새로 설치한 앱 얼리기`(`isFreezeNewlyInstalledApplication`)가 켜져 있으면 설치하는 앱마다 켜진다.
-- 그래서 앱을 쓰는 동안만 런처 조회(`queryIntentActivities`)에 나오고, 끄고 나면 빠진다. 꺼 둔 앱은 `getPackageInfo` 로는 찾아져 Pebble Desk 설정에서 지워지지는 않는다(목록에서만 사라짐).
+- 그래서 앱을 쓰는 동안만 런처 조회(`queryIntentActivities`)에 나오고, 끄고 나면 빠진다. 꺼 둔 앱은 `getPackageInfo` 로는 찾아져 Readblio 설정에서 지워지지는 않는다(목록에서만 사라짐).
 - 얼린 앱 열기: BOOX 런처가 동적으로(권한 없이) 받는 방송 `onyx.action.open_frozen_app`(extra `args_pkg`·`args_class`·`args_user_id`)을 받으면 앱을 풀고 연다(`EACStatusChangedReceiver`). BOOX 플로팅 버튼은 같은 일을 `com.onyx.floatbutton.open.apps` 로 한다.
-- Pebble Desk 는 `com.onyx` 가 있으면 앱 단위로 꺼진(`DISABLED_USER`) 앱의 실행 화면도 목록에 넣고, 누르면 위 방송을 보낸다(아래 표). 실기기 **(미확인)**.
-- BOOX 런처 띄워 두기: 방송을 받는 곳은 런처가 떠 있을 때 코드로 등록한 것이고(`ContentBrowserApplication` → `EACStatusChangedReceiver`), 런처에는 부팅 완료를 받는 매니페스트 항목이 없어 Pebble Desk 가 기본 홈이면 부팅 뒤 꺼져 있을 수 있다(시스템 UI 도 사용자가 `앱 최적화` 를 누를 때만 런처를 부른다). 공개 서비스 `EACService` 는 붙으면 포그라운드 알림을 띄워 쓰지 않는다. 대신 권한 없이 열린 데이터 창구 `com.onyx.system.database.ContentProvider` 에 불안정(unstable) 연결만 해 둔다(`Device.keepBooxLauncher`). 창구는 시작할 때 DB 라이브러리 초기화만 한다(`FlowManager.init`). 안드로이드가 런처를 띄우고 이 앱과 같은 중요도로 살려 둔다(불안정 연결도 `OomAdjuster` 가 똑같이 센다. 런처가 죽어도 이 앱은 죽지 않는다). 홈이 보일 때·잠금이 풀릴 때·화면이 켜질 때 다시 잡는다(잠금 전에는 런처를 띄울 수 없다). 연결은 한 줄(단일 스레드)로 차례대로 잡고, 못 잡으면 전 연결을 둔다.
+- Readblio 는 `com.onyx` 가 있으면 앱 단위로 꺼진(`DISABLED_USER`) 앱의 실행 화면도 목록에 넣고, 누르면 위 방송을 보낸다(아래 표). 실기기 **(미확인)**.
+- BOOX 런처 띄워 두기: 방송을 받는 곳은 런처가 떠 있을 때 코드로 등록한 것이고(`ContentBrowserApplication` → `EACStatusChangedReceiver`), 런처에는 부팅 완료를 받는 매니페스트 항목이 없어 Readblio 가 기본 홈이면 부팅 뒤 꺼져 있을 수 있다(시스템 UI 도 사용자가 `앱 최적화` 를 누를 때만 런처를 부른다). 공개 서비스 `EACService` 는 붙으면 포그라운드 알림을 띄워 쓰지 않는다. 대신 권한 없이 열린 데이터 창구 `com.onyx.system.database.ContentProvider` 에 불안정(unstable) 연결만 해 둔다(`Device.keepBooxLauncher`). 창구는 시작할 때 DB 라이브러리 초기화만 한다(`FlowManager.init`). 안드로이드가 런처를 띄우고 이 앱과 같은 중요도로 살려 둔다(불안정 연결도 `OomAdjuster` 가 똑같이 센다. 런처가 죽어도 이 앱은 죽지 않는다). 홈이 보일 때·잠금이 풀릴 때·화면이 켜질 때 다시 잡는다(잠금 전에는 런처를 띄울 수 없다). 연결은 한 줄(단일 스레드)로 차례대로 잡고, 못 잡으면 전 연결을 둔다.
 - 얼린 앱을 누르면: 연결을 다시 잡아(런처가 죽었으면 띄운다) 방송을 보낸다. 막 뜬 런처는 창구를 내놓은 뒤 `Application.onCreate` 에서 받는 곳을 등록하므로 그 사이 방송을 놓칠 수 있다. 그래서 2초 뒤에도 홈이 초점을 갖고 있으면 — 앱이 이미 풀렸으면 직접 열고, 아직 얼려 있으면 한 번 더 보낸다. 그래도 2초 안에 안 열리면 안내 창(`얼리기(freeze) 설정 열기` → `com.onyx.app.freeze.page`, `앱 정보`).
 - 얼린 앱 판정에서 뺀 것: 시스템 앱(`FLAG_SYSTEM`·`FLAG_UPDATED_SYSTEM_APP`), 이름에 `com.onyx` 가 든 앱(펌웨어 `isOnyxOrSystemApp` 과 같게), Google Play·GMS·GSF(`disableGooglePlay` 가 같은 방법으로 끈다. 누르면 사용자가 끈 Play 가 다시 켜진다).
 - codex 리뷰(2026-10-10, gpt-5.6-sol high): 방법은 "조건부"로 맞음. 반영한 것 — 누를 때 다시 띄우기·재시도, 연결 직렬화·실패 시 전 연결 유지, 시스템 판정을 펌웨어와 같게, Google Play 제외. 기각한 것 — "얼리기·풀기 때 앱 변경 순번이 안 바뀐다"(Leaf2 `PackageManagerService.setEnabledSetting` 명령 덤프에 `updateSequenceNumberLP` 호출이 있다), "런처를 늘 띄워 두는 비용"(기본 홈이 BOOX 런처일 때와 같은 상태).
-- **Pebble Desk 자신이 얼려진다**(2026-10-20 사용자 전달: Palma 1 에서 접근성 권한이 때때로 풀린다. Palma 4.0.2 펌웨어로 확인):
+- **Readblio 자신이 얼려진다**(2026-10-20 사용자 전달: Palma 1 에서 접근성 권한이 때때로 풀린다. Palma 4.0.2 펌웨어로 확인):
   - 런처의 `새로 설치한 앱 자동 얼리기`(`ApplicationSettingUtil.isFreezeNewlyInstalledApplication`, **처음 켜짐**)가 켜져 있으면 처음 설치하는 앱(`PACKAGE_ADDED` 중 `EXTRA_REPLACING` 이 아닌 것. 덮어 설치·업데이트는 아님)을 얼리기 대상(`autoFreeze`)으로 둔다(`AppInstalledAction`). 빼는 앱은 프리셋에서 막은 앱·Google·입력기·TTS·VPN 뿐이고(`PresetEACConfig.getDynamicDisAllowAutoFreezePkg`) 홈 앱·접근성 앱은 빼지 않는다. 그래서 지우고 다시 깔면 또 대상이 된다.
   - 대상 앱에서 다른 앱으로 넘어가면 얼릴 차례에 넣고, 30초마다 보다가 맨 위 작업의 앱이 아니고 멈춘 지 30초가 지났고 포그라운드 서비스가 없으면(`Settings.Global` `freeze_inactive_detect_include_foreground_service`, 처음 1) 작업을 지우고 `DISABLED_USER` 로 끈다(`ApplicationFreezeController`). 부팅 때(`OECService` 가 설정을 읽을 때)는 대상 앱을 묻지 않고 모두 끈다(`EACAutoFreezeImpl.init`). 얼리지 않는 것은 화이트리스트(`OnyxSystemConfig` `KEY_APP_FREEZE_WHITE_LIST`)·Onyx·시스템 앱·입력기다(`ApplicationFreezeHelper.disableAppsAsUser`).
   - 접근성: 얼렸다 풀면 접근성 설정에는 켜진 채(`enabled_accessibility_services` 그대로)인데 시스템이 '멈춘 서비스'(crashed)로 두어 붙이지 않는다(접근성 화면 `작동하지 않음`, `accessibility_enabled` 0). 껐다 켜기·덮어 설치·재부팅으로 다시 붙는다. 앱이 쓰는 켜짐 판정(설정 값)으로는 `켜짐` 이라 홈의 `멈춰 있습니다` 창(5초 뒤 안 붙어 있으면)이 알린다. 강제 종료는 접근성 목록에서 아예 지운다(꺼짐). 메모리 정리처럼 프로세스만 죽으면 시스템이 다시 띄워 붙는다. 셋 다 `Palma_A11` 에뮬레이터(안드로이드 11, 824×1648, 300dpi)에서 `pm disable-user`·`pm enable`·`am force-stop`·`kill -9` 로 확인.
   - 설정 메뉴: BOOX 설정 › 앱 및 알림 › `설정 잠금`(영어 `Freeze Settings`, 한국어 번역이 잘못됨. 휴대폰형 설정도 같은 `FREEZE_SETTINGS` 화면) — 앱마다 얼리기 끄기, `새로 설치한 앱 자동 얼리기`(한국어 문구가 영어로 나온다). 앱 하나는 BOOX 앱 목록에서 길게 눌러 앱 최적화 › `앱 백그라운드 자동 동결하기` 도 같다. Palma 실기기에서 `[설정] - [앱 및 알림] - [설정 잠금]` 이 맞다는 답을 받았다(파브르박, 2026-10-20 14:28).
-  - 같은 답에서 아이콘을 길게 눌러 `[최적화]` › `[기타]` 탭 › `[백그라운드에서 활성화 상태]` 를 `무제한` 으로 바꿨다고 했다. 4.0.2 런처에서 가장 가까운 것은 `eac_item_full_pm_access`(영어 `Stay active in the background`, 한국어 `백그라운드 실행 허용합니다`, 켜고 끄기)로, 앱의 백그라운드 제한(앱 작업 `RUN_ANY_IN_BACKGROUND`, `EACPMImpl.setForceAppStandby`)을 푼다. 얼리기와는 따로다(기기 정보의 `백그라운드 제한` 이 이것). `무제한` 을 고르는 화면은 4.0.2 에 없어 사용자 기기의 펌웨어가 다를 수 있다 **(미확인)**. `RUN_ANY_IN_BACKGROUND` 만 보면 자동 추가에는 필요 없다(단 4.2 펌웨어의 시간 고르기 `백그라운드에서 활성화 상태` 는 다른 것이고 필요하다, 아래 백그라운드 강제 종료): `Palma_A11` 에뮬레이터에서 `appops set … RUN_ANY_IN_BACKGROUND ignore` 로 막은 채 다른 앱에 60초 두거나 프로세스를 죽여도 접근성 서비스는 붙어 있었다/다시 붙었다(시스템이 붙여 두는 서비스라 백그라운드 제한을 받지 않는다). Pebble Desk 는 작업 예약·알람·포그라운드 서비스를 쓰지 않는다.
+  - 같은 답에서 아이콘을 길게 눌러 `[최적화]` › `[기타]` 탭 › `[백그라운드에서 활성화 상태]` 를 `무제한` 으로 바꿨다고 했다. 4.0.2 런처에서 가장 가까운 것은 `eac_item_full_pm_access`(영어 `Stay active in the background`, 한국어 `백그라운드 실행 허용합니다`, 켜고 끄기)로, 앱의 백그라운드 제한(앱 작업 `RUN_ANY_IN_BACKGROUND`, `EACPMImpl.setForceAppStandby`)을 푼다. 얼리기와는 따로다(기기 정보의 `백그라운드 제한` 이 이것). `무제한` 을 고르는 화면은 4.0.2 에 없어 사용자 기기의 펌웨어가 다를 수 있다 **(미확인)**. `RUN_ANY_IN_BACKGROUND` 만 보면 자동 추가에는 필요 없다(단 4.2 펌웨어의 시간 고르기 `백그라운드에서 활성화 상태` 는 다른 것이고 필요하다, 아래 백그라운드 강제 종료): `Palma_A11` 에뮬레이터에서 `appops set … RUN_ANY_IN_BACKGROUND ignore` 로 막은 채 다른 앱에 60초 두거나 프로세스를 죽여도 접근성 서비스는 붙어 있었다/다시 붙었다(시스템이 붙여 두는 서비스라 백그라운드 제한을 받지 않는다). Readblio 는 작업 예약·알람·포그라운드 서비스를 쓰지 않는다.
   - 앱이 아는 법: 펌웨어 공개 함수 `android.onyx.optimization.EInkHelper.getAutoFreezeApps()`(dex 의 숨은 API 표시 `SDK,CORE-PLATFORM-API` 라 일반 앱이 리플렉션으로 부를 수 있다. 시스템 서비스 `oec_service`(`IOECService`) 의 같은 이름 함수를 부르고, 서비스는 권한을 묻지 않는다. 앱 프로세스마다 `ViewRootImpl` 이 이미 이 서비스를 쓴다)가 대상 앱 목록을 준다. 서비스가 준비되지 않았으면 빈 목록. `Device.booxAutoFreeze` 가 이 목록에 이 앱이 있는지 보고, 대상이면 ⑭ 시작하기 맨 앞 단계·`멈춰 있습니다` 창의 얼리기 안내·기기 정보 `BOOX 얼리기(freeze) 켜짐` 을 보인다. 실기기 **(미확인)**. 에뮬레이터 시험은 디버그 소스에 같은 이름의 가짜 클래스(`debug.fakefreeze` 속성의 패키지를 돌려줌)를 잠깐 넣어 했다(부트 클래스에 없으면 앱 클래스로 찾아진다. 커밋하지 않았다).
 - 재현: 에뮬레이터에서 `pm disable-user <패키지>` 가 얼리기와 같다(시스템 앱이 아닌 시험 앱으로. 끈 직후 재부팅하면 상태가 아직 파일에 안 써져 풀린다). BOOX 런처 대신 가짜 `com.onyx` 앱(같은 이름의 데이터 창구, `Application.onCreate` 에서 `onyx.action.open_frozen_app`·`com.onyx.app.freeze.page` 받는 곳을 등록해 로그를 남기고 자기 화면을 띄움)을 깐다. "열림"은 `appops set com.onyx SYSTEM_ALERT_WINDOW allow`(백그라운드에서 화면 띄우기 허용), "안 열림"은 `deny` 로 흉내 낸다. 꺼진 런처는 `am force-stop com.onyx` 나 재부팅으로 만든다.
 
@@ -620,7 +620,7 @@ jadx --no-res -d src/framework fs/system/system/framework/framework.jar
 
 - **기기**: Bigme B7 Pro, 안드로이드 14(사용자가 알려 줌), 펌웨어 `Bigme_V1.020260716`(아래 기기 정보 사진). 영상으로는 약 7인치, 한쪽 넓은 테두리에 쪽 넘김 단추 둘.
 - **증상**: Mihon 으로 만화를 읽어도 들어오지 않고 홈에 `Auto-add has stopped`(자동 추가가 멈춰 있습니다) 창. 홈에는 KOReader 책(표지·진행률)과 `Today 5 min` 이 보여 오늘 읽은 시간은 됐다.
-- **해결(우회)**: 접근성에서 Pebble Desk 를 껐다 켜니 자동 추가가 된다(새 만화·이미 읽던 만화 모두). 그 전에는 접근성 스위치가 켜져 있어 그대로 두었다고 한다.
+- **해결(우회)**: 접근성에서 Readblio 를 껐다 켜니 자동 추가가 된다(새 만화·이미 읽던 만화 모두). 그 전에는 접근성 스위치가 켜져 있어 그대로 두었다고 한다.
 - **원인 (미확인)**: 서비스가 접근성에 켜진 채 붙지 않은 상태. 아래 기기 정보 사진으로는 1.6.1 업데이트와 앱 오류가 같은 때(09:48) 난 뒤로 다시 붙지 않았다. 에뮬레이터에서는 앱 오류(`am crash`, 안드로이드 11·14) 뒤에도, 앱 안 업데이트(안드로이드 14) 뒤에도 저절로 다시 붙었고, 앱 끄기→켜기(`pm disable-user`·`enable`, 안드로이드 11)는 멈춘 채 남았다(DESIGN.md 멈춤 창). 이 기기에서 왜 다시 붙지 않았는지는 모른다.
 - **기기 정보 사진 (2026-10-26 13:59, Pebble Desk 1.6.1, 접근성 껐다 켜기 전에 찍은 것으로 보인다 (추정))**:
   - 기기: `HiBreak (Smartphone) · Bigme · Bigme · Android 14 (API 34) · Other` · 화면 1264×1680 · 앱 354dpi · 571×759dp · 펌웨어 `Bigme_V1.020260716`. B7 Pro 인데 모델 이름은 `HiBreak` 로 나온다(기기 종류는 기타).
@@ -638,7 +638,7 @@ jadx --no-res -d src/framework fs/system/system/framework/framework.jar
 - **해결(2026-11-14, 사용자 확인)**: Bigme 펌웨어가 업데이트된 뒤 거꾸로 들어도 모든 앱·설정 화면이 바로 보이고, 다른 런처에서도 고쳐졌다 → 원인은 기기 펌웨어. 이 앱은 고친 것이 없다. GitHub #10 닫음.
 - **근거**: 영상 2개(캡처로 받음)와 기기 정보 사진 1장(Pebble Desk 1.6.6, 거꾸로 든 채). 같은 사용자의 페이지 버튼 댓글에 이어 왔다.
 - **증상**: 기기를 위아래 뒤집어 들면(180°, 사용자는 손을 자주 바꿔 든다) 새 화면을 열 때마다 화면이 1~2초 거꾸로 보였다가 돌아온다. 모든 앱·독서 기록을 열 때, 홈으로 돌아갈 때. 똑바로 들면 괜찮고 페이지 버튼은 방향을 따라 바뀐다. 첫 영상에는 회전 뒤 모든 앱이 왼쪽으로 밀리고 오른쪽에 잔상 띠가 남아 손으로 다시 그려야 했는데, Bigme 전자잉크 센터에서 갱신 방식을 낮추니 이것은 없어졌다. 거꾸로 보이는 것은 갱신 방식과 상관없이 남는다.
-- **사용자가 확인한 것**: KOReader·Mihon 에서는 새 화면을 열어도 안 생긴다. **Niagara 런처에서도 생긴다**(Pebble Desk 는 새 화면을 더 자주 열어 더 거슬린다).
+- **사용자가 확인한 것**: KOReader·Mihon 에서는 새 화면을 열어도 안 생긴다. **Niagara 런처에서도 생긴다**(Readblio 는 새 화면을 더 자주 열어 더 거슬린다).
 - **기기 정보 사진 (2026-10-29)**: 기기·펌웨어는 10-26 과 같다. 자동 추가 마지막 연결 `10/29 11:12` · 멈춤 없음. 앱이 끝난 까닭 `10/29 11:10 CRASH · 11:10 PKG_UPDATED`(1.6.6 업데이트, 이번에는 2분 뒤 다시 붙었다) · 마지막 앱 오류 `-`. 사진에서도 내용이 왼쪽으로 밀려(`evice info`) 오른쪽에 빈 띠가 보인다. 회전 직후 덜 갱신된 장면인지, 180° 에서 비워 둘 자리를 돌리지 않은 것인지는 **(미확인)**(사진 왼쪽이 잘려 찍혔을 수도 있다).
 - **이 앱 쪽**: 전자잉크 갱신 명령을 보내지 않고(뷰를 다시 그릴 뿐), 매니페스트·코드 어디서도 방향을 정하지 않는다(`screenOrientation`·`configChanges` 없음, 회전을 보는 곳은 크레마 전용 `Crema.reserveHiddenBottom` 뿐). 창 전환 애니메이션·미리 보기 창은 이미 끈다(`windowAnimationStyle @null`·`windowDisablePreview`·`overridePendingTransition(0, 0)`). cutout·insets 도 다루지 않는다.
 - **원인 (추정)**: 180° 에서 새 창(액티비티)이 뜰 때 펌웨어가 돌리지 않은 첫 장면을 그린다. 액티비티 하나 안에서 화면을 바꾸는 앱(KOReader·Mihon 둘러보기)은 안 생기는 것과 맞다. Bigme 펌웨어는 회전 버그가 잦다(eWritable 펌웨어 4.6 리뷰: 노트 앱 필기가 180° 로 뒤집힘, 여러 판의 노트에 '일부 상황의 회전' 고침). 같은 증상의 보고는 찾지 못했다.
@@ -682,7 +682,7 @@ jadx --no-res -d src/framework fs/system/system/framework/framework.jar
 
 **읽은 시간 — 화면이 꺼질 때**: 9 부터는 `SCREEN_NON_INTERACTIVE` 로 읽기를 끊는데(`Reading.kt` `Counter.feed`), 이 이벤트는 8 에 없다. 에뮬레이터 `CremaPebble_A8_27`(8.1)·`CremaPebble_A8_26`(8.0)(페블 규격, google_apis arm64)에서 앱(설정)을 연 채 화면을 90초 끄고 켰다. 전원 키·시간 초과, 잠금 화면 있음·없음 모두에서 끌 때 액티비티가 멈추고(`am_on_stop_called … sleeping`) 사용 기록에 `MOVE_TO_BACKGROUND` 가, 켤 때 `MOVE_TO_FOREGROUND` 가 남았다. 앱은 같은 클래스의 `MOVE_TO_BACKGROUND` 로 읽는 화면 구간을 닫고 켤 때 다시 열므로, 꺼진 동안은 읽은 시간에 들어가지 않는다. 기기마다 다른 잠자기 화면(e-ink 대기 그림)에서도 같은지는 실기기에서 **(미확인)**.
 
-## Pebble Desk 에 넣은 것
+## Readblio 에 넣은 것
 
 | 내용 | 기기 구분 | 확인 |
 |---|---|---|
@@ -694,7 +694,7 @@ jadx --no-res -d src/framework fs/system/system/framework/framework.jar
 | 화면 폭 572dp 맞춤: 짧은 변이 572dp 가 되도록 앱 밀도를 다시 정한다(`Ui.designDensityDpi`, `EinkActivity.attachBaseContext`). E6 는 320 → 300dpi, 572×772dp 로 페블과 같은 물리 크기. 기기 정보의 `화면` 줄에 기기 값과 `앱 기준` 값을 함께 보인다 | — | E6 크기 에뮬레이터(536×724dp)에서 1.2.0 은 책 3권일 때 **함께 읽는 책 줄 아래 32dp 가 잘렸고**(큰 표지가 최소 136dp 에 걸려 책 자리가 58dp 넘침), 상단 바 54dp 를 흉내 내면(`wm size 1072x1388`) 설정 마지막 줄이 40dp 잘렸다. 밀도 맞춤 뒤 셋 다 들어감(설정은 상단 바 54dp 를 빼도 약 714dp 라 708dp 가 여유 6dp 로 들어간다). 페블 실기기 **(미확인)**. AiPaper Mini(1440px → 403dpi, 572×762dp) 실기기 홈 사진에서 그대로 들어감. Minimal Phone(4.3", 600px → 168dpi)은 거꾸로 밀도를 낮춰 모든 것이 페블의 약 0.7배로 작아진다(아래 기기 절) |
 | 기기 정보 화면(사진으로 찍어 보내는 진단). 시스템 속성·설정 값은 아는 키에 더해 `getprop`·`Settings.System` 전체에서 전자잉크·조명 낱말이나 제조사 이름이 든 키를 찾아 있는 것만 보인다(1.2.1 까지는 크레마·메이북 키만 보여 AiPaper Mini 의 고유 값이 안 나왔다). 제조사·브랜드 낱말 중 `phone` 같은 흔한 낱말은 쓰지 않는다(Minimal Phone 에서 전화 관련 기본 키만 잔뜩 나왔다) | — | 에뮬레이터(M6C 이름)에서 한 화면에 들어감, 볼륨 키가 `24 KEYCODE_VOLUME_UP` 로 기록됨. E6 실기기에서도 상단 바 아래에 다 들어감 |
 | 안드로이드 13+ **제한된 설정** 안내: ⑭ 시작하기 1쪽의 `켜는 방법` 단계(접근성에서 눌러 보기 → 막힌 창 닫기 → `앱 정보 열기` › ⋮ › 제한된 설정 허용 → 다시 켜기)와 설정 › 독서의 자동 추가 창(늘 `앱 정보 열기`). 앱 정보는 `ACTION_APPLICATION_DETAILS_SETTINGS` + extra `uId`(안드로이드 13 설정 앱 `AppInfoDashboardFragment.getUid()` 는 인자 `uid` 나 extra `uId` 만 읽어, 없으면 -1 로 묻다 실패해 ⋮ 메뉴가 빠진다) | 안드로이드 13+ | 에뮬레이터 API 33(`CremaPebble_A13`): 파일 앱으로 깐 APK 가 `packageSource=3`·`ACCESS_RESTRICTED_SETTINGS: deny` 로 막힘 → 막힌 창 → 시작하기에 안내·`앱 정보 열기` → ⋮ `Allow restricted settings` → 접근성 켜짐 → `켜짐 ✓`. `uId` 없이 열면 ⋮ 가 없다(설정 › 앱 목록에서 들어가면 있다). iReader(안드로이드 14) **(미확인)** |
-| BOOX 앱 얼리기: `com.onyx`(BOOX 런처)가 있으면 BOOX 가 얼린 앱(위 판정)의 실행 화면도 앱 목록에 넣는다(앱이 스스로 끈 실행 화면은 빼고). 누르면 `onyx.action.open_frozen_app` 을 `com.onyx` 로 보내 BOOX 런처가 풀고 연다(`AppStore.openFrozen`, 재시도·안내 창). 방송을 받도록 BOOX 런처를 띄워 둔다(`Device.keepBooxLauncher`). 숨긴(hidden) 앱도 지워진 앱으로 보지 않는다 | `com.onyx` 설치 여부 | 에뮬레이터 API 30 + 가짜 `com.onyx`: 얼린 시험 앱이 자주 쓰는 앱에 남음, 시스템 앱(Calendar)·실행 화면만 끈 앱은 안 나옴, 가짜 런처가 없으면 전처럼 빠짐. 누르기: 열림 → 방송 1번 / 안 열림 → 재시도 뒤 안내 창 / 런처 죽은 채로 → 다시 떠서 열림 / 풀렸는데 안 열림 → 직접 열림. 런처를 끄고 홈 복귀·재부팅(기본 홈 Pebble Desk)·화면 끄고 켜기 → 런처가 다시 뜸. BOOX 실기기 **(미확인)** |
+| BOOX 앱 얼리기: `com.onyx`(BOOX 런처)가 있으면 BOOX 가 얼린 앱(위 판정)의 실행 화면도 앱 목록에 넣는다(앱이 스스로 끈 실행 화면은 빼고). 누르면 `onyx.action.open_frozen_app` 을 `com.onyx` 로 보내 BOOX 런처가 풀고 연다(`AppStore.openFrozen`, 재시도·안내 창). 방송을 받도록 BOOX 런처를 띄워 둔다(`Device.keepBooxLauncher`). 숨긴(hidden) 앱도 지워진 앱으로 보지 않는다 | `com.onyx` 설치 여부 | 에뮬레이터 API 30 + 가짜 `com.onyx`: 얼린 시험 앱이 자주 쓰는 앱에 남음, 시스템 앱(Calendar)·실행 화면만 끈 앱은 안 나옴, 가짜 런처가 없으면 전처럼 빠짐. 누르기: 열림 → 방송 1번 / 안 열림 → 재시도 뒤 안내 창 / 런처 죽은 채로 → 다시 떠서 열림 / 풀렸는데 안 열림 → 직접 열림. 런처를 끄고 홈 복귀·재부팅(기본 홈 Readblio)·화면 끄고 켜기 → 런처가 다시 뜸. BOOX 실기기 **(미확인)** |
 | BOOX 얼리기 대상 안내: 이 앱이 BOOX 자동 얼리기 대상이면(`Device.booxAutoFreeze` = 펌웨어 `EInkHelper.getAutoFreezeApps()` 에 이 앱이 있음) ⑭ 시작하기 자동 추가 단계 맨 앞에 얼리기에서 빼기(`얼리기 설정 열기 ›`), 홈 `멈춰 있습니다` 창에 원인 단락과 `얼리기(freeze) 설정 열기`, 기기 정보 권한 줄에 `BOOX 얼리기(freeze) 켜짐/꺼짐/?` | 함수가 있으면(없거나 막히면 null: 안내 없음, 기기 정보는 BOOX 런처가 있을 때만 `?`) | `Palma_A11` 에뮬레이터 + 디버그 소스의 가짜 `EInkHelper`·가짜 `com.onyx` 로 세 화면 확인(2026-10-20). Palma 실기기 **(미확인)** |
 
 넣지 않은 것: `com.haoqing.action.FULL_REFRESH`(잔상 제거 버튼).
@@ -732,5 +732,5 @@ jadx --no-res -d src/framework fs/system/system/framework/framework.jar
    - 앱을 강제 종료하는 경로(`forceStopPackage`), 백그라운드 제한
    - 기본 홈을 막거나 되돌리는 코드
    - 페이지 버튼 키 코드(키 배치 파일 `usr/keylayout/*.kl`, `KeyEvent`)
-4. 화면 규격 AVD 에 Pebble Desk 를 깔아 배치를 본다.
+4. 화면 규격 AVD 에 Readblio 를 깔아 배치를 본다.
 5. 이 문서의 **한눈에** 표에 열을 더하고 기기 절을 쓴다.

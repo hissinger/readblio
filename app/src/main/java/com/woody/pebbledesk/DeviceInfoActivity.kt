@@ -73,7 +73,7 @@ class DeviceInfoActivity : EinkActivity() {
         list.addView(text(listOf(
             "${Build.MODEL} (${Build.DEVICE})", Build.MANUFACTURER, Build.BRAND,
             "${getString(R.string.device_android)} ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
-            kind, "Pebble Desk ${appVersion()}", screen, Build.DISPLAY,
+            kind, "${getString(R.string.app_name)} ${appVersion()}", screen, Build.DISPLAY,
         ).joinToString(" · "), 14f, lines = 4).apply {
             setLineSpacing(0f, 1.15f)
             // 숨은 메뉴: 길게 누르면 달마다 읽은 시간 지우기(문의가 오면 안내한다)

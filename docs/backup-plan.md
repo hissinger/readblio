@@ -19,7 +19,7 @@
 
 ## 사용 흐름
 
-1. 그만 쓸 기기: 설정 › `기록 내보내기` → 저장할 곳 고르기(SAF `ACTION_CREATE_DOCUMENT`). 기본 이름 `PebbleDesk-기록-<yyyyMMdd>.zip`.
+1. 그만 쓸 기기: 설정 › `기록 내보내기` → 저장할 곳 고르기(SAF `ACTION_CREATE_DOCUMENT`). 기본 이름 `Readblio-기록-<yyyyMMdd>.zip`.
 2. 파일을 옮긴다(USB 로 PC, SD 카드 등. 사용자 안내는 TROUBLESHOOTING 에).
 3. 받는 기기: 설정 › `기록 가져오기` → 파일 고르기(`ACTION_OPEN_DOCUMENT`).
 4. 확인 창: 무엇이 들어오는지 숫자로 보여 준다. 예: `책 12권(3권은 이미 있는 책에 합침) · 완독 5번 · 읽은 시간 34시간 · 별점 4개`. `가져오기` / `취소`.
