@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap
  * Librera 는 저장소의 `Librera/profile.<프로필>/device.<기기 모델>/`(모든 파일 액세스가 없으면 `Download/Librera/…`)에 책을 열 때 `app-Recent.json`
  * (연 파일 `internal-storage:/Download/a.epub` 과 때, 최근 탭을 감추면 적지 않는다)을, 쪽을 넘길 때마다 `app-Progress.json`(파일 이름 → 진행 비율 `p`)을 쓴다.
  * 그래서 책 파일 읽기를 허용했으면 메뉴 없이도 방금 연 책과 그 파일·진행률을 알고([dataBook]), 홈에서 그 파일을 바로 연다([open]). 판단과 기억은 [LibreraReader].
- * Play 무료판은 저장소 권한이 없어 기록을 `Download/Librera` 에 두지만, 책은 Librera 전용 폴더·폴더 허용(SAF)으로 읽어 기록의 경로를 Pebble Desk 가 읽을 수 없다:
+ * Play 무료판은 저장소 권한이 없어 기록을 `Download/Librera` 에 두지만, 책은 Librera 전용 폴더·폴더 허용(SAF)으로 읽어 기록의 경로를 Readblio 가 읽을 수 없다:
  * 그 책은 서재 칸·메뉴로만 안다([dataBook] 이 읽을 수 없는 파일은 거른다).
  * (Librera Pro 10.0.7·무료판 10.0.11, 2026-10-29 에뮬레이터에서 확인)
  */

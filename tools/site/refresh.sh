@@ -4,10 +4,10 @@
 # 에뮬 시계를 SITE_DATE(기본: 처음 릴리스 v1.0.0 한 날 12:00)로 맞추고 mock 도 그날을 오늘로 만들어, 언제 돌려도 같은 날짜의 그림이 나온다
 # (root 가 되는 google_apis 에뮬. 끝나면 자동 시간을 켜고 지금 시각으로 돌린다). 그날 이북 앱을 쓴 기록이 있는 에뮬은 피한다:
 # 사용 기록이 mock 의 오늘 읽은 시간을 덮는다(CremaPebble_A11_Millie -read-only 등).
-# 저장소 맨 위에서, site/ 에 홈페이지 저장소(pebbledesk/pebbledesk.github.io)를 받아 두고. 에뮬은 페블(1072×1456)·바형(824×1648, Tango).
+# 저장소 맨 위에서, site/ 에 홈페이지 저장소(readblio/readblio.github.io)를 받아 두고. 에뮬은 페블(1072×1456)·바형(824×1648, Tango).
 # 순서: 디버그 빌드 설치 → 없는 이북 앱은 빈 앱(stubs.sh) → 표지(covers.py, 저장소 밖 <작업 폴더>) → mock.py → 한국어·영어 × 페블·바형 캡처(shoot.sh)
 #       → site/img/*.webp(images.py) → 공유 그림·README 첫 그림(og.py) → README 홈 그림 → 깐 빈 앱 지우기.
-# 에뮬의 Pebble Desk 데이터는 mock 으로 바뀐다. PY 는 Pillow 가 있는 python(기본 python3).
+# 에뮬의 Readblio 데이터는 mock 으로 바뀐다. PY 는 Pillow 가 있는 python(기본 python3).
 set -e
 W=${1:?작업 폴더}; PY=${PY:-python3}
 : "${PEBBLE:?PEBBLE=emulator-…}" "${BAR:?BAR=emulator-…}"

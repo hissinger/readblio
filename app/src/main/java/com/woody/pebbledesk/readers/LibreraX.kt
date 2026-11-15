@@ -33,7 +33,7 @@ import com.woody.pebbledesk.hasTitle
  * 쪽 `1` · 막대(`SeekBar`) · `81`. 메뉴를 닫으면 아래 상태 줄(`1` ` / 81`, 설정에서 끌 수 있다)만 남고 누를 수 있는 것이 하나도 없다.
  * 본문(웹 화면·PDF 그림)은 창 뿌리에서 닿지 않는다. 그래서 읽는 화면은 쪽 막대가 있는 메뉴가 보이거나, 화면에 누를 수 있는 것이 없는 동안이다([showsViewer]).
  * LibreraX 는 저장소 권한이 없어 책을 사용자가 허용한 폴더의 문서 주소나 자기 폴더에 베낀 사본으로 읽는다(미디어 서비스의 책 경로가 그것).
- * Pebble Desk 가 읽을 수 있는 파일은 아니지만 LibreraX 에 그 경로를 그대로 보내면 그 책을 읽던 곳에서 연다: 어댑터가 최근 책에서 그 경로를 적어 두고([saveBookPath])
+ * Readblio 가 읽을 수 있는 파일은 아니지만 LibreraX 에 그 경로를 그대로 보내면 그 책을 읽던 곳에서 연다: 어댑터가 최근 책에서 그 경로를 적어 두고([saveBookPath])
  * 홈에서 그 경로로 연다([open]. 사용자의 저장소 경로 `file://` 는 LibreraX 가 읽지 못해 열지 못한다).
  */
 object LibreraX : ReaderApp(

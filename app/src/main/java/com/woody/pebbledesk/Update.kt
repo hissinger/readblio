@@ -27,9 +27,11 @@ import java.security.MessageDigest
  * 상태는 앱이 떠 있는 동안만 기억하고, 바뀌면 [onChange] 로 알린다(앞에 있는 화면이 건다. 설정은 그 줄만 다시 그리고, 홈은 새 판 창을 띄운다).
  */
 object Update {
-    private const val LATEST = "https://api.github.com/repos/hissinger/pebble-desk/releases/latest"
+    private const val LATEST = "https://api.github.com/repos/hissinger/readblio/releases/latest"
     /** API 를 쓰지 않는 최신 릴리스 주소: `…/releases/tag/v1.5.1` 로 넘겨 준다(API 요청 한도와 상관없다, [latestTag]) */
-    private const val LATEST_PAGE = "https://github.com/hissinger/pebble-desk/releases/latest"
+    private const val LATEST_PAGE = "https://github.com/hissinger/readblio/releases/latest"
+    /** 받을 APK 이름 앞부분, 앞의 것을 먼저(1.8.1 까지의 이름 `PebbleDesk` 도 받는다) */
+    private val APK_NAMES = listOf("Readblio", "PebbleDesk")
     /**
      * 마지막으로 받은 릴리스 정보(API 응답 그대로). API 요청 한도가 찼을 때 판이 같으면 이것을 쓴다.
      * (ETag 로 묻는 것은 로그인하지 않으면 304 여도 한도를 쓰므로 하지 않는다)
@@ -231,7 +233,7 @@ object Update {
     }
 
     /**
-     * 최신 릴리스(태그 `v1.5.1`, 자산 `PebbleDesk-1.5.1-release.apk`). 네트워크를 쓰므로 백그라운드에서.
+     * 최신 릴리스(태그 `v1.5.1`, 자산 `Readblio-1.9.0-release.apk`, 1.8.1 까지는 `PebbleDesk-…`). 네트워크를 쓰므로 백그라운드에서.
      * 받은 응답은 릴리스로 읽히면 파일에 두고(읽히지 않는 응답이 둔 것을 덮지 않게), API 요청 한도가 찼으면 API 를 쓰지 않는 주소로 최신 판 번호만 보고, 둔 응답이 그 판이면 그것을 쓴다(아니면 [RateLimited]).
      */
     private fun latest(context: Context): Release {
@@ -266,11 +268,13 @@ object Update {
     /** 릴리스 정보(API 응답)를 읽는다. 태그·자산·크기·SHA-256 이 맞지 않으면 실패 */
     private fun release(body: String): Release {
         val json = JSONObject(body)
-        // 태그 `v1.5.1` 과 자산 `PebbleDesk-1.5.1-release.apk` 가 맞아야 한다(받은 APK 의 versionName 도 [verify] 가 본다).
+        // 태그 `v1.5.1` 과 자산 `Readblio-1.9.0-release.apk`(1.8.1 까지는 `PebbleDesk-1.8.1-release.apk`) 가 맞아야 한다(받은 APK 의 versionName 도 [verify] 가 본다).
         val version = TAG.matchEntire(json.getString("tag_name"))?.groupValues?.get(1) ?: throw IOException("bad tag")
         val assets = json.getJSONArray("assets")
+        val names = APK_NAMES.map { "$it-$version-release.apk" }
         val apk = (0 until assets.length()).map { assets.getJSONObject(it) }
-            .firstOrNull { it.getString("name") == "PebbleDesk-$version-release.apk" } ?: throw IOException("no apk asset")
+            .filter { it.getString("name") in names }.minByOrNull { names.indexOf(it.getString("name")) }
+            ?: throw IOException("no apk asset")
         val size = apk.getLong("size")
         if (size !in 1..MAX_APK_BYTES) throw IOException("bad asset size $size")
         // GitHub 가 자산마다 알려 주는 `sha256:…`. 없거나 형식이 틀리면 받지 않는다(크기만으로는 바뀐 파일을 못 가린다).
@@ -306,7 +310,7 @@ object Update {
     private fun connect(url: String) = (URL(url).openConnection() as HttpURLConnection).apply {
         connectTimeout = 15_000
         readTimeout = 30_000
-        setRequestProperty("User-Agent", "PebbleDesk")
+        setRequestProperty("User-Agent", "Readblio")
     }
 
     /** [url] 을 연다(200 만). GitHub API 요청 한도가 찼으면 [RateLimited] */

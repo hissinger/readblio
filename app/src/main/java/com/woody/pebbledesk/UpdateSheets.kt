@@ -33,13 +33,13 @@ class UpdateSheets(private val activity: Activity) {
 
     /** 설정 › 업데이트: 새 판의 바뀐 점(릴리스 설명, 화면에서 [NOTES_LINES] 줄까지)과 `설치` */
     fun offer(release: Update.Release) {
-        Sheet(activity).header("Pebble Desk ${release.version}", releaseNotes(activity, release.notes), lines = NOTES_LINES)
+        Sheet(activity).header("${activity.getString(R.string.app_name)} ${release.version}", releaseNotes(activity, release.notes), lines = NOTES_LINES)
             .item(activity.getString(R.string.update_install), bold = true) { install(release) }
             .show()
     }
 
     /**
-     * 홈: 새 판이 나왔다는 창(화면 가운데). 머리 `새 버전이 나왔습니다` · `Pebble Desk 1.5.9 · 지금 1.5.8`, 반 줄 띄워 바뀐 점,
+     * 홈: 새 판이 나왔다는 창(화면 가운데). 머리 `새 버전이 나왔습니다` · `Readblio 1.9.0 · 지금 1.8.1`, 반 줄 띄워 바뀐 점,
      * `설치`(굵게) · `이 버전은 알리지 않기`([onSkip]) · `닫기`. 글자를 키워 화면을 넘으면 바뀐 점을 줄여 들어가게 한다.
      * 닫히면(어느 항목이든) [onClosed]: `설치` 가 설치 허용 안내로 갔으면 true(허용하고 돌아오면 다시 띄우게).
      * 화면이 다시 만들어져(회전) 창이 사라질 때는 부르지 않는다.
@@ -84,12 +84,12 @@ class UpdateSheets(private val activity: Activity) {
     }
 
     /**
-     * 받는 중 창: 머리 `Pebble Desk 1.5.1` · `받는 중`, 막대. 전자잉크라 막대는 25% 씩 네 번만 바꾸고, 금방 받아도
+     * 받는 중 창: 머리 `Readblio 1.9.0` · `받는 중`, 막대. 전자잉크라 막대는 25% 씩 네 번만 바꾸고, 금방 받아도
      * [Update.MIN_SHOW_MS](5초)에 걸쳐 채운다(받은 만큼보다 앞서 가지 않는다). 받기가 끝나면 닫히고 설치 창이 뜬다.
      */
     private fun showProgress(release: Update.Release) {
         val bar = ProgressLine(activity, PROGRESS_DP)
-        val dialog = Sheet(activity).header("Pebble Desk ${release.version}", activity.getString(R.string.update_downloading))
+        val dialog = Sheet(activity).header("${activity.getString(R.string.app_name)} ${release.version}", activity.getString(R.string.update_downloading))
             .note(bar).locked().show()
         progressDialog = dialog
         val step = Update.MIN_SHOW_MS / 4
