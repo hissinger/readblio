@@ -237,7 +237,7 @@ class SettingsActivity : EinkActivity() {
         }
         // 홈 모양: 기본 / 표지 / 서재(책 자리를 채우는 방법)를 그림으로 고른다. 홈으로 돌아가면 다시 그린다.
         row(getString(R.string.home_style), getString(prefs.homeStyle.label), next = true) {
-            chooseHomeStyle(prefs.homeStyle) { prefs.homeStyle = it; renderDisplay() }
+            chooseHomeStyle(prefs) { renderDisplay() }
         }
         // 배경 사진: 진하기(사진이 없으면 `없음`, 진하기 0 이면 홈에 보이지 않아 흐리게)
         val wallpaper = Wallpaper.exists(this)

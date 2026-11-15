@@ -168,6 +168,14 @@ class HomePrefs(context: Context) {
         get() = HomeStyle.of(sp.getString("home_style", null))
         set(v) = sp.edit().putString("home_style", v.key).apply()
 
+    /**
+     * 기본·표지 모양에서 책이 한 권일 때(홈 모양 창의 `책이 한 권일 때`): true(처음)면 맨 앞 책을 남는 높이만큼 크게(1.8.1 까지의 기본 모양),
+     * false 면 두 권 이상일 때와 같은 크기·자리로 그리고 함께 읽는 책 자리는 비운다(1.8.1 까지의 표지 모양. 배경 사진을 배치에 맞춘 사람).
+     */
+    var oneBookBig: Boolean
+        get() = sp.getBoolean("one_book_big", true)
+        set(v) = sp.edit().putBoolean("one_book_big", v).apply()
+
     /** 홈 배경 사진의 진하기(%): [WALLPAPER_STRENGTHS] 중 하나, 처음 30. 0 이면 사진이 있어도 흰 바탕([Wallpaper]). */
     var wallpaperStrength: Int
         get() = sp.getInt(KEY_WALLPAPER, WALLPAPER_DEFAULT).takeIf { it in WALLPAPER_STRENGTHS } ?: WALLPAPER_DEFAULT
