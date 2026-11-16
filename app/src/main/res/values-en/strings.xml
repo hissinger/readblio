@@ -39,8 +39,6 @@
     <string name="clock24">24-hour</string>
     <string name="clock12">12-hour</string>
     <string name="date_format">Date</string>
-    <string name="date_app_language">App language</string>
-    <string name="date_device_region">Device region</string>
     <string name="text_size">Text size</string>
     <string name="text_size_device">Multiplied by the device font size (%1$d%%)</string>
     <string name="text_spacing">Text &amp; spacing</string>
