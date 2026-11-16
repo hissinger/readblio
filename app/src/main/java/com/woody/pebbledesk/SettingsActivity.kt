@@ -253,20 +253,13 @@ class SettingsActivity : EinkActivity() {
                 prefs.clock24h = it == 0; renderDisplay()
             }
         }
-        // 날짜: 오늘 날짜를 형식마다 그대로 보여 고른다(앱 언어 형식·기기 지역 형식은 오른쪽에 회색으로)
+        // 날짜: 오늘 날짜를 형식마다 그대로 보여 고른다
         val english = HomePrefs.isEnglish(this)
         val styles = DateStyle.choices(english)
         val today = Date()
         val dateStyle = prefs.dateStyle.takeIf { it in styles } ?: DateStyle.APP
         row(getString(R.string.date_format), HomeDate.format(dateStyle, english, today), next = true) {
-            val notes = styles.map {
-                when (it) {
-                    DateStyle.APP -> getString(R.string.date_app_language)
-                    DateStyle.DEVICE -> getString(R.string.date_device_region)
-                    else -> null
-                }
-            }
-            choose(getString(R.string.date_format), styles.map { HomeDate.format(it, english, today) }, styles.indexOf(dateStyle), notes = notes) {
+            choose(getString(R.string.date_format), styles.map { HomeDate.format(it, english, today) }, styles.indexOf(dateStyle)) {
                 prefs.dateStyle = styles[it]; renderDisplay()
             }
         }
