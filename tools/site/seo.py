@@ -7,16 +7,17 @@
 글은 여기서 고친다(홈페이지에서 직접 고치면 다음에 돌릴 때 되돌아간다). 사실(안드로이드 9+ = minSdk 28,
 인터넷은 표지 검색(한국어 제목은 YES24, 그 밖은 Apple Books·Open Library)·GitHub 새 버전 확인·만화 표지 풀기 도구 받기뿐,
 기록은 기기 안)은 코드와 docs/DEVICES.md 에서 확인한 것. 바뀌면 같이 고친다. 판 번호·날짜는 app/build.gradle.kts 와 그 판의 git 태그에서.
-주소 BASE 는 GitHub Pages(pebbledesk/pebbledesk.github.io) 기준.
+주소 BASE 는 GitHub Pages(readblio/readblio.github.io) 기준. 1.8.1 까지의 이름 Pebble Desk 도 함께 적어 옛 이름으로 찾는 사람이 닿게 한다.
 """
 import json
 import re
 import subprocess
 
-BASE = "https://pebbledesk.github.io/"
-REPO = "https://github.com/hissinger/pebble-desk"
+BASE = "https://readblio.github.io/"
+REPO = "https://github.com/hissinger/readblio"
+OLD_NAME = "Pebble Desk"  # 1.8.1 까지의 이름
 # Cloudflare Web Analytics(쿠키 없음): 방문 수·페이지·들어온 곳·나라·기기 종류. 토큰은 공개 값(페이지에 그대로 실린다)
-CF_BEACON = "1896b35940664abaa335017941fc327d"
+CF_BEACON = "5c96e192fbe9450a8ab2f5bb8f2502ae"  # readblio.github.io 용(옛 pebbledesk.github.io 는 1896b359…)
 RELEASES = REPO + "/releases/latest"
 LICENSE = REPO + "/blob/main/LICENSE"
 
@@ -37,7 +38,7 @@ FIRST = tag_date("1.0.0")
 PAGES = {
     "ko": {
         "file": "site/index.html", "url": BASE, "locale": "ko_KR", "img": "",
-        "title": "Pebble Desk — 이북리더기 런처",
+        "title": "Readblio — 이북리더기 런처",
         # 네이버 서치어드바이저가 80자 안을 권한다
         "desc": "크레마·BOOX·메이북 같은 안드로이드 이북리더기용 무료 런처. "
                 "이북 앱에서 편 책이 홈 화면에 들어오고, 책마다 읽은 시간이 남습니다.",
@@ -46,10 +47,10 @@ PAGES = {
             ("어떤 기기에서 쓸 수 있나요?",
              "안드로이드 9 이상의 이북리더기에서 씁니다."),
             ("무료인가요?",
-             "무료이고 광고도 없습니다. 비상업적 용도로 자유롭게 쓸 수 있습니다(PolyForm Noncommercial 1.0.0)."),
+             "무료이고 광고도 없습니다. 비상업적 용도로 쓸 수 있습니다(PolyForm Strict 1.0.0). 고친 판이나 APK 사본을 다시 배포할 수는 없습니다."),
             ("어떻게 설치하나요?",
              "GitHub 릴리스에서 APK 를 받아 기기에 옮기고 파일 관리자에서 눌러 설치합니다. 처음 한 번 '알 수 없는 앱 설치'를 허용합니다. "
-             "그다음 Pebble Desk 설정 › 앱 관리 › 기본 홈 앱에서 홈 앱으로 고릅니다. 새 버전은 설정 › 정보 › 업데이트에서 받습니다."),
+             "그다음 Readblio 설정 › 앱 관리 › 기본 홈 앱에서 홈 앱으로 고릅니다. 새 버전은 설정 › 정보 › 업데이트에서 받습니다."),
             ("접근성 권한은 왜 필요한가요?",
              "이북 앱에서 편 책을 알아보려고 씁니다. 지원하는 이북 앱의 화면만 받고, 다른 앱의 화면은 보지 않습니다. "
              "읽은 시간은 안드로이드의 '사용 기록 액세스'로 셉니다."),
@@ -57,13 +58,15 @@ PAGES = {
              "기기 안에만 저장되고 어디로도 보내지 않습니다. 인터넷은 표지 검색(한국어 제목은 YES24, 그 밖은 Apple Books·Open Library), "
              "새 버전 확인과 만화 표지 풀기 도구 받기(둘 다 GitHub)에만 씁니다. "
              "앱을 지우면 기록도 함께 지워집니다."),
+            ("Pebble Desk 와 같은 앱인가요?",
+             "네. 1.8.1 까지의 이름이 Pebble Desk 이고, 1.9.0 부터 Readblio 입니다. 업데이트해도 기록과 설정은 그대로 남습니다."),
         ],
         "features": ["이북 앱에서 편 책을 홈 화면에 자동으로 추가(표지·제목·진행률·반납일)", "책마다 읽은 시간, 하루 목표, 연속일",
                      "올해 읽은 책과 완독 기록(별점·감상, 다시 읽기 회차)", "스크롤 대신 쪽 넘김, 애니메이션 없음", "흑백·컬러 테마 여섯 가지, 홈 배경 사진, 글자 크기·줄 간격"],
     },
     "en": {
         "file": "site/en/index.html", "url": BASE + "en/", "locale": "en_US", "img": "en-",
-        "title": "Pebble Desk — E Ink launcher for Android e-readers",
+        "title": "Readblio — E Ink launcher for Android e-readers",
         "desc": "A free, text-first launcher for Android E Ink readers like BOOX, Meebook, iReader, Crema and Bigme. "
                 "Books you open in Kindle, Libby, KOReader and more appear on your home screen, and reading time is kept for every book.",
         "faq_title": "Questions", "cta": "Download APK",
@@ -71,10 +74,10 @@ PAGES = {
             ("Which devices does it work on?",
              "Android E Ink readers running Android 9 or later."),
             ("Is it free?",
-             "Yes, and there are no ads. You can use it freely for noncommercial purposes (PolyForm Noncommercial 1.0.0)."),
+             "Yes, and there are no ads. You can use it for noncommercial purposes (PolyForm Strict 1.0.0). Modified versions and copies of the APK may not be redistributed."),
             ("How do I install it?",
              "Download the APK from GitHub Releases, copy it to your device and tap it in a file manager. Allow “install unknown apps” the first time. "
-             "Then set Pebble Desk as your home app in its Settings › Apps › Default home app. Later versions install from Settings › About › Update."),
+             "Then set Readblio as your home app in its Settings › Apps › Default home app. Later versions install from Settings › About › Update."),
             ("Why does it need the accessibility permission?",
              "To recognize the book you open in a reading app. It only receives the screens of supported reading apps and doesn’t look at any other app. "
              "Reading time comes from Android’s Usage access."),
@@ -82,6 +85,8 @@ PAGES = {
              "Only on your device; nothing is sent anywhere. The internet is used only to search covers (Apple Books and Open Library, or YES24 for Korean titles), "
              "to check for new versions and to download the comic cover unpacking tool (both from GitHub). "
              "Uninstalling the app deletes the history too."),
+            ("Is this Pebble Desk?",
+             "Yes. It was called Pebble Desk up to version 1.8.1 and is called Readblio from 1.9.0. Updating keeps your history and settings."),
         ],
         "features": ["Books you open in reading apps are added to the home screen automatically (cover, title, progress, due date)",
                      "Reading time per book, daily goal and streak", "Books this year with finish history (ratings, notes, re-reads)",
@@ -182,8 +187,8 @@ def head(lang, p):
     data = {
         "@context": "https://schema.org",
         "@graph": [
-            {"@type": "WebSite", "@id": BASE + "#website", "url": BASE, "name": "Pebble Desk", "inLanguage": ["ko", "en"]},
-            {"@type": "SoftwareApplication", "@id": p["url"] + "#app", "name": "Pebble Desk", "url": p["url"],
+            {"@type": "WebSite", "@id": BASE + "#website", "url": BASE, "name": "Readblio", "alternateName": OLD_NAME, "inLanguage": ["ko", "en"]},
+            {"@type": "SoftwareApplication", "@id": p["url"] + "#app", "name": "Readblio", "alternateName": OLD_NAME, "url": p["url"],
              "description": p["desc"], "inLanguage": lang,
              "applicationCategory": "UtilitiesApplication", "applicationSubCategory": "Launcher",
              "softwareVersion": VERSION, "datePublished": FIRST, "dateModified": RELEASED,
@@ -210,7 +215,7 @@ def head(lang, p):
 <link rel="icon" href="{icon}icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="{icon}icon-180.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Pebble Desk">
+<meta property="og:site_name" content="Readblio">
 <meta property="og:title" content="{esc(p["title"])}">
 <meta property="og:description" content="{esc(p["desc"])}">
 <meta property="og:url" content="{p["url"]}">
@@ -268,13 +273,13 @@ open("site/sitemap.xml", "w").write(
 
 # llms.txt(https://llmstxt.org): AI 검색이 읽는 요약
 en, ko = PAGES["en"], PAGES["ko"]
-llms = f"""# Pebble Desk
+llms = f"""# Readblio
 
 > {en["desc"]}
 
-Pebble Desk (페블 데스크) is a home-screen app (launcher) for Android E Ink readers.
+Readblio (리드블리오), called Pebble Desk (페블 데스크) up to version 1.8.1, is a home-screen app (launcher) for Android E Ink readers.
 The home screen shows the book you are reading, three more books you are reading, favorite apps and today’s reading time.
-It runs on Android 9 or later and is free with no ads (PolyForm Noncommercial 1.0.0).
+It runs on Android 9 or later and is free with no ads (PolyForm Strict 1.0.0: noncommercial use; no modified versions or redistribution).
 Latest version: {VERSION} ({RELEASED}), first released {FIRST}.
 
 ## Features
@@ -285,7 +290,7 @@ Latest version: {VERSION} ({RELEASED}), first released {FIRST}.
 ## Compared with other launchers
 
 General Android launchers such as {", ".join(e for _, e in LAUNCHERS[:11])} are designed for phones: icons, widgets, scrolling and animation.
-Pebble Desk is an alternative made for E Ink e-readers: the book you are reading sits on the home screen, lists turn page by page, nothing animates, and reading time is kept per book.
+Readblio is an alternative made for E Ink e-readers: the book you are reading sits on the home screen, lists turn page by page, nothing animates, and reading time is kept per book.
 It is an independent app and is not affiliated with any of these launchers, BOOX or Crema.
 
 ## E-readers
@@ -303,7 +308,7 @@ Does not run on (these can't install Android apps, or run Android 8 or older): {
 {ko["desc"]}
 
 - 최신 판: {VERSION}({RELEASED}), 첫 판 {FIRST}
-- 다른 런처와 비교: {", ".join(k for k, _ in LAUNCHERS[:11])} 같은 일반 안드로이드 런처는 휴대폰용(아이콘·위젯·스크롤·애니메이션)이다. Pebble Desk 는 이북리더기용 대안으로, 읽는 책이 홈에 있고 목록은 쪽으로 넘기며 움직임이 없고 읽은 시간이 책마다 남는다. 이 런처들, BOOX, 크레마와는 관계없는 독립 앱이다.
+- 다른 런처와 비교: {", ".join(k for k, _ in LAUNCHERS[:11])} 같은 일반 안드로이드 런처는 휴대폰용(아이콘·위젯·스크롤·애니메이션)이다. Readblio 는 이북리더기용 대안으로, 읽는 책이 홈에 있고 목록은 쪽으로 넘기며 움직임이 없고 읽은 시간이 책마다 남는다. 이 런처들, BOOX, 크레마와는 관계없는 독립 앱이다.
 - 쓸 수 있는 기기: 안드로이드 9 이상의 전자잉크 이북리더기. 실제로 쓰는 기기: {", ".join(k for k, _, st in DEVICES if st == "used")}. 그 밖의 안드로이드 이북리더기(안드로이드 9 이상인 기기에서 쓸 수 있다. 옛 크레마·리디페이퍼 등은 더 낮은 안드로이드다. 시험하지 않음): {", ".join(k for k, _, st in DEVICES if st == "android")}
 - 쓸 수 없는 기기(안드로이드 앱을 깔 수 없거나 안드로이드 8 이하): {", ".join(k for k, _, st in DEVICES if st == "no")}
 

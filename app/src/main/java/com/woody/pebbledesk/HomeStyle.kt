@@ -1,6 +1,5 @@
 package com.woody.pebbledesk
 
-import android.app.Dialog
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -8,6 +7,8 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.view.Gravity
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.TextView
 import java.time.LocalDate
 
 /**
@@ -198,10 +199,14 @@ class DueTagView(context: Context, private val label: String) : View(context) {
 
 /**
  * 홈 모양 고르기 창의 그림 한 장: 홈을 선과 회색 칸으로만 줄인 것(진한 칸 = 맨 앞 책, 연한 칸 = 다른 표지, 가는 막대 = 글자,
- * 아래 동그라미 넷 = 자주 쓰는 앱, 맨 아래 선 = 하단 줄). 높이는 폭의 [RATIO] 배. 고른 것은 굵은 검정 테두리.
+ * 아래 동그라미 넷 = 자주 쓰는 앱, 맨 아래 선 = 하단 줄). 높이는 폭의 [RATIO] 배. 고른 것([picked])은 굵은 검정 테두리.
+ * [oneBook] 이 있으면 책이 한 권일 때 모습(홈 모양 창의 `책이 한 권일 때` 작은 그림, 기본 모양으로: true = 맨 앞 책을 크게,
+ * false = 두 권 이상일 때 크기 그대로 아래를 비움).
  */
-class HomeStyleThumb(context: Context, private val style: HomeStyle, private val picked: Boolean) : View(context) {
+class HomeStyleThumb(context: Context, private val style: HomeStyle, private val oneBook: Boolean? = null) : View(context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    var picked = false
+        set(v) { if (field != v) { field = v; invalidate() } }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val w = MeasureSpec.getSize(widthMeasureSpec)
@@ -227,17 +232,18 @@ class HomeStyleThumb(context: Context, private val style: HomeStyle, private val
         val left = 6f
         val inner = 60f - 2 * left
         val top = 7f
-        // 맨 앞 책: 표지 옆 제목·저자, 아래 끝에 진행률
+        // 맨 앞 책: 표지 옆 제목·저자, 아래 끝에 진행률. 한 권 크게면 표지를 키우고 진행률을 그 아래 끝에
         fun mainBook() {
-            cover(left, top, 17f, main = true)
-            line(left + 21, top + 2, 22f, strong = true)
-            line(left + 21, top + 8, 14f)
-            line(left + 21, top + 21, inner - 21)
+            val w = if (oneBook == true) 24f else 17f
+            cover(left, top, w, main = true)
+            line(left + w + 4, top + 2, 22f - (w - 17), strong = true)
+            line(left + w + 4, top + 8, 14f - (w - 17))
+            line(left + w + 4, top + w * 1.5f - 4.5f, inner - w - 4)
         }
         when (style) {
             HomeStyle.BASIC -> {
                 mainBook()
-                for (i in 0 until 3) {
+                if (oneBook == null) for (i in 0 until 3) {
                     val x = left + i * inner / 3
                     cover(x, top + 31, 5.5f)
                     line(x + 7.5f, top + 32, 7f)
@@ -283,40 +289,100 @@ class HomeStyleThumb(context: Context, private val style: HomeStyle, private val
 /**
  * 홈 모양 고르기 창(설정 › 화면 › 홈 모양): 세 모양의 그림([HomeStyleThumb])을 나란히, 아래에 이름. 지금 값은 굵은 테두리 · 굵은 이름 + ✓.
  * 이름만으로는 뜻이 잘 전해지지 않아 다른 고르기 창([choose])과 달리 그림으로 고른다. 그림 폭은 [THUMB_DP] 까지(좁으면 칸 폭에 맞춘다).
- * 그림이나 이름을 누르면 고르고 닫는다.
+ * 그 아래 `책이 한 권일 때` 와 작은 그림 둘 `크게` · `그대로`([HomePrefs.oneBookBig], 기본·표지 모양만. 서재면 흐리게 두고 누르지 않는다).
+ * 그림·이름·크게·그대로를 누르면 바로 저장하고([onChange]) 창은 그대로 두어 그 자리에서 바뀐다(닫기·바깥 누르기로 닫는다).
  */
-fun Context.chooseHomeStyle(selected: HomeStyle, onPick: (HomeStyle) -> Unit) {
+fun Context.chooseHomeStyle(prefs: HomePrefs, onChange: () -> Unit) {
     val styles = HomeStyle.entries
     val inner = resources.displayMetrics.widthPixels - 2 * dp(Ui.MARGIN)
     val w = minOf(dp(THUMB_DP), (inner - (styles.size - 1) * dp(THUMB_GAP_MIN_DP)) / styles.size)
     // 세로는 세 장을 폭에 고르게, 가로(넓은 화면)는 왼쪽부터 같은 간격으로
     val gap = if (landscape()) dp(THUMB_GAP_WIDE_DP) else (inner - styles.size * w) / (styles.size - 1)
-    var dialog: Dialog? = null
+    val thumbs = styles.map { HomeStyleThumb(this, it) }
+    val names = styles.map { text("", THUMB_LABEL_SP) }
+    val oneLabel = text(getString(R.string.one_book), 24f, lines = 2)
+    val oneHint = text(getString(R.string.one_book_hint), 15f, color = Ui.GRAY, lines = 2)
+    val miniW = minOf(dp(ONE_BOOK_THUMB_DP), w * 2 / 3)
+    // `책이 한 권일 때` 고르는 칸: 값 · 이름 글자 · 누르는 칸(그림 + 이름) · 그림 · 이름
+    class Choice(val big: Boolean, val label: String, val cell: LinearLayout, val thumb: HomeStyleThumb, val name: TextView)
+    val choices = listOf(true, false).map { big ->
+        Choice(big, getString(if (big) R.string.one_book_big else R.string.one_book_keep), vbox(), HomeStyleThumb(this, HomeStyle.BASIC, oneBook = big), text("", ONE_BOOK_LABEL_SP))
+    }
+    // 고른 것은 굵은 이름 + ✓. 키운 글자로 이름이 그림 폭에 들지 않으면(영어 `Standard  ✓`) 기준 크기까지 줄인다
+    fun TextView.markPicked(label: String, on: Boolean, sp: Float, width: Int) {
+        text = label + if (on) "  ✓" else ""
+        typeface = if (on) Ui.bold else Ui.regular
+        setSp(sp)
+        fitLines(sp, width)
+    }
+    // 지금 값으로 그림·이름·한 권 줄을 다시 칠한다(바뀐 것만 다시 그려진다)
+    fun refresh() {
+        val style = prefs.homeStyle
+        val big = prefs.oneBookBig
+        styles.forEachIndexed { i, s ->
+            val on = s == style
+            thumbs[i].picked = on
+            names[i].markPicked(getString(s.label), on, THUMB_LABEL_SP, w)
+        }
+        val usable = style != HomeStyle.LIBRARY
+        oneLabel.setTextColor(if (usable) Ui.BLACK else Ui.LIGHT_GRAY)
+        oneHint.setTextColor(if (usable) Ui.GRAY else Ui.LIGHT_GRAY)
+        choices.forEach { c ->
+            val on = c.big == big
+            c.thumb.picked = on
+            c.thumb.alpha = if (usable) 1f else DISABLED_ALPHA
+            c.name.markPicked(c.label, on, ONE_BOOK_LABEL_SP, miniW)
+            c.name.setTextColor(if (usable) Ui.BLACK else Ui.LIGHT_GRAY)
+            c.cell.isEnabled = usable
+        }
+    }
     val row = hbox().apply {
         gravity = Gravity.TOP
         styles.forEachIndexed { i, style ->
-            val on = style == selected
             addView(vbox().apply {
-                addView(HomeStyleThumb(context, style, on), lp(w, WRAP))
-                // 키운 글자로 이름이 그림 폭에 들지 않으면(영어 `Standard  ✓`) 기준 크기까지 줄인다
-                addView(text(getString(style.label) + if (on) "  ✓" else "", THUMB_LABEL_SP, if (on) Ui.bold else Ui.regular).apply {
-                    gravity = Gravity.CENTER_HORIZONTAL
-                    fitLines(THUMB_LABEL_SP, w)
-                }, lp(MATCH, WRAP).apply { topMargin = dp(12) })
+                addView(thumbs[i], lp(w, WRAP))
+                addView(names[i].apply { gravity = Gravity.CENTER_HORIZONTAL }, lp(MATCH, WRAP).apply { topMargin = dp(12) })
                 contentDescription = getString(style.label)
-                // 닫히는 중에 한 번 더 눌린 것은 버린다(다른 메뉴와 같다)
                 setOnClickListener {
-                    val shown = dialog?.takeIf { it.isShowing } ?: return@setOnClickListener
-                    shown.dismiss()
-                    onPick(style)
+                    if (prefs.homeStyle == style) return@setOnClickListener
+                    prefs.homeStyle = style
+                    refresh()
+                    onChange()
                 }
             }, lp(w, WRAP).apply { if (i > 0) marginStart = gap })
         }
     }
-    dialog = Sheet(this).header(getString(R.string.home_style)).note(row).show()
+    val oneBook = hbox().apply {
+        gravity = Gravity.TOP
+        addView(vbox().apply {
+            addView(oneLabel)
+            addView(oneHint)
+        }, lp(0, WRAP, 1f))
+        choices.forEach { c ->
+            addView(c.cell.apply {
+                addView(c.thumb, lp(miniW, WRAP))
+                addView(c.name.apply { gravity = Gravity.CENTER_HORIZONTAL }, lp(MATCH, WRAP).apply { topMargin = dp(8) })
+                contentDescription = c.label
+                setOnClickListener {
+                    if (prefs.oneBookBig == c.big) return@setOnClickListener
+                    prefs.oneBookBig = c.big
+                    refresh()
+                    onChange()
+                }
+            }, lp(miniW, WRAP).apply { marginStart = dp(ONE_BOOK_GAP_DP) })
+        }
+    }
+    refresh()
+    Sheet(this).header(getString(R.string.home_style)).note(row).note(oneBook).show()
 }
 
 private const val THUMB_DP = 148
+/** `책이 한 권일 때` 작은 그림 폭(dp, 모양 그림의 2/3 까지)·이름 크기·사이 */
+private const val ONE_BOOK_THUMB_DP = 80
+private const val ONE_BOOK_LABEL_SP = 18f
+private const val ONE_BOOK_GAP_DP = 28
+/** 서재일 때 `책이 한 권일 때` 작은 그림의 진하기 */
+private const val DISABLED_ALPHA = 0.35f
 private const val THUMB_LABEL_SP = 20f
 private const val THUMB_GAP_MIN_DP = 12
 private const val THUMB_GAP_WIDE_DP = 24

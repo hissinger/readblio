@@ -61,7 +61,7 @@ class HomeActivity : EinkActivity() {
     private var mainLevel = MAIN_NORMAL
 
     /** 함께 읽는 책 줄의 모양(아래 글자·옆 글자·글자만, 여백·제목 줄 수·표지 폭. [buildHero] 가 정한다) */
-    private var alsoLevel = ALSO_BASE
+    private var alsoLevel = SIDE
 
     /** 함께 읽는 책을 표지 아래 글자로 그리는가(아니면 표지 옆 글자, 또는 글자만) */
     private val bigAlso get() = alsoLevel.big
@@ -624,7 +624,7 @@ class HomeActivity : EinkActivity() {
         val status = books.map { bookStatus(it) }
         // 표지가 생겼는지(책 파일 표지는 뒤에서 꺼내 둔다: 압축 만화·만화 표지 도구를 받은 뒤. 책 목록이 그대로여도 다시 그리게)
         val covers = books.map { BookShelf.hasCover(this, it.id) }
-        val heroState = listOf(books, reading, icons, packs, ownIcons[reading?.key], heroHeight, watching, status, covers, short, homeStyle, wall != null)
+        val heroState = listOf(books, reading, icons, packs, ownIcons[reading?.key], heroHeight, watching, status, covers, short, homeStyle, prefs.oneBookBig, wall != null)
         // 아이콘이 바뀌었을 수 있는 앱(그사이 업데이트된 앱)이 보이는 자리만 다시 그린다(다른 앱 업데이트로 홈 전체가 깜빡이지 않게).
         if (reading?.pkg in changedPkgs || heroState != shownHero) {
             shownHero = heroState
@@ -809,7 +809,8 @@ class HomeActivity : EinkActivity() {
         fillAlso = null
         // 홈 모양이 표지·서재면 책 자리를 표지로 채운다(책이 없으면 어느 모양이든 같은 스켈레톤)
         val style = homeStyle
-        if (style != HomeStyle.BASIC && books.isNotEmpty()) {
+        // 표지 모양에서 책이 한 권이고 `크게`([HomePrefs.oneBookBig])면 기본 모양과 같이 맨 앞 책을 크게
+        if (style != HomeStyle.BASIC && books.isNotEmpty() && !(style == HomeStyle.COVER && books.size == 1 && prefs.oneBookBig)) {
             if (heroHeight <= 0) return
             // 책 자리가 아주 낮아 표지가 들지 않으면(null) 아래 기본 모양으로 그린다
             (if (style == HomeStyle.LIBRARY) libraryShelf(books) else coverShelf(books, reading))?.let {
@@ -822,10 +823,11 @@ class HomeActivity : EinkActivity() {
         val pages = rest.chunked(ALSO_PER_PAGE)
         setPages(rest, pages.size)
         if (heroHeight <= 0) return
-        val view: View = when (books.size) {
+        val view: View = when {
             // 함께 읽는 책 줄이 없으면 맨 앞 책이 책 자리를 다 채우지 않고 자주 쓰는 앱 위를 [NO_ALSO_GAP_DP] 비운다
-            0 -> skeleton(soloCoverWidth())
-            1 -> mainBook(books.first(), reading, soloCoverWidth(), mainRoom())
+            books.isEmpty() -> skeleton(soloCoverWidth())
+            // 한 권이면 크게(처음). `그대로`면 아래처럼 두 권 이상일 때와 같은 크기로 재고 함께 읽는 책 자리는 비운다(쪽이 없어 그 줄을 그리지 않는다)
+            books.size == 1 && prefs.oneBookBig -> mainBook(books.first(), reading, soloCoverWidth(), mainRoom())
             else -> {
                 /**
                  * [measureOnly] 면 표지 그림 대신 같은 크기의 빈 칸(높이만 잴 때. 표지는 폭마다 줄인 파일을 남긴다).
@@ -888,7 +890,8 @@ class HomeActivity : EinkActivity() {
                 // 가장 긴 글자의 칸 셋(제목은 두 줄에서 잘리고, 앱·진행률·반납일). 앱 줄은 앱을 아는 책이 있을 때만(이름은 그 앱으로)
                 val worst = ShelfBook(
                     id = "", title = "가".repeat(60), author = "", updatedAt = 0, progress = 100, due = LocalDate.now().toEpochDay() + 30,
-                    app = rest.firstNotNullOfOrNull { b -> b.app?.takeIf { findApp(it) != null } },
+                    // 한 권(`그대로`)이면 함께 읽는 책도 그 책의 앱일 것으로 본다(두 권이 되어도 맨 앞 책 크기가 그대로이게)
+                    app = (rest.ifEmpty { books }).firstNotNullOfOrNull { b -> b.app?.takeIf { findApp(it) != null } },
                 )
                 val worstLabel = worst.app?.let(::findApp)?.label
                 fun worstRow(level: AlsoLevel, coverW: Int): Int {
@@ -897,13 +900,17 @@ class HomeActivity : EinkActivity() {
                         alsoRow(coverW, List(ALSO_PER_PAGE) { worst }, measureOnly = true).measuredIn()
                     }
                 }
+                // 함께 읽는 책 줄 높이. 한 권(`그대로`)이면 쪽이 없어 가장 긴 글자의 줄로 잰다(그 줄은 그리지 않고 비운다)
+                fun rowHeight(coverW: Int) = if (pages.isEmpty()) worstRow(alsoLevel, coverW) else alsoHeight(coverW)
                 var chosen: AlsoLevel? = null
                 var mainW = 0
                 var alsoW = dp(SMALL_COVER_DP)
                 // 함께 읽는 책 모양과 맨 앞 책 간격([ALSO_STEPS]): 처음 드는 것. 아래 글자(큰 표지) 모양은 두 표지를 2 : 1 로 나눈다([HomeShelf.bigAlso]:
                 // 함께 읽는 책 [BIG_ALSO_MIN_DP] 이상, 맨 앞 책은 최소(지금 간격의 가장 긴 글자가 다 드는 높이) 이상·최대 [mainMaxW] 까지).
                 // 함께 읽는 책 [BIG_ALSO_MIN_DP] 를 두면 맨 앞 책이 최소보다 작아지면 다음 단계. 옆 글자·글자만 모양은 남는 높이를 맨 앞 책에(최대까지), 그래도 남으면 그 줄 아래 빈칸.
-                if (fixedFrame) for ((level, ml) in ALSO_STEPS) {
+                // 기기가 앱의 밀도를 덮어써 틀을 고정하지 않을 때도 같다(높이는 실제 화면에서 잰다. 1.8.1 까지는 늘 작은 표지에 남는 높이를 맨 앞 책에 주어
+                // 바형(미니파워)에서 함께 읽는 책 아래가 크게 비었다).
+                for ((level, ml) in ALSO_STEPS) {
                     mainLevel = ml
                     val need = need(ml)
                     val pad = level.padBottomDp?.let { minOf(it, base) } ?: base
@@ -927,34 +934,25 @@ class HomeActivity : EinkActivity() {
                     break
                 }
                 // 어느 모양으로도 안 되면(책 자리가 아주 낮거나 글자가 아주 큼) 맨 앞 책은 최소, 함께 읽는 책 줄은 그리지 않는다
-                val noAlso = fixedFrame && chosen == null
-                alsoLevel = chosen ?: if (fixedFrame) TEXT1 else ALSO_BASE
+                val noAlso = chosen == null
+                alsoLevel = chosen ?: TEXT1
                 if (noAlso) {
                     mainLevel = MAIN_MIN
                     mainW = minOf(mainMax, (need(MAIN_MIN) * 2 + 2) / 3)
                 }
-                if (!fixedFrame) {
-                    mainLevel = MAIN_NORMAL
-                    alsoW = dp(SMALL_COVER_DP)
-                    mainW = coverWidth(reserved = alsoHeight(alsoW), padBottom = base)
-                }
                 // 아래 글자 모양은 표지 말고 줄 높이가 표지 크기와 상관없어 가장 작은 표지로 잰 것에 표지 높이만 더한다(모든 쪽을 다시 재지 않게)
                 val alsoH = when {
                     noAlso -> 0
-                    bigAlso -> dp(BIG_ALSO_MIN_DP).let { minW -> alsoHeight(minW) - (minW * 3 / 2 + dp(2)) } + alsoW * 3 / 2 + dp(2)
-                    else -> alsoHeight(alsoW)
+                    bigAlso -> dp(BIG_ALSO_MIN_DP).let { minW -> rowHeight(minW) - (minW * 3 / 2 + dp(2)) } + alsoW * 3 / 2 + dp(2)
+                    else -> rowHeight(alsoW)
                 }
                 val main = mainBook(books.first(), reading, mainW, mainRoom(alsoH, padBottom))
                 // 책 자리에 남는 높이(아래 여백, 맨 앞 책이 최대라 남는 높이)도 함께 읽는 책 줄에 준다(빈칸은 그 줄 아래).
                 // 어느 모양도 들지 않으면 그 줄을 두지 않는다(그리지 않은 줄이 누르기를 받지 않게).
-                // 틀을 고정하지 않으면(기기가 밀도를 덮어씀) 1.5.3 까지처럼 그대로 쌓는다(넘치면 책 자리 끝에서 잘린다).
-                if (fixedFrame) FitColumn(this@HomeActivity).apply {
+                FitColumn(this@HomeActivity).apply {
                     addView(main)
                     val left = heroHeight - main.measuredIn()
-                    if (!noAlso && alsoH <= left) addView(alsoRow(alsoW, pages[alsoPage]), lp(MATCH, left))
-                } else vbox().apply {
-                    addView(main)
-                    addView(alsoRow(alsoW, pages[alsoPage]))
+                    if (!noAlso && pages.isNotEmpty() && alsoH <= left) addView(alsoRow(alsoW, pages[alsoPage]), lp(MATCH, left))
                 }
             }
         }
@@ -1074,7 +1072,7 @@ class HomeActivity : EinkActivity() {
     /**
      * 표지 모양(DESIGN.md `홈 모양`): 맨 앞 책(기본 모양과 같은 표지 옆 글자) 아래 `함께 읽는 책`을 표지로만(세로 4열, 높이에 드는 만큼 줄,
      * 표지에 반납일 딱지 · 아래에 진행률 막대). 두 표지 크기는 [HomeShelf]: 맨 앞 책은 가장 긴 글자가 드는 높이(최소)를 먼저 지키고,
-     * 책 수와 상관없이 같은 크기다(한 권이면 아래가 빈다).
+     * 책 수와 상관없이 같은 크기다(한 권이면 아래가 빈다. 한 권이고 [HomePrefs.oneBookBig] 면 부르지 않고 기본 모양의 한 권으로 그린다).
      * 책 자리가 아주 낮아 함께 읽는 책 줄이 들지 않거나(세로) 맨 앞 책 표지가 [SHELF_COVER_MIN_DP] 보다 작아지면 null(기본 모양으로 그린다).
      */
     private fun coverShelf(books: List<ShelfBook>, reading: AppEntry?): View? {
@@ -1129,12 +1127,12 @@ class HomeActivity : EinkActivity() {
     }
 
     /**
-     * 맨 앞 책 표지 폭: 책 자리 높이에서 표지 위 여백·테두리·색면 아래 여백, 그 아래에 놓일 높이([reserved], 함께 읽는 책 줄)와
-     * 책 자리 맨 아래 여백([padBottom]dp)을 뺀 만큼, [COVER_MIN_DP] ~ [mainMaxW]. 책 한 권([soloCoverWidth])·틀을 고정하지 않을 때(기기가 밀도를 덮어씀).
+     * 맨 앞 책 표지 폭: 책 자리 높이에서 표지 위 여백·테두리·색면 아래 여백, 그 아래에 비워 둘 높이([reserved])와
+     * 책 자리 맨 아래 여백을 뺀 만큼, [COVER_MIN_DP] ~ [mainMaxW]. 함께 읽는 책 줄이 없을 때(책 한 권·스켈레톤, [soloCoverWidth]).
      */
-    private fun coverWidth(reserved: Int = 0, padBottom: Int = HERO_PAD_BOTTOM_DP): Int {
+    private fun coverWidth(reserved: Int): Int {
         val max = mainMaxW()
-        return (mainRoom(reserved, padBottom) * 2 / 3).coerceIn(minOf(dp(COVER_MIN_DP), max), max)
+        return (mainRoom(reserved) * 2 / 3).coerceIn(minOf(dp(COVER_MIN_DP), max), max)
     }
 
     /**
@@ -1381,7 +1379,7 @@ class HomeActivity : EinkActivity() {
         private const val STALLED_WAIT_MS = 5_000L
         /**
          * 맨 앞 책 표지 폭 상한(리더 화면 / 바형). 하한은 가장 긴 글자가 다 드는 높이([mainNeedHeight], 페블 글자 100% 에서 약 151dp)이고,
-         * [COVER_MIN_DP] 는 틀을 고정하지 않을 때·책 한 권일 때 표지가 너무 작아지지 않게 막는 값. (1.7.10 까지 160~230dp, 여러 권이면 136dp 부터)
+         * [COVER_MIN_DP] 는 책 한 권일 때 표지가 너무 작아지지 않게 막는 값. (1.7.10 까지 160~230dp, 여러 권이면 136dp 부터)
          */
         private const val MAIN_MAX_DP = 180
         private const val MAIN_MAX_TALL_DP = 230
@@ -1414,9 +1412,6 @@ class HomeActivity : EinkActivity() {
             val big: Boolean, val textOnly: Boolean, val headerTopDp: Int, val cellTopDp: Int, val padBottomDp: Int?, val titleLines: Int,
             val textGapDp: Int = BIG_TEXT_GAP_DP, val titleOnly: Boolean = false,
         )
-
-        /** 틀을 고정하지 않을 때(기기가 밀도를 덮어씀)의 모양(1.7.10 까지의 작은 표지 줄) */
-        private val ALSO_BASE = AlsoLevel(false, false, 28, 14, null, 2)
 
         // 함께 읽는 책 줄의 모양: 아래 글자(제목 한 줄, 간격 그대로 → 줄임 → 가장 줄임), 옆 글자(제목 두 줄, 간격 그대로 → 줄임 → 가장 줄임), 글자만
         private val BIG = AlsoLevel(true, false, 28, 14, null, 1)

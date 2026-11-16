@@ -83,7 +83,7 @@ class SettingsActivity : EinkActivity() {
             root.addView(list, lp(MATCH, 0, 1f))
         }
         // 맨 아래 지금 판, 늘 보인다(업데이트 줄은 새 판이 있으면 새 판 번호를 보여 지금 판이 안 보인다)
-        if (page == null) root.addView(text("Pebble Desk ${appVersion()}", 15f, color = Ui.LIGHT_GRAY).apply {
+        if (page == null) root.addView(text("${getString(R.string.app_name)} ${appVersion()}", 15f, color = Ui.LIGHT_GRAY).apply {
             gravity = Gravity.CENTER
         }, lp(MATCH, dp(44)))
         setContentView(root)
@@ -218,7 +218,7 @@ class SettingsActivity : EinkActivity() {
         val s = Update.state
         if (!announceLatest || s == Update.State.Checking) return
         announceLatest = false
-        if (s == Update.State.Latest) Sheet(this).header("Pebble Desk ${appVersion()}", getString(R.string.update_is_latest)).show()
+        if (s == Update.State.Latest) Sheet(this).header("${getString(R.string.app_name)} ${appVersion()}", getString(R.string.update_is_latest)).show()
     }
 
     private fun open(page: String) = startActivity(Intent(this, SettingsActivity::class.java).putExtra(EXTRA_PAGE, page))
@@ -237,7 +237,7 @@ class SettingsActivity : EinkActivity() {
         }
         // 홈 모양: 기본 / 표지 / 서재(책 자리를 채우는 방법)를 그림으로 고른다. 홈으로 돌아가면 다시 그린다.
         row(getString(R.string.home_style), getString(prefs.homeStyle.label), next = true) {
-            chooseHomeStyle(prefs.homeStyle) { prefs.homeStyle = it; renderDisplay() }
+            chooseHomeStyle(prefs) { renderDisplay() }
         }
         // 배경 사진: 진하기(사진이 없으면 `없음`, 진하기 0 이면 홈에 보이지 않아 흐리게)
         val wallpaper = Wallpaper.exists(this)

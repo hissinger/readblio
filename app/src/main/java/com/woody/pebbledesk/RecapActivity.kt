@@ -167,8 +167,8 @@ class RecapActivity : EinkActivity() {
         }
     }
 
-    /** 파일 이름 `PebbleDesk-2026-10.png` */
-    private fun fileName() = "PebbleDesk-$month.png"
+    /** 파일 이름 `Readblio-2026-10.png` */
+    private fun fileName() = "Readblio-$month.png"
 
     /** 저장·보내기 그림: 늘 컬러(화면이 흑백이면 컬러로 한 번 더 그린다) */
     private fun sharedImage(): Bitmap? = shareImage ?: data?.let { RecapImage.draw(this, it, color = true) }?.also { shareImage = it }

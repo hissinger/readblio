@@ -29,7 +29,7 @@ import java.util.zip.GZIPInputStream
 object ArchiveLib {
     const val VERSION = "1.1.7"
     private const val TAG = "libarchive-$VERSION"
-    private const val BASE = "https://github.com/hissinger/pebble-desk/releases/download/$TAG/"
+    private const val BASE = "https://github.com/hissinger/readblio/releases/download/$TAG/"
     private const val MARK = "archive_working"
     private const val BAD = "archive_bad"
     /** 그림 하나가 이보다 크면 꺼내지 않는다(메모리) */
