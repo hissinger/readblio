@@ -631,11 +631,14 @@ fun Context.confirm(title: String, subtitle: String?, action: String, onConfirm:
     Sheet(this).header(title, subtitle).item(action, bold = true) { onConfirm() }.item(getString(R.string.cancel)) {}.noClose().show()
 }
 
-/** 고르기 메뉴: 지금 값은 굵게 + ✓. [swatches] 가 있으면 줄마다 글자 앞에 그 색 칸들(색 테마). */
-fun Context.choose(title: String, options: List<String>, selected: Int, swatches: List<List<Int>>? = null, onPick: (Int) -> Unit) {
+/**
+ * 고르기 메뉴: 지금 값은 굵게 + ✓. [swatches] 가 있으면 줄마다 글자 앞에 그 색 칸들(색 테마),
+ * [notes] 가 있으면 줄마다 오른쪽에 작은 회색 설명(날짜 형식의 `앱 언어`·`기기 지역`, 없으면 null).
+ */
+fun Context.choose(title: String, options: List<String>, selected: Int, swatches: List<List<Int>>? = null, notes: List<String?>? = null, onPick: (Int) -> Unit) {
     val sheet = Sheet(this).header(title)
     options.forEachIndexed { i, label ->
-        sheet.item(if (i == selected) "$label  ✓" else label, bold = i == selected, swatch = swatches?.get(i)) { onPick(i) }
+        sheet.item(if (i == selected) "$label  ✓" else label, bold = i == selected, right = notes?.get(i), swatch = swatches?.get(i)) { onPick(i) }
     }
     sheet.show()
 }

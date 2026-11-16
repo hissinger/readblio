@@ -75,10 +75,13 @@ class HomeActivity : EinkActivity() {
     /** 홈 모양(설정 › 화면). 기기가 앱의 밀도를 덮어썼으면(틀을 고정하지 않음) 늘 기본 모양. */
     private val homeStyle get() = if (fixedFrame) prefs.homeStyle else HomeStyle.BASIC
 
-    /** 자주 쓰는 앱 격자 칸 수: 가로 페블처럼 오른쪽 칸이 좁으면 3칸 */
-    private val gridColumns by lazy {
-        if (wide && resources.displayMetrics.widthPixels - heroPaneWidth() - 2 * dp(Ui.MARGIN) < dp(GRID_NARROW_DP)) 3 else GRID_COLUMNS
-    }
+    /** 자주 쓰는 앱 격자 칸 수: 설정한 값([HomePrefs.favColumns]). 가로 페블처럼 오른쪽 칸이 좁으면 3칸. [refresh] 가 정한다 */
+    private var gridColumns = HomePrefs.FAV_COLUMNS.first()
+    /** 자주 쓰는 앱 격자에 이름을 보이는가([HomePrefs.favNames]). [refresh] 가 정한다 */
+    private var gridNames = true
+
+    /** 가로 홈 오른쪽 칸이 좁아 격자를 3칸으로 두는가 */
+    private val narrowPane by lazy { wide && resources.displayMetrics.widthPixels - heroPaneWidth() - 2 * dp(Ui.MARGIN) < dp(GRID_NARROW_DP) }
 
     /** 가로 화면 왼쪽(책) 칸 폭: 화면의 [HERO_PANE_RATIO], 세로 화면 폭까지 */
     private fun heroPaneWidth() = minOf(dp(Ui.DESIGN_WIDTH_DP), (resources.displayMetrics.widthPixels * HERO_PANE_RATIO).toInt())
@@ -418,6 +421,7 @@ class HomeActivity : EinkActivity() {
     override fun onStart() {
         super.onStart()
         topBar.use24Hour = prefs.clock24h
+        topBar.dateStyle = prefs.dateStyle
         registerReceiver(statusReceiver, IntentFilter().apply {
             addAction(Intent.ACTION_TIME_TICK)
             addAction(Intent.ACTION_TIME_CHANGED)
@@ -613,6 +617,8 @@ class HomeActivity : EinkActivity() {
         val ownIcons = prefs.iconOverrides
         val grid = prefs.favGrid
         short = prefs.favShort && !wide
+        gridColumns = if (narrowPane) GRID_NARROW_COLUMNS else prefs.favColumns
+        gridNames = prefs.favNames
 
         heroHeight = hero.height
         // 배경 사진(설정에서 고르거나 진하기를 바꾸고 돌아오면 바탕을 다시 그린다). 사진이 있으면 맨 앞 책 색면을 칠하지 않는다(책 자리를 다시 만든다).
@@ -630,7 +636,7 @@ class HomeActivity : EinkActivity() {
             shownHero = heroState
             buildHero(books, reading)
         }
-        val favState = listOf(favs, icons, packs, favs.map { ownIcons[it.key] }, grid, short)
+        val favState = listOf(favs, icons, packs, favs.map { ownIcons[it.key] }, grid, short, gridColumns, gridNames)
         if (favs.none { it.pkg in changedPkgs } && favState == shownFavs) return
         shownFavs = favState
         // 격자 한 줄은 목록 세 줄 높이를 두 줄로 나눈 높이(낮게면 그 한 줄만). 가로는 높이에 들어가는 만큼.
@@ -666,34 +672,52 @@ class HomeActivity : EinkActivity() {
     }
 
     /**
-     * 격자 한 줄([pos]: 한 쪽 [per] 줄 중 몇째 줄): 아이콘(흑백, 컬러 [Palette] 면 원래 색) 아래 이름 한 줄.
+     * 격자 한 줄([pos]: 한 쪽 [per] 줄 중 몇째 줄): 아이콘(흑백, 컬러 [Palette] 면 원래 색) 아래 이름 한 줄. 칸 수는 [gridColumns].
      * 줄들이 한 묶음으로 보이게 바깥(위 선 → 첫 줄, 끝 줄 → 하단 선)은 [GRID_OUTER_DP], 줄 사이는 [GRID_INNER_DP] 로 좁게 둔다.
      * 줄 높이(목록 높이를 줄 수로 나눈 값)에서 여백·이름 한 줄을 뺀 만큼 아이콘을 키우고(최대 [GRID_ICON_MAX_DP]), 그래도 남는 높이는 바깥으로 보낸다
      * (첫 줄은 아래에, 끝 줄은 위에, 가운데 줄(가로 화면)은 가운데에 붙인다). 한 줄뿐인 쪽([lastAlone])은 첫 줄 모양으로 위에 붙인다.
+     * 칸이 좁으면(5·6칸) 아이콘을 칸 폭의 [GRID_ICON_WIDTH_RATIO] 까지 줄인다(이름 한 줄과 어울리게, 이름은 길면 `…`).
+     * 이름을 끄면([gridNames]) 아이콘 크기는 이름이 있을 때의 높이로 정한 그대로 두고(칸 폭에는 들게), 줄 높이도 그대로(구역 높이가 변하지 않는다) 두고,
+     * 구역(제목 선 아래 ~ 하단 선)의 위 여백·줄 사이·아래 여백을 모두 같게 한다: 남는 높이를 (줄 수 + 1)로 나눈 [namelessGap].
+     * 몇째 줄이든 그 줄 칸 안에서 아이콘 위 여백은 gap × (줄 수 − 몇째) ÷ 줄 수(한 줄이면 가운데). 한 줄만 남은 쪽은 첫 줄 자리.
      * 격자에서는 '앱 아이콘' 설정과 상관없이 아이콘을 그린다.
      */
     private fun gridRow(line: List<AppEntry>, pos: Int, per: Int, lastAlone: Boolean): View = hbox().apply {
         // 함께 읽는 책 줄과 같은 칸(좌우 여백 + 칸 사이 간격)으로 나누고, 칸마다 아이콘과 이름을 가운데에 맞춘다.
         val first = pos == 0
         val last = pos == per - 1
-        gravity = when {
-            first && last -> Gravity.CENTER_VERTICAL
-            first && !lastAlone -> Gravity.BOTTOM
-            first || last -> Gravity.TOP
-            else -> Gravity.CENTER_VERTICAL
-        }
         val inner = GRID_INNER_DP / 2
-        setPadding(dp(Ui.MARGIN), dp(if (first) GRID_OUTER_DP else inner), dp(Ui.MARGIN), dp(if (last) GRID_OUTER_DP else inner))
+        // 이름이 있으면 줄 묶음 모양으로 붙이고 여백을 둔다(이름이 없으면 아이콘 크기를 정한 뒤 아래에서 정한다)
+        if (gridNames) {
+            gravity = when {
+                first && last -> Gravity.CENTER_VERTICAL
+                first && !lastAlone -> Gravity.BOTTOM
+                first || last -> Gravity.TOP
+                else -> Gravity.CENTER_VERTICAL
+            }
+            setPadding(dp(Ui.MARGIN), dp(if (first) GRID_OUTER_DP else inner), dp(Ui.MARGIN), dp(if (last) GRID_OUTER_DP else inner))
+        }
         // 이름은 한 줄(길면 `…`)이라 글자를 키워도 이름 칸은 한 줄만큼만 커진다. 남는 높이를 아이콘에 준다.
         val labelH = text("가", 13f).run { measure(0, 0); measuredHeight }
         // 한 쪽이 한 줄이면(격자 1줄) 위아래 모두 바깥 여백
         val pads = if (first && last) 2 * GRID_OUTER_DP else GRID_OUTER_DP + inner
-        val icon = (favRows.rowHeightPx - dp(pads + GRID_LABEL_GAP_DP) - labelH).coerceIn(dp(32), dp(GRID_ICON_MAX_DP))
+        val byHeight = (favRows.rowHeightPx - dp(pads + GRID_LABEL_GAP_DP) - labelH).coerceIn(dp(32), dp(GRID_ICON_MAX_DP))
+        // 칸 폭(좌우 여백·칸 사이 간격을 뺀 폭을 칸 수로)
+        val rowWidth = favRows.width.takeIf { it > 0 } ?: resources.displayMetrics.widthPixels
+        val cell = (rowWidth - 2 * dp(Ui.MARGIN) - (gridColumns - 1) * dp(GAP_DP)) / gridColumns
+        val icon = if (gridNames) minOf(byHeight, maxOf(dp(32), (cell * GRID_ICON_WIDTH_RATIO).toInt()))
+            else minOf(byHeight, cell - dp(GRID_ICON_SIDE_DP))
+        if (!gridNames) {
+            // 이름 없이: 위·줄 사이·아래 여백을 같게(한 줄만 남은 마지막 쪽은 pos 0 이라 앞 쪽 첫 줄 자리)
+            gravity = Gravity.TOP
+            setPadding(dp(Ui.MARGIN), namelessGap(icon, per) * (per - pos) / per, dp(Ui.MARGIN), 0)
+        }
         line.forEachIndexed { i, app ->
             addView(vbox().apply {
                 gravity = Gravity.CENTER_HORIZONTAL
                 addView(picture(AppIcons.icon(context, app, icon)), lp(icon, icon))
-                addView(text(app.label, 13f).apply { gravity = Gravity.CENTER; ellipsize = TextUtils.TruncateAt.END }, lp(MATCH, WRAP).apply { topMargin = dp(GRID_LABEL_GAP_DP) })
+                if (gridNames) addView(text(app.label, 13f).apply { gravity = Gravity.CENTER; ellipsize = TextUtils.TruncateAt.END }, lp(MATCH, WRAP).apply { topMargin = dp(GRID_LABEL_GAP_DP) })
+                else contentDescription = app.label
                 setOnClickListener { AppStore.launch(this@HomeActivity, app) }
                 setOnLongClickListener { showAppMenu(app, rename = true) { refresh() }; true }
             }, lp(0, WRAP, 1f).apply { if (i > 0) marginStart = dp(GAP_DP) })
@@ -701,6 +725,9 @@ class HomeActivity : EinkActivity() {
         // 덜 찬 줄도 칸 폭이 같도록 빈 칸을 채운다.
         repeat(gridColumns - line.size) { addView(View(context), lp(0, 1, 1f).apply { marginStart = dp(GAP_DP) }) }
     }
+
+    /** 이름 없는 격자의 여백(px): 한 쪽 [per] 줄의 높이에서 아이콘 [icon] 줄들을 뺀 높이를 위·줄 사이·아래([per] + 1 곳)에 똑같이 */
+    private fun namelessGap(icon: Int, per: Int) = maxOf(0, per * (favRows.rowHeightPx - icon) / (per + 1))
 
     /**
      * 구역 제목(함께 읽는 책 · 자주 쓰는 앱): 작은 회색 굵은 글자, 아래에 가는 선. 높이는 기준 크기 글자일 때로 고정하고
@@ -1494,8 +1521,8 @@ class HomeActivity : EinkActivity() {
         /** 세로 홈 자주 쓰는 앱 격자 줄 수(낮게면 한 줄, 줄 높이는 그대로) */
         fun favGridRows(short: Boolean) = if (short) GRID_ROWS - 1 else GRID_ROWS
 
-        /** 자주 쓰는 앱 격자: 4칸 × 2줄(목록과 같은 높이 안에), 아이콘 최대 크기 */
-        private const val GRID_COLUMNS = 4
+        /** 자주 쓰는 앱 격자: 칸 수는 설정([HomePrefs.FAV_COLUMNS]), 가로 홈 오른쪽 칸이 좁으면 3칸. 2줄(목록과 같은 높이 안에), 아이콘 최대 크기 */
+        private const val GRID_NARROW_COLUMNS = 3
         /** 함께 읽는 책·격자 칸 사이 간격(두 줄의 칸을 맞춘다) */
         private const val GAP_DP = 12
         private const val GRID_ROWS = 2
@@ -1504,6 +1531,10 @@ class HomeActivity : EinkActivity() {
         private const val GRID_OUTER_DP = 11
         private const val GRID_INNER_DP = 12
         private const val GRID_LABEL_GAP_DP = 6
+        /** 이름이 있는 격자의 아이콘: 칸 폭에 대한 상한(4칸은 높이가, 5·6칸은 폭이 정한다) */
+        private const val GRID_ICON_WIDTH_RATIO = 0.6f
+        /** 이름 없는 격자의 아이콘: 칸 폭에서 뺄 양옆 여백(이웃 아이콘과 붙지 않게) */
+        private const val GRID_ICON_SIDE_DP = 8
         /** 가로 화면: 책 칸 폭(화면 폭에 대한 비율, 세로 화면 폭까지), 두 칸 사이 세로 선의 위아래 여백, 표지 폭 상한(칸 폭에 대한 비율) */
         private const val HERO_PANE_RATIO = 0.6f
         private const val PANE_LINE_INSET_DP = 16
