@@ -71,6 +71,11 @@ class HomePrefs(context: Context) {
         get() = sp.getBoolean("clock_24h", true)
         set(v) = sp.edit().putBoolean("clock_24h", v).apply()
 
+    /** 홈 상단 날짜 형식(설정 › 화면 › 날짜). 처음은 앱 언어의 형식(1.9.0 까지와 같다) */
+    var dateStyle: DateStyle
+        get() = DateStyle.of(sp.getString("date_style", null))
+        set(v) = sp.edit().putString("date_style", v.key).apply()
+
     /** 글자 크기(%): [TEXT_SCALES] 중 하나. 앱 전체 글자에 곱한다([Ui.textScale]). */
     var textScalePercent: Int
         get() = percent(sp, KEY_TEXT_SCALE, TEXT_SCALES)
@@ -162,6 +167,16 @@ class HomePrefs(context: Context) {
     var favShort: Boolean
         get() = sp.getBoolean("fav_short", false)
         set(v) = sp.edit().putBoolean("fav_short", v).apply()
+
+    /** 자주 쓰는 앱 격자의 한 줄 칸 수([FAV_COLUMNS] 중 하나, 처음은 4. 가로 홈 오른쪽 칸이 좁으면 3) */
+    var favColumns: Int
+        get() = sp.getInt("fav_columns", FAV_COLUMNS.first()).takeIf { it in FAV_COLUMNS } ?: FAV_COLUMNS.first()
+        set(v) = sp.edit().putInt("fav_columns", v).apply()
+
+    /** 자주 쓰는 앱 격자에 앱 이름을 보이는가. 끄면 아이콘만 칸 가운데에(구역 높이는 그대로) */
+    var favNames: Boolean
+        get() = sp.getBoolean("fav_names", true)
+        set(v) = sp.edit().putBoolean("fav_names", v).apply()
 
     /** 홈 모양(설정 › 화면): 기본 · 표지 · 서재. 처음은 기본(1.7.10 까지의 홈). */
     var homeStyle: HomeStyle
@@ -319,6 +334,8 @@ class HomePrefs(context: Context) {
 
     companion object {
         const val FILE = "home"
+        /** 자주 쓰는 앱 격자 칸 수로 고를 수 있는 값 */
+        val FAV_COLUMNS = listOf(4, 5, 6)
         /** 1.5.8 까지의 언어(영어면 true). 처음 [language] 를 정할 때만 읽고 지운다 */
         private const val KEY_ENGLISH = "english"
         private const val KEY_LANGUAGE = "language"

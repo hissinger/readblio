@@ -42,6 +42,9 @@
     <string name="clock">시계</string>
     <string name="clock24">24시간</string>
     <string name="clock12">12시간</string>
+    <string name="date_format">날짜</string>
+    <string name="date_app_language">앱 언어</string>
+    <string name="date_device_region">기기 지역</string>
     <string name="text_size">글자 크기</string>
     <string name="text_size_device">기기 글꼴 크기 %1$d%% 에 곱합니다</string>
     <string name="text_spacing">글자 · 간격</string>
@@ -254,6 +257,8 @@
     <string name="fav_view_list">목록</string>
     <string name="fav_view_grid">격자</string>
     <string name="fav_rows">줄</string>
+    <string name="fav_columns">칸</string>
+    <string name="fav_names">앱 이름</string>
     <plurals name="fav_rows_n">
         <item quantity="other">%1$d줄</item>
     </plurals>

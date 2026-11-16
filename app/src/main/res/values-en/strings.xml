@@ -38,6 +38,9 @@
     <string name="clock">Clock</string>
     <string name="clock24">24-hour</string>
     <string name="clock12">12-hour</string>
+    <string name="date_format">Date</string>
+    <string name="date_app_language">App language</string>
+    <string name="date_device_region">Device region</string>
     <string name="text_size">Text size</string>
     <string name="text_size_device">Multiplied by the device font size (%1$d%%)</string>
     <string name="text_spacing">Text &amp; spacing</string>
@@ -250,6 +253,8 @@
     <string name="fav_view_list">List</string>
     <string name="fav_view_grid">Grid</string>
     <string name="fav_rows">Rows</string>
+    <string name="fav_columns">Columns</string>
+    <string name="fav_names">App names</string>
     <plurals name="fav_rows_n">
         <item quantity="one">%1$d row</item>
         <item quantity="other">%1$d rows</item>

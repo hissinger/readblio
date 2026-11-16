@@ -170,14 +170,28 @@ class TopBarView(context: Context, private val fixedFrame: Boolean = true) : Vie
         "light" to context.getDrawable(R.drawable.ic_light)!!,
         "bolt" to context.getDrawable(R.drawable.ic_bolt)!!,
     )
+    /** 시계·날짜를 영어로. 언어를 바꾸면 화면을 새로 만들므로 만들 때 적용된 언어로 한 번 정한다. */
+    private val english = context.resources.configuration.locales[0].language == Locale.ENGLISH.language
     private val time24 = SimpleDateFormat("HH:mm", Locale.KOREA)
     private val time12 = SimpleDateFormat("h:mm", Locale.KOREA)
     private val ampmKo = SimpleDateFormat("a", Locale.KOREA)
     private val ampmEn = SimpleDateFormat("a", Locale.US)
-    private val dateKo = SimpleDateFormat("M월 d일 EEEE", Locale.KOREA)
-    private val dateEn = SimpleDateFormat("EEE, MMM d", Locale.US)
     private val timeFormat get() = if (use24Hour) time24 else time12
-    private val dateFormat get() = if (english) dateEn else dateKo
+    /** 날짜 형식기([dateStyle] 를 바꾸면 다시 만든다) */
+    private var dateFormat: SimpleDateFormat = HomeDate.formatter(DateStyle.APP, english)
+
+    /**
+     * 상단 날짜 형식(설정 › 화면 › 날짜). 기기 지역 형식은 그사이 안드로이드 언어를 바꿨을 수 있어 정할 때마다 형식기를 다시 만들고,
+     * 지금 날짜가 다르게 써질 때만 다시 그린다.
+     */
+    var dateStyle: DateStyle = DateStyle.APP
+        set(v) {
+            field = v
+            val f = HomeDate.formatter(v, english)
+            val changed = f.format(now) != dateFormat.format(now)
+            dateFormat = f
+            if (changed) invalidate()
+        }
 
     /** 24시간(18:24) / 12시간. 12시간이면 작은 오전·오후를 한국어는 시각 앞(오후 6:24), 영어는 뒤(6:24 PM)에 붙인다. */
     var use24Hour = true
@@ -187,8 +201,6 @@ class TopBarView(context: Context, private val fixedFrame: Boolean = true) : Vie
             invalidate()
         }
 
-    /** 시계·날짜를 영어로. 언어를 바꾸면 화면을 새로 만들므로 만들 때 적용된 언어로 한 번 정한다. */
-    private val english = context.resources.configuration.locales[0].language == Locale.ENGLISH.language
 
     private var status: DeviceStatus? = null
     private var now = Date()
