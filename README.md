@@ -73,7 +73,9 @@ Design and behavior are specified in [DESIGN.md](DESIGN.md); device notes are in
 
 ## License
 
-[PolyForm Strict 1.0.0](LICENSE). Individuals (hobby, study, research) and noncommercial organizations (schools, public institutions, charities, etc.) may use it. Changing it or distributing it, including modified versions and copies of the APK, is not allowed; get it from this repository's [Releases](https://github.com/hissinger/readblio/releases). Pull requests are not accepted.
+[PolyForm Strict 1.0.0](LICENSE). Individuals (hobby, study, research) and noncommercial organizations (schools, public institutions, charities, etc.) may use it. Distributing it, including modified versions and copies of the APK, is not allowed; get it from this repository's [Releases](https://github.com/hissinger/readblio/releases). Pull requests are not accepted.
+
+Additional permission: you may modify it for your own personal, noncommercial use. You may not distribute the modified version in any form (source code, public forks, patches, or APKs). Keep your changes on your own computer or in a private repository. A GitHub fork of this repository is public, so pushing changes to it counts as distribution. Modified builds are not supported.
 
 Commercial use (selling it, including it in a paid product, service or device, using it for a company's for-profit work, etc.) is not allowed. If you need it, ask through [GitHub issues](https://github.com/hissinger/readblio/issues).
 
