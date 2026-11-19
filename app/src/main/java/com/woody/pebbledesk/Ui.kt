@@ -281,6 +281,24 @@ fun Context.orderArrow(symbol: String, enabled: Boolean, onClick: () -> Unit): T
         else isClickable = true
     }
 
+/** 목록 줄 오른쪽 밑줄 글자 단추(`빼기`·`보이기`). 줄 높이 전체로 넣는다(`lp(WRAP, MATCH)`). */
+fun Context.rowLink(label: String, onClick: () -> Unit): TextView = text(label, 19f).apply {
+    paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
+    gravity = Gravity.CENTER_VERTICAL
+    setPadding(dp(16), 0, 0, 0)
+    setOnClickListener { onClick() }
+}
+
+/**
+ * 줄 맨 오른쪽 단추(`빼기`·`↓`)가 화면 오른쪽 끝까지 누름을 받게 줄의 오른쪽 여백을 이 단추의 패딩·최소 폭으로 옮긴다
+ * (줄은 오른쪽 패딩 0, 단추들은 줄 높이 전체로). 글자 자리는 그대로이고, 단추 근처를 눌러 줄 누르기로 가지 않는다.
+ */
+fun TextView.reachRowEnd(): TextView = apply {
+    val margin = context.dp(Ui.MARGIN)
+    minWidth += margin
+    setPadding(paddingLeft, paddingTop, paddingRight + margin, paddingBottom)
+}
+
 /**
  * 그림 한 장(비트맵 또는 드로어블)을 패딩 안쪽에 그리는 뷰. [crop] 이면 칸을 채워 가운데를 자르고, 아니면 비율을 지켜 가운데에 맞춘다.
  * ImageView 를 쓰지 않는 이유: 크레마는 앱이 바뀔 때마다 화면의 모든 ImageView 에 명암 필터를 다시 걸고 다시 그려
