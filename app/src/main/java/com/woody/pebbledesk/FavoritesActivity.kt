@@ -2,7 +2,6 @@ package com.woody.pebbledesk
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Paint
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -142,16 +141,15 @@ class FavoritesActivity : EinkActivity() {
         val icons = prefs.showIcons
         rows.setRows(favs.mapIndexed { i, app ->
             {
+                // `↑ ↓ 빼기` 는 줄 높이 전체, `빼기` 는 오른쪽 끝까지([reachRowEnd]). 줄 누르기(이름 바꾸기)는 아이콘·이름 쪽만.
                 val controls = hbox().apply {
-                    addView(orderArrow("↑", i > 0) { prefs.moveFavorite(app.key, -1); render() })
-                    addView(orderArrow("↓", i < favs.size - 1) { prefs.moveFavorite(app.key, 1); render() })
-                    addView(text(getString(R.string.remove), 19f).apply {
-                        paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
-                        setPadding(dp(16), dp(14), 0, dp(14))
-                        setOnClickListener { prefs.favorites = prefs.favorites - app.key; render() }
-                    })
+                    addView(orderArrow("↑", i > 0) { prefs.moveFavorite(app.key, -1); render() }, lp(WRAP, MATCH))
+                    addView(orderArrow("↓", i < favs.size - 1) { prefs.moveFavorite(app.key, 1); render() }, lp(WRAP, MATCH))
+                    addView(rowLink(getString(R.string.remove)) { prefs.favorites = prefs.favorites - app.key; render() }.reachRowEnd(), lp(WRAP, MATCH))
                 }
                 appRow(app, app.label, Ui.ROW_ICON_DP, Ui.ROW_SP, showIcon = icons, right = controls).apply {
+                    setPadding(paddingLeft, 0, 0, 0)
+                    controls.layoutParams.height = MATCH
                     setOnClickListener { renameFavorite(app) { render() } }
                 }
             }
