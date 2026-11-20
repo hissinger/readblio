@@ -259,7 +259,8 @@
     </plurals>
     <string name="app_icons_hint">in list view</string>
     <string name="status_bar">System status bar</string>
-    <string name="status_bar_hint">on home too</string>
+    <string name="status_bar_hide">Hide</string>
+    <string name="status_bar_show">Show</string>
     <string name="page_keys">Page buttons</string>
     <string name="page_key_prev">Previous page</string>
     <string name="page_key_next">Next page</string>

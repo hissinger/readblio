@@ -263,7 +263,14 @@ class SettingsActivity : EinkActivity() {
                 prefs.dateStyle = styles[it]; renderDisplay()
             }
         }
-        toggle(getString(R.string.status_bar), prefs.showStatusBar, hint = getString(R.string.status_bar_hint), redraw = ::renderDisplay) { prefs.showStatusBar = it }
+        // 기기 상단 바: 모든 화면에서 숨기기(처음 값) · 보이기. 이 화면에도 바로 맞춘다
+        val bars = listOf(getString(R.string.status_bar_hide), getString(R.string.status_bar_show))
+        val bar = if (prefs.showStatusBar) 1 else 0
+        row(getString(R.string.status_bar), bars[bar], next = true) {
+            choose(getString(R.string.status_bar), bars, bar) {
+                prefs.showStatusBar = it == 1; applyStatusBar(); renderDisplay()
+            }
+        }
         // 페이지 버튼: 앞 쪽 · 다음 쪽 키(`음량 위 · 음량 아래`, 한쪽만 정했으면 다른 쪽은 `없음`), 둘 다 없으면 `없음`
         val keys = listOf(prefs.pageKeyPrev, prefs.pageKeyNext)
         val anyKey = keys.any { it != 0 }
