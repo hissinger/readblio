@@ -427,6 +427,7 @@
     <string name="guide_n_resume_cover">이어 읽기로 연 책은 서재로 돌아가면 들어옵니다</string>
     <string name="guide_n_aladin_title">격자 보기·이어 읽기로 연 책은 메뉴를 띄우면 들어옵니다</string>
     <string name="guide_n_ridi_cover">서재를 거치지 않고 연 책은 서재로 돌아가면 들어옵니다</string>
+    <string name="guide_n_yes24ebook_cover">내서재에서 그 책이 2초쯤 보이면 들어옵니다</string>
     <string name="guide_n_yes24lib_title">도서관 화면에서 연 책은 메뉴를 띄우면 들어옵니다</string>
     <string name="guide_n_moon_cover">최근 목록 화면·책장 목록에서 연 책만 들어옵니다</string>
     <string name="guide_n_moon_title">홈 탭·책장 보기로 연 책은 메뉴를 띄우면 들어옵니다</string>
@@ -496,7 +497,7 @@
     <string name="guide_t_wattpad_open">이야기는 서재에서 누르거나 이야기 화면의 Start reading·Continue reading 으로 여세요. 다른 길로 화 중간부터 이어 열면 마지막으로 연 이야기로 이어 갑니다.</string>
     <string name="guide_n_wattpad_author">서재가 목록 보기이거나 이야기 화면을 보면 들어옵니다</string>
     <string name="guide_n_wattpad_chapter">% 대신 화면 맨 위에 보이는 화 이름 그대로 들어옵니다</string>
-    <string name="guide_note_yes24ebook">내서재 위 탭(읽고 있는 책 · 책장 · 구매한 책)을 1초 안에 다른 탭으로 넘겼다가 다시 돌아오면, 드물게 표지가 옆으로 밀린 채 들어올 수 있습니다.</string>
+    <string name="guide_note_yes24ebook">표지는 내서재 화면에서 잘라 옵니다. 내서재가 뜨자마자 책을 누르면 표지가 들어오지 않고, 다음에 내서재에서 그 책이 2초쯤 보이면 들어옵니다. 읽다가 홈으로 나가면 YES24 eBook 이 다음에 읽는 화면으로 바로 열려 내서재를 거치지 않으니, 표지가 없으면 뒤로 가기로 내서재에 잠깐 들러 주세요. 내서재 위 탭(읽고 있는 책 · 책장 · 구매한 책)을 1초 안에 다른 탭으로 넘겼다가 다시 돌아오면, 드물게 표지가 옆으로 밀린 채 들어올 수 있습니다.</string>
     <string name="guide_note_eco">PDF 책은 자동으로 들어오지 않습니다.</string>
     <string name="guide_t_bookcube_list">내서재 보기는 \'리스트형\'으로 두세요. \'표지형\'에는 제목이 없어 읽다가 메뉴를 띄워야 책이 들어옵니다.</string>
     <string name="guide_t_bookcube_bottom">뷰어설정 › 하단 좌/우 정보 표시 한쪽을 \'페이지 정보\'로 두세요(처음 설정). 없으면 읽는 중 진행률은 메뉴를 띄울 때만 들어옵니다.</string>
