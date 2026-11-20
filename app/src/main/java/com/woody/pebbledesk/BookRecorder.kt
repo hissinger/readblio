@@ -135,8 +135,8 @@ class ShelfRecorder(private val context: Context) : BookRecorder, BookLookup {
         // 편 책 기록에는 앱이 보여 준 제목을 적는다(제목을 고친 책이어도. 지운 뒤 그 시간을 다시 정할 때 같은 제목의 새 책을 찾게)
         ReadingLog.bookOpened(context, pkg, title, book.id, openedAt)
         steps?.logged(book)
-        // 미리 잘라 둔 표지(검색 화면의 `바로 읽기`, 서재). 앱이 정한 책은 그 열쇠의 것만
-        (if (exact) coverKey?.takeIf { it in pendingCovers } else pendingFor(book.title))?.let { key ->
+        // 미리 잘라 둔 표지(검색 화면의 `바로 읽기`, 서재). 앱이 열쇠를 넘기면 그 열쇠의 것(제목 없이 잘라 둔 칸), 앱이 정한 책은 그 열쇠의 것만
+        (coverKey?.takeIf { it in pendingCovers } ?: if (exact) null else pendingFor(book.title))?.let { key ->
             val bytes = pendingCovers.remove(key) ?: return@let
             if (coverFromFile(context, BookShelf.filePath(context, book.id), BookShelf.fileCovers(context, book.id))) return@let
             cover(book.id, bytes)

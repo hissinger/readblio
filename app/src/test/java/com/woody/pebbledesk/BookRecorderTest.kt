@@ -2,6 +2,7 @@ package com.woody.pebbledesk
 
 import com.woody.pebbledesk.Db.rows
 import org.junit.After
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -45,9 +46,13 @@ class BookRecorderTest {
         Storage.of(app).getDatabasePath("pebble.db").parentFile?.deleteRecursively()
     }
 
-    private fun jpeg(): ByteArray = ByteArrayOutputStream().also {
-        android.graphics.Bitmap.createBitmap(4, 4, android.graphics.Bitmap.Config.ARGB_8888).compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, it)
+    private fun jpeg(color: Int = 0): ByteArray = ByteArrayOutputStream().also {
+        android.graphics.Bitmap.createBitmap(4, 4, android.graphics.Bitmap.Config.ARGB_8888).apply { eraseColor(color) }
+            .compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, it)
     }.toByteArray()
+
+    /** 그 책의 표지 파일([BookShelf] 의 `books/<id>.jpg`) */
+    private fun coverBytes(id: String) = java.io.File(Storage.of(app).filesDir, "books/$id.jpg").readBytes()
 
     private fun ids() = BookShelf.list(app).map { it.id }
 
@@ -97,6 +102,23 @@ class BookRecorderTest {
         val c = rec.opened(pkg, Seen("x"), null, Target.Exact(null), coverKey = "file:#휴대폰/a/x.epub")
         assertTrue(BookShelf.hasCover(app, c.id))
         assertFalse(rec.hasPendingCover("file:#휴대폰/a/x.epub"))
+    }
+
+    @Test fun `제목으로 찾는 책도 앱이 넘긴 열쇠의 잘라 둔 표지가 붙고, 이미 표지가 있으면 두지 않는다`() {
+        // 제목 없이 잘라 둔 칸(교보도서관 표지 보기): 새 책에 붙고 열쇠는 쓴다
+        rec.pendingCover("kyobo-grid:1 2 3 4:15일", jpeg())
+        val a = rec.opened(pkg, Seen("열쇠 책"), null, Target.ByTitle, coverKey = "kyobo-grid:1 2 3 4:15일")
+        assertTrue(BookShelf.hasCover(app, a.id))
+        assertFalse(rec.hasPendingCover("kyobo-grid:1 2 3 4:15일"))
+        // 열쇠의 표지가 없으면 제목 자리의 것을 그대로 본다
+        rec.pendingCover(normTitle("제목 책"), jpeg())
+        val b = rec.opened(pkg, Seen("제목 책"), null, Target.ByTitle, coverKey = "kyobo-grid:없는 열쇠")
+        assertTrue(BookShelf.hasCover(app, b.id))
+        // 이미 표지가 있는 책(같은 제목을 다시 폄)은 바꾸지 않는다
+        val before = coverBytes(a.id)
+        rec.pendingCover("kyobo-grid:5 6 7 8:3일", jpeg(android.graphics.Color.RED))
+        rec.opened(pkg, Seen("열쇠 책"), null, Target.ByTitle, coverKey = "kyobo-grid:5 6 7 8:3일")
+        assertArrayEquals(before, coverBytes(a.id))
     }
 
     @Test fun `안의 순서는 found 다음 편 책 기록 다음 logged`() {

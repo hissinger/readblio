@@ -109,7 +109,7 @@ internal object ReaderGuide {
         )),
         App(listOf(R.string.guide_kel), listOf(KyoboLibrary), Info(
             listOf(R.string.guide_t_kyobo_bottom, R.string.guide_t_kel_list),
-            cover = Field(R.string.guide_added_list_view), title = yes(R.string.guide_n_kel_title),
+            cover = yes(R.string.guide_n_kel_cover), title = yes(R.string.guide_n_kel_title),
             author = Field(R.string.guide_added_list_view), progress = YES, due = YES,
         )),
         App(listOf(R.string.guide_kyobo_mobile, R.string.guide_kyobo), listOf(KyoboEbookMobile, KyoboEbook), Info(
