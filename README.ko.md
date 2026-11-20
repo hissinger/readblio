@@ -81,8 +81,6 @@ adb install -r app/build/outputs/apk/release/Readblio-<판>-release.apk
 
 `docs/screenshots/` 의 화면 그림에 보이는 책 표지·다른 앱 아이콘과, `hero-*.png` 의 기기 틀(크레마 페블은 YES24 상품 사진, BOOX 팔마는 BOOX 공식 사진)은 위 라이선스가 아니며 각 권리자의 것이다.
 
-Pebble Desk 1.8.1 까지는 [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)으로 배포했다.
-
 완독 도장 그림(`app/src/main/res/drawable-nodpi/stamp_completed.png`)은 위 라이선스가 아니다. Pixabay의 [TheDigitalArtist 'Approved Stamp'](https://pixabay.com/illustrations/approved-stamp-approval-business-5254258/)([Pixabay Content License](https://pixabay.com/service/license-summary/))를 고친 것이다(가운데 글자를 `COMPLETED`로, 흑백, `tools/stamp_completed.py`).
 
 만화 표지 압축 해제용 libarchive 의 Java 부분(`app/src/main/java/me/zhanghai/android/libarchive/`)은 [libarchive-android](https://github.com/zhanghai/libarchive-android)(Apache-2.0)를 가져와 네이티브 라이브러리를 부르는 한 줄만 고친 것이다. 네이티브 라이브러리 `libarchive-jni.so` 는 앱에 넣지 않고 사용자가 설정에서 받는다(이 저장소의 릴리스 [`libarchive-1.1.7`](https://github.com/hissinger/readblio/releases/tag/libarchive-1.1.7), 그 안의 libarchive·bzip2·xz·lz4·zstd·Mbed TLS·zlib 라이선스는 같은 릴리스의 `NOTICE.txt`, 만드는 법은 `tools/libarchive/make-assets.sh`).
