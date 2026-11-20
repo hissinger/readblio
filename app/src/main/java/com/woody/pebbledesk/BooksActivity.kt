@@ -2,7 +2,6 @@ package com.woody.pebbledesk
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Paint
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -89,7 +88,9 @@ class BooksActivity : EinkActivity() {
         val hidden = book.homeHidden
         return hbox().apply {
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(Ui.MARGIN), 0, dp(Ui.MARGIN), 0)
+            // 오른쪽 `↑ ↓`·`보이기`·`빼기` 는 줄 높이 전체, `빼기` 는 오른쪽 끝까지([reachRowEnd]).
+            // 줄 누르기(읽는 앱 고르기)·길게 누르기(표지 다시 찾기)는 표지·제목 쪽만.
+            setPadding(dp(Ui.MARGIN), 0, 0, 0)
             val w = dp(COVER_DP)
             addView(coverImage(BookShelf.cover(context, book, w)).apply { if (hidden) alpha = HIDDEN_ALPHA }, lp(w + dp(2), w * 3 / 2 + dp(2)))
             addView(vbox().apply {
@@ -98,25 +99,18 @@ class BooksActivity : EinkActivity() {
                 val line = (listOfNotNull(getString(R.string.home_hidden_tag).takeIf { hidden }, appText) + bookStatus(book)).joinToString("  ·  ")
                 addView(text(line, 16f, color = if (app != null && !hidden) Ui.GRAY else Ui.LIGHT_GRAY), lp(WRAP, WRAP).apply { topMargin = dp(6) })
             }, lp(0, WRAP, 1f).apply { marginStart = dp(16) })
-            if (hidden) addView(link(getString(R.string.unhide)) { BookShelf.setHomeHidden(this@BooksActivity, book.id, false); render() })
+            if (hidden) addView(rowLink(getString(R.string.unhide)) { BookShelf.setHomeHidden(this@BooksActivity, book.id, false); render() }, lp(WRAP, MATCH))
             else {
-                addView(orderArrow("↑", BookShelf.movableTo(books, i, -1) != null) { move(book, -1) })
-                addView(orderArrow("↓", BookShelf.movableTo(books, i, 1) != null) { move(book, 1) })
+                addView(orderArrow("↑", BookShelf.movableTo(books, i, -1) != null) { move(book, -1) }, lp(WRAP, MATCH))
+                addView(orderArrow("↓", BookShelf.movableTo(books, i, 1) != null) { move(book, 1) }, lp(WRAP, MATCH))
             }
-            addView(link(getString(R.string.remove)) { removeBook(BookRecord.of(this@BooksActivity, book), bookSubtitle(book, reading = true)) { render() } })
+            addView(rowLink(getString(R.string.remove)) { removeBook(BookRecord.of(this@BooksActivity, book), bookSubtitle(book, reading = true)) { render() } }.reachRowEnd(), lp(WRAP, MATCH))
             setOnClickListener {
                 startActivity(AppListActivity.intent(this@BooksActivity, AppListActivity.Mode.PICK_READER, book.id))
             }
             // 길게 누르면 표지를 인터넷([BookSearch])에서 다시 찾아 바꾼다(자동으로 넣은 책도).
             setOnLongClickListener { startActivity(BookSearchActivity.intent(this@BooksActivity, replace = book)); true }
         }
-    }
-
-    /** 줄 오른쪽 밑줄 글자(`보이기`·`빼기`) */
-    private fun link(label: String, onClick: () -> Unit) = text(label, 19f).apply {
-        paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        setPadding(dp(16), dp(14), 0, dp(14))
-        setOnClickListener { onClick() }
     }
 
     /** 옮긴 책이 다른 페이지로 넘어가면 그 페이지를 보여 준다(숨긴 책을 건너뛰어 간 자리). */
