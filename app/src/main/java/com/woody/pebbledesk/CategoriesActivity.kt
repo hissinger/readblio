@@ -69,15 +69,16 @@ class CategoriesActivity : EinkActivity() {
         rows.setRows(list.mapIndexed { i, c -> { row(c, i, list.size, counts[c.id] ?: 0) } })
     }
 
+    // `↑ ↓` 는 줄 높이 전체, `↓` 는 오른쪽 끝까지([reachRowEnd]). 줄 누르기(카테고리 메뉴)는 이름·권수 쪽만.
     private fun row(c: Category, i: Int, size: Int, books: Int): View = hbox().apply {
         gravity = Gravity.CENTER_VERTICAL
-        setPadding(dp(Ui.MARGIN), 0, dp(Ui.MARGIN), 0)
+        setPadding(dp(Ui.MARGIN), 0, 0, 0)
         addView(text(c.name, 22f), lp(WRAP, WRAP))
         if (c.excluded) addView(text(getString(R.string.category_excluded_tag), 15f, color = Ui.GRAY), lp(WRAP, WRAP).apply { marginStart = dp(10) })
         addView(text(bookCount(books), 19f, color = Ui.GRAY).apply { gravity = Gravity.END },
             lp(0, WRAP, 1f).apply { marginStart = dp(16) })
-        addView(orderArrow("↑", i > 0) { move(c, i, -1) })
-        addView(orderArrow("↓", i < size - 1) { move(c, i, 1) })
+        addView(orderArrow("↑", i > 0) { move(c, i, -1) }, lp(WRAP, MATCH))
+        addView(orderArrow("↓", i < size - 1) { move(c, i, 1) }.reachRowEnd(), lp(WRAP, MATCH))
         setOnClickListener { menu(c, books) }
     }
 

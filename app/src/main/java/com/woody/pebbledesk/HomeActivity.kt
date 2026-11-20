@@ -289,7 +289,7 @@ class HomeActivity : EinkActivity() {
 
     /**
      * 자동 추가 창에서 `다시 보지 않기` 를 누른 뒤로 서비스가 한 번도 붙지 않았다([HomePrefs.autoNoticeSkip]): 이미 본 상태라 다시 알리지 않는다.
-     * 한 번도 붙지 않는 기기(Viwoods AiPaper Mini)나 일부러 끈 사람은 이것으로 조용해지고, 잘 돌다 멈추는 기기(BOOX 얼리기·메모리 정리)는
+     * 한 번도 붙지 않는 기기(Viwoods AiPaper Mini 펌웨어 3.16.4 전)나 일부러 끈 사람은 이것으로 조용해지고, 잘 돌다 멈추는 기기(BOOX 얼리기·메모리 정리)는
      * 멈추기 전에 붙어 연결 때가 바뀌므로 다시 알린다.
      */
     private fun autoNoticeSkipped(): Boolean = prefs.autoNoticeSkip == ReaderWatchService.lifeLog(this).first
@@ -316,7 +316,7 @@ class HomeActivity : EinkActivity() {
      * 껐다 켜거나 앱을 업데이트해야 붙는다. 2026-10-16 에뮬레이터(안드로이드 11)에서 확인): 그동안은 편 책을 모르니 꺼짐과 같이 화면 가운데에 알린다.
      * BOOX 가 얼렸다 푼 뒤에도 이렇게 된다(2026-10-20 에뮬레이터에서 `pm disable-user`·`enable` 로 확인). 이 앱이 BOOX 얼리기
      * 대상이면([Device.booxAutoFreeze]) 얼리기에서 빼라는 말과 `얼리기 설정 열기` 를 더한다(빼지 않으면 다시 켜도 또 멈춘다).
-     * 한 번도 붙은 적이 없으면(Viwoods AiPaper Mini: 켜져 있는데 시스템이 붙이지 않는다) 껐다 켜도 안 되면 이 기기에서는 동작하지 않는다고,
+     * 한 번도 붙은 적이 없으면(Viwoods AiPaper Mini 펌웨어 3.16.4 전: 켜져 있는데 시스템이 붙이지 않는다) 껐다 켜도 안 되면 이 기기에서는 동작하지 않는다고,
      * `다시 보지 않기` 를 누르고 책을 직접 넣으라고 한다.
      */
     private fun warnStalled() {

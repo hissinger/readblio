@@ -73,7 +73,9 @@ adb install -r app/build/outputs/apk/release/Readblio-<판>-release.apk
 
 ## 라이선스
 
-[PolyForm Strict 1.0.0](LICENSE). 개인 용도(취미·공부·연구)와 비영리 단체(학교·공공기관·자선 단체 등)는 쓸 수 있다. 고치거나 다시 배포하는 것(고친 판, APK 사본 포함)은 허용하지 않는다. 앱은 이 저장소의 [Releases](https://github.com/hissinger/readblio/releases)에서 받는다. 풀 리퀘스트는 받지 않는다.
+[PolyForm Strict 1.0.0](LICENSE). 개인 용도(취미·공부·연구)와 비영리 단체(학교·공공기관·자선 단체 등)는 쓸 수 있다. 다시 배포하는 것(고친 판, APK 사본 포함)은 허용하지 않는다. 앱은 이 저장소의 [Releases](https://github.com/hissinger/readblio/releases)에서 받는다. 풀 리퀘스트는 받지 않는다.
+
+추가 허락: 개인적·비상업적 용도로 자기가 쓰려고 고치는 것은 된다. 고친 판은 어떤 형태로도(소스 코드·공개 포크·패치·APK) 배포할 수 없다. 고친 것은 자기 컴퓨터나 비공개 저장소에만 둔다. 이 저장소의 GitHub 포크는 공개이므로, 고친 것을 포크에 올리면 배포가 된다. 고친 빌드는 지원하지 않는다.
 
 상업적 이용(판매, 유료 제품·서비스·기기에 넣기, 회사의 영리 업무에 쓰기 등)은 허용하지 않는다. 필요하면 [GitHub 이슈](https://github.com/hissinger/readblio/issues)로 따로 문의한다.
 

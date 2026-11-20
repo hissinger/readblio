@@ -197,6 +197,12 @@ open class ReaderApp(
     /** 내용 바뀜 알림으로 화면을 읽는다(앞에 올 때만 데이터로 맞추는 앱은 아니다) */
     open val readsContent: Boolean get() = true
 
+    /**
+     * 읽는 화면에서 이 내용 바뀜 알림([cls]: 알림 요소의 종류)을 없던 것으로 보는가. 쉬지 않고 바뀌는 요소(본문 웹 화면 등)가 있으면
+     * 읽는 화면이 잠잠해지지 않아 메뉴 제목·진행률을 끝내 읽지 못한다. 기본: 모든 알림을 본다
+     */
+    open fun ignoresViewerContent(cls: String?): Boolean = false
+
     /** 읽는 화면이 서재 액티비티 안의 요소라 화면 이름이 알림 없이 바뀐다(내용 바뀜마다 화면 이름을 다시 정한다) */
     open val screenInsideActivity: Boolean get() = viewerHolder != null
 
