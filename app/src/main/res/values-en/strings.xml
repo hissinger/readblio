@@ -423,6 +423,7 @@
     <string name="guide_n_resume_cover">For resumed books, added when you return to the shelf</string>
     <string name="guide_n_aladin_title">For books opened in grid view or resumed, added when you open the menu</string>
     <string name="guide_n_ridi_cover">For books opened without the shelf, added when you return to the shelf</string>
+    <string name="guide_n_yes24ebook_cover">Added once the book shows in My Library for about 2 seconds</string>
     <string name="guide_n_yes24lib_title">For books opened from a library page, added when you open the menu</string>
     <string name="guide_n_moon_cover">Only for books opened from the recent list or the bookshelf list</string>
     <string name="guide_n_moon_title">For books opened from the Home tab or bookshelf view, added when you open the menu</string>
@@ -491,7 +492,7 @@
     <string name="guide_t_wattpad_open">Open stories from your Library or with Start reading or Continue reading on a story\'s page. If you pick up mid-part another way, it continues with the story you opened last.</string>
     <string name="guide_n_wattpad_author">Added when your Library is in list view or you view the story\'s page</string>
     <string name="guide_n_wattpad_chapter">Shows the part name at the top of the page instead of a percentage</string>
-    <string name="guide_note_yes24ebook">If you switch the My Library tabs (reading · bookshelf · purchased) to another tab and back within a second, a cover can rarely come in shifted to one side.</string>
+    <string name="guide_note_yes24ebook">Covers are cropped from the My Library screen. If you tap a book as soon as My Library opens, its cover isn\'t added yet; it comes in the next time the book shows in My Library for about 2 seconds. If you leave the reader with Home, YES24 eBook reopens straight to the reader and skips My Library, so if a cover is missing, go back to My Library for a moment. If you switch the My Library tabs (reading · bookshelf · purchased) to another tab and back within a second, a cover can rarely come in shifted to one side.</string>
     <string name="guide_note_eco">PDF books aren\'t added automatically.</string>
     <string name="guide_t_bookcube_list">Use \'리스트형\' (list) view for 내서재. \'표지형\' (cover) view shows no titles, so books come in only when you open the menu while reading.</string>
     <string name="guide_t_bookcube_bottom">In 뷰어설정 › 하단 좌/우 정보 표시, keep one side on \'페이지 정보\' (the default). Without it, progress while reading comes in only when you open the menu.</string>
