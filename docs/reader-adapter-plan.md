@@ -98,7 +98,7 @@ ReaderApp (앱마다, 서비스와 상관없는 선언: 화면 역할·읽은 �
 
 | 무엇 | 어디 | 수명 | 예 |
 |---|---|---|---|
-| 앱의 선언 | `ReaderApp`(앱 파일의 `object`, 바뀌는 값 없음) | 프로세스 | 패키지, `role`, `viewerTime`·`markedScreens`, `readsContent`, `fileEntry`, `needsBookFiles`, `open(…)`, 요소 이름 |
+| 앱의 선언 | `ReaderApp`(앱 파일의 `object`, 바뀌는 값 없음) | 프로세스 | 패키지, `role`, `viewerTime`·`markedScreens`, `readsContent`·`ignoresViewerContent`, `fileEntry`, `needsBookFiles`, `open(…)`, 요소 이름 |
 | 앱의 판단 기억 | `ReaderAdapter`(그 앱 `ReaderApp.newAdapter()` 가 만든 인스턴스) | 서비스 연결 한 번 | 누른 칸, 열기 확인 창, 탭별 모르는 책, 열쇠 몰라 책 모름, 바로 자르기 횟수 |
 | 여러 흐름이 같이 쓰는 기억 | `WatchCore`(앱마다) | 서비스 연결 한 번 | 지금 화면, 읽는 화면이 앞에 온 때, 책 모름이 된 때 `unknownOpen`, 책을 편 때 `lastOpenedAt` |
 | 오래 남는 값 | `ctx.prefs`(지금 `reader_watch` prefs 의 같은 키) | 기기 | 열쇠 ↔ 책, 탭 ↔ 책, 서재에서 마지막으로 편 파일 |
@@ -319,7 +319,7 @@ class CoverSpot(val title: String, val rect: Rect, val id: String? = null, val k
 | 모든 알림(그 앱의 것) | 알림 수 기록(`WatchLog.event`) → 그 앱의 서재 멈춤 예약이 걸려 있으면 다시 건다(지금 `if (settleSpec?.pkg == spec.pkg) scheduleSettle`) → 아래 |
 | 창 바뀜, 액티비티(서비스가 이름 앞부분·`isActivity` 로 판단) | (`screenInsideActivity` 앱이면 `screenName(ctx, 액티비티)`, null 이면 기억한 화면이 같은 액티비티면 그것, 아니면 액티비티) → 기록(WatchLog) → `onScreen(byWindow = true)` → 서재면 `onShelfLive(force = true)`·멈춤 예약, 읽는 화면이면 진행률 재시도 3번으로 두고 잠잠 예약(700ms) |
 | 창 바뀜, 액티비티 아님 | 기록 → `onWindow` → 지금 화면대로 `onShelfLive(force = true)`·멈춤 예약 / 잠잠 예약 |
-| 내용 바뀜 | `readsContent == false`(KOReader)면 여기서 끝 → `onContent(ctx, 알림의 요소)` → (`screenInsideActivity` 앱만, 0.5초에 한 번 + **마지막 재확인**, 아래) `screenName(ctx, 기억한 액티비티)` 가 지금 화면과 다르면 기록 → `onScreen(byWindow = false)` → 서재면 `onShelfLive(force = false)`·멈춤 다시 예약, 읽는 화면이면 재시도 3번·잠잠 다시 예약 |
+| 내용 바뀜 | `readsContent == false`(KOReader)면 여기서 끝 → 읽는 화면에서 앱이 그 알림 종류를 뺀다고 하면(`ignoresViewerContent(cls)`, 기본 아니다. 교보도서관의 쉬지 않는 본문) 여기서 끝 → `onContent(ctx, 알림의 요소)` → (`screenInsideActivity` 앱만, 0.5초에 한 번 + **마지막 재확인**, 아래) `screenName(ctx, 기억한 액티비티)` 가 지금 화면과 다르면 기록 → `onScreen(byWindow = false)` → 서재면 `onShelfLive(force = false)`·멈춤 다시 예약, 읽는 화면이면 재시도 3번·잠잠 다시 예약 |
 | 마지막 재확인 예약이 돎 | 위 `screenName` 확인 → 지금 화면대로 `onShelfLive(force = false)`·예약(지금 `holderLater` 가 `checkHolder` 뒤 `readScreen(force = false)` 하는 것과 같다) |
 | 누름 | `onClick`(서재가 아니어도 부른다. 지금도 확인 창 누름은 화면과 상관없이 본다) |
 | 서재 멈춤 예약이 돎 | 그 앱 화면이 서재면 `onShelf`(지금 `settleShelf` 첫 줄) |

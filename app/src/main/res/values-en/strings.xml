@@ -420,6 +420,7 @@
     <string name="guide_added_book_files">Added when Read book files is on</string>
     <string name="guide_n_reading_menu">While reading, added when you open the menu</string>
     <string name="guide_n_kel_title">For books opened in cover view, added when you open the menu</string>
+    <string name="guide_n_kel_cover">For books opened in cover view, the due-date label is captured with the cover</string>
     <string name="guide_n_resume_cover">For resumed books, added when you return to the shelf</string>
     <string name="guide_n_aladin_title">For books opened in grid view or resumed, added when you open the menu</string>
     <string name="guide_n_ridi_cover">For books opened without the shelf, added when you return to the shelf</string>

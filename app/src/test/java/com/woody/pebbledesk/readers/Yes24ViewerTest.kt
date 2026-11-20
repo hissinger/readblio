@@ -4,12 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Rect
 import android.view.accessibility.AccessibilityNodeInfo
-import com.woody.pebbledesk.BookLookup
 import com.woody.pebbledesk.BookRecorder
-import com.woody.pebbledesk.BookShelf
 import com.woody.pebbledesk.OpenSteps
 import com.woody.pebbledesk.Seen
-import com.woody.pebbledesk.ShelfBook
 import com.woody.pebbledesk.Target
 import com.woody.pebbledesk.WatchLog
 import org.junit.Assert.assertEquals
@@ -139,34 +136,7 @@ class Yes24ViewerTest {
         var rootNow: AccessibilityNodeInfo? = null
         val shots = mutableListOf<List<Rect>>()
         override val context: Context = RuntimeEnvironment.getApplication()
-        override val recorder: BookRecorder = object : BookRecorder {
-            override fun opened(pkg: String, seen: Seen, at: Long?, target: Target, coverKey: String?, steps: OpenSteps?) = error("자르기만")
-            override fun unknown(pkg: String, at: Long) {}
-            override fun status(bookId: String, progress: Int, due: Long, author: String, chapter: String) {}
-            override fun statuses(list: List<BookShelf.Status>) {}
-            override fun setFile(bookId: String, path: String) {}
-            override fun setTitle(bookId: String, title: String) {}
-            override fun setAuthor(bookId: String, author: String) {}
-            override fun cover(bookId: String, jpeg: ByteArray) {}
-            override fun pendingCover(key: String, jpeg: ByteArray) {}
-            override fun hasPendingCover(key: String) = false
-            override fun hasPendingTitle(title: String) = false
-            override fun viewerShown(pkg: String, shown: Boolean, at: Long, current: Boolean) {}
-            override fun openedId(pkg: String): String? = null
-            override fun recordedBook(pkg: String): ShelfBook? = null
-            override val lookup: BookLookup = object : BookLookup {
-                override fun byTitle(title: String): ShelfBook? = null
-                override fun get(id: String): ShelfBook? = null
-                override fun bookOf(id: String): ShelfBook? = null
-                override fun byFile(path: String): String? = null
-                override fun byPath(path: String): String? = null
-                override fun withoutFile(title: String): String? = null
-                override fun knownTitle(path: String, title: String) = title
-                override fun idsByFileName(name: String) = emptySet<String>()
-                override fun filePath(id: String): String? = null
-                override fun hasCover(id: String) = false
-            }
-        }
+        override val recorder: BookRecorder = FakeRecorder()
         override fun opened(seen: Seen, at: Long?, target: Target, coverKey: String?, steps: OpenSteps?) = error("자르기만")
         override fun unknown(at: Long) {}
         override var unknownOpenAt: Long? = null

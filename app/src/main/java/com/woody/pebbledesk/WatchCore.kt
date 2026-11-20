@@ -117,6 +117,8 @@ class WatchCore(private val host: WatchHost, private val clock: WatchClock, priv
                 AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
                     // 앞에 올 때만 데이터로 맞추는 앱(KOReader)은 내용이 바뀔 때마다 읽지 않는다
                     if (!e.app.readsContent) return@guard
+                    // 앱이 없던 것으로 보는 읽는 화면 알림(쉬지 않고 바뀌는 본문)은 잠잠해지기를 미루지 않게 아무것도 하지 않는다
+                    if (e.app.ignoresViewerContent(cls) && e.screen?.let { e.app.isViewer(context, it) } == true) return@guard
                     e.adapter.onContent(e, source)
                     checkHolder(e)
                     readScreen(e, force = false)

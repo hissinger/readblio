@@ -3,6 +3,7 @@ package com.woody.pebbledesk.readers
 import android.graphics.Rect
 import android.view.accessibility.AccessibilityNodeInfo
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -64,4 +65,42 @@ class KyoboLibraryTest {
 
     @Test fun `보이지 않는 옆 쪽의 칸은 읽지 않는다`() =
         assertNull(clicked(cell("기술이 인류를 구원한다는 착각", downloading = false, shown = false)))
+
+    /** 표지 보기 칸: 누르는 칸 안에 표지·새 책 점·표지 위에 겹친 반납일(`15일`)·진행 막대. 제목이 없다(갤럭시 A23 화면 덤프 2026-11-20) */
+    private fun gridCell(downloading: Boolean = false, shown: Boolean = true) = node(
+        "android.widget.RelativeLayout", 31, 440, 370, 929, null, null, shown,
+        node("android.widget.ImageView", 72, 479, 328, 876, "ivThumbnail"),
+        node("android.widget.LinearLayout", 72, 820, 328, 876, "info", null, true,
+            node("android.widget.TextView", 200, 820, 328, 876, "tvRemainDate", "15일")),
+        node("android.widget.FrameLayout", 276, 479, 328, 531, "bookshelf_main_grid_item_download_layout", null, downloading),
+    ).apply { isClickable = true }
+
+    private fun gridOf(cell: AccessibilityNodeInfo): KyoboGridCell? {
+        seal(node("android.widget.GridView", 0, 384, 1080, 2040, "rvBookList", null, true, cell))
+        return KyoboLibrary.gridCell(cell.getChild(0))
+    }
+
+    @Test fun `표지 보기 칸은 칸 자리와 표지 자리(반납일이 겹친 채)와 반납일 글자`() {
+        val g = gridOf(gridCell())!!
+        assertEquals(Rect(31, 440, 370, 929), g.cell)
+        assertEquals(Rect(72, 479, 328, 876), g.thumb)
+        assertEquals("15일", g.due)
+    }
+
+    @Test fun `잘라 둔 표지 열쇠는 칸 자리와 반납일 글자로 누른 칸과 맞춘다`() {
+        val g = gridOf(gridCell())!!
+        assertEquals(KyoboGridCell.key(Rect(31, 440, 370, 929), "15일"), g.key)
+        // 같은 자리라도 반납일이 다른 칸(쪽을 넘긴 직후의 다른 책)은 다른 열쇠
+        assertNotEquals(KyoboGridCell.key(Rect(31, 440, 370, 929), "3일"), g.key)
+    }
+
+    @Test fun `받는 중인 표지 보기 칸은 자르지 않는다`() = assertNull(gridOf(gridCell(downloading = true)))
+
+    @Test fun `보이지 않는 표지 보기 칸은 자르지 않는다`() = assertNull(gridOf(gridCell(shown = false)))
+
+    @Test fun `제목이 있는 칸(목록 보기)은 표지 보기 칸이 아니다`() {
+        val c = cell("기술이 인류를 구원한다는 착각", downloading = false).apply { isClickable = true }
+        seal(node("androidx.recyclerview.widget.RecyclerView", 0, 300, 1072, 1300, "rvBookList", null, true, c))
+        assertNull(KyoboLibrary.gridCell(c.getChild(0).getChild(0)))
+    }
 }

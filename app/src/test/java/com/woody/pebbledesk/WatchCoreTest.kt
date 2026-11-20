@@ -132,12 +132,13 @@ class WatchCoreTest {
     private val log = mutableListOf<String>()
     private val adapters = mutableMapOf<String, Probe>()
 
-    private fun app(pkg: String, viewerTime: ViewerTime = ViewerTime.SCREEN, inside: Boolean = false, content: Boolean = true) =
+    private fun app(pkg: String, viewerTime: ViewerTime = ViewerTime.SCREEN, inside: Boolean = false, content: Boolean = true, busy: String? = null) =
         object : ReaderApp(pkg, "", setOf("$pkg.Shelf"), setOf("$pkg.ViewerActivity", "$pkg.Shelf#ViewerActivity"), emptyList(), emptyList(),
             authors = emptyList(), progress = null, due = null, viewerProgress = emptyList()) {
             override val viewerTime get() = viewerTime
             override val screenInsideActivity get() = inside
             override val readsContent get() = content
+            override fun ignoresViewerContent(cls: String?) = busy != null && cls == busy
             override fun newAdapter(): ReaderAdapter = Probe(this, log).also { adapters[pkg] = it }
         }
 
@@ -188,6 +189,22 @@ class WatchCoreTest {
         core.attach()
         core.detach()
         assertEquals(listOf("shown:c:false", "shown:o:true", "shown:c:false", "shown:o:true"), rec.calls)
+    }
+
+    @Test fun `읽는 화면에서 앱이 없던 것으로 보는 알림은 잠잠해지기를 미루지 않는다`() {
+        val core = core(Recorder(), app("a", busy = "x.Busy"), app("b"))
+        for (pkg in listOf("a", "b")) {
+            core.window(pkg, "$pkg.ViewerActivity")
+            // 쉬지 않고 오는 알림(0.25초마다 4초)
+            repeat(16) { clock.advance(250); core.onEvent(pkg, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED, "x.Busy", null) }
+        }
+        // a 는 그 알림을 보지 않아 처음 잠잠 예약대로 읽었고, b(기본)는 그 알림마다 미뤄 아직 읽지 않았다
+        assertEquals(listOf("viewer:a"), log.filter { it.startsWith("viewer") })
+        // 서재에서는 그 알림도 그대로 본다(내용 바뀜으로 서재를 읽는다. 창 알림이 남긴 기록은 비우고 본다)
+        core.window("a", "a.Shelf")
+        log.clear()
+        core.onEvent("a", AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED, "x.Busy", null)
+        assertTrue("live:a:false" in log)
     }
 
     @Test fun `⑥ 읽는 화면을 떠나면 잠잠 예약이 돌지 않는다`() {

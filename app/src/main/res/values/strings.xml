@@ -423,6 +423,7 @@
     <string name="guide_added_book_files">책 파일 읽기를 켜면 들어옵니다</string>
     <string name="guide_n_reading_menu">읽는 중에는 메뉴를 띄우면 들어옵니다</string>
     <string name="guide_n_kel_title">표지 보기로 연 책은 메뉴를 띄우면 들어옵니다</string>
+    <string name="guide_n_kel_cover">표지 보기로 연 책은 표지에 반납일 글자가 함께 찍힙니다</string>
     <string name="guide_n_resume_cover">이어 읽기로 연 책은 서재로 돌아가면 들어옵니다</string>
     <string name="guide_n_aladin_title">격자 보기·이어 읽기로 연 책은 메뉴를 띄우면 들어옵니다</string>
     <string name="guide_n_ridi_cover">서재를 거치지 않고 연 책은 서재로 돌아가면 들어옵니다</string>
