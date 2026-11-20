@@ -256,7 +256,7 @@ fun Context.fitTitleLink(row: View, link: TextView) {
 
 private const val LINK_MIN_RATIO = 0.7f
 
-/** 안드로이드 상단바를 보이거나 숨긴다(숨기면 위에서 아래로 쓸 때 잠깐 나온다). 홈과 월간 결산 크게 보기. */
+/** 안드로이드 상단바를 보이거나 숨긴다(숨기면 위에서 아래로 쓸 때 잠깐 나온다). 모든 화면([EinkActivity.applyStatusBar])과 월간 결산 크게 보기. */
 fun Activity.setStatusBarVisible(show: Boolean) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         window.insetsController?.let {

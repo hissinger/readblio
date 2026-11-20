@@ -96,8 +96,22 @@ abstract class EinkActivity : Activity() {
             prefs.rowScalePercent != createdRowScale || prefs.palette != createdPalette) {
             recreating = true
             recreate()
+            return
         }
+        applyStatusBar()
     }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        // 아래 메뉴·다른 창이 닫혀 이 화면으로 돌아오면 숨긴 상단 바가 다시 나와 있을 수 있다
+        if (hasFocus) applyStatusBar()
+    }
+
+    /**
+     * 안드로이드 상단 바: 설정 › 화면 › `기기 상단 바` 가 `숨기기`(처음 값)면 모든 화면에서 숨기고(위에서 아래로 쓸면 잠깐 나온다),
+     * `보이기` 면 모든 화면에서 보인다. 홈은 상단(로고·시계·상태 줄)도 함께 바꾼다.
+     */
+    protected open fun applyStatusBar() = setStatusBarVisible(prefs.showStatusBar)
 
     /** 설정(언어·글자·간격·색)이 바뀌어 [onResume] 에서 이 화면을 다시 만드는 중. 이어지는 일(다시 세기·그리기)은 새 화면이 한다. */
     protected var recreating = false

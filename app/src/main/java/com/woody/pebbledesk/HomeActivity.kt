@@ -189,7 +189,6 @@ class HomeActivity : EinkActivity() {
     override fun onResume() {
         super.onResume()
         if (recreating) return
-        applyStatusBar()
         // KOReader 처럼 지켜보지 않고 데이터로 아는 앱에서 그사이 열고 닫은 책을 먼저 맞춘다(책 자리·읽은 시간을 그리기 전에)
         if (Storage.isUnlocked(this)) ReaderWatchService.syncFileApps()
         refresh()
@@ -456,11 +455,6 @@ class HomeActivity : EinkActivity() {
         super.onStop()
     }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) applyStatusBar()
-    }
-
     /** 홈 버튼을 다시 누르면 첫 페이지로(자주 쓰는 앱·함께 읽는 책 모두) */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -510,15 +504,15 @@ class HomeActivity : EinkActivity() {
 
     /**
      * 홈에서는 안드로이드 상단바를 숨긴다. 위에서 아래로 쓸면 잠깐 나온다.
-     * 설정 `기기 상단 바 · 홈에서도 보이기`를 켜면 보인다(교보 sam 7 처럼 빠른 설정이 상단 바 버튼뿐인 기기).
+     * 설정 `기기 상단 바` 를 `보이기` 로 하면 보인다(교보 sam 7 처럼 빠른 설정이 상단 바 버튼뿐인 기기).
      * 그때는 시각·배터리 등이 겹치지 않게 홈 상단(로고·시계·상태 줄)을 빼고, 그 자리에 빈 띠를 두어 상단 바와 띄운다
      * (컬러면 색면 위에. 색면 안 표지 위아래 여백은 그대로 같다).
      */
-    private fun applyStatusBar() {
+    override fun applyStatusBar() {
         val show = prefs.showStatusBar
         topBar.visibility = if (show) View.GONE else View.VISIBLE
         (topBar.parent as View).setPadding(0, if (show) dp(STATUS_BAR_GAP_DP) else 0, 0, 0)
-        setStatusBarVisible(show)
+        super.applyStatusBar()
     }
 
     /** 화면이 꺼져 있을 때는 그리지 않는다(슬립화면 위에 덧그리지 않도록). 켜지면 SCREEN_ON 으로 다시 부른다. */

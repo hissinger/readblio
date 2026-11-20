@@ -262,7 +262,8 @@
     </plurals>
     <string name="app_icons_hint">목록 보기에서</string>
     <string name="status_bar">기기 상단 바</string>
-    <string name="status_bar_hint">홈에서도 보이기</string>
+    <string name="status_bar_hide">숨기기</string>
+    <string name="status_bar_show">보이기</string>
     <string name="page_keys">페이지 버튼</string>
     <string name="page_key_prev">앞 쪽 버튼</string>
     <string name="page_key_next">다음 쪽 버튼</string>

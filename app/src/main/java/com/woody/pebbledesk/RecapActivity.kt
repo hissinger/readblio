@@ -90,10 +90,15 @@ class RecapActivity : EinkActivity() {
         })
     }
 
-    /** 크게 보기: 상단바를 숨기고 그림의 바깥 흰 여백을 잘라 화면 폭·높이를 채운다(그림은 4:5, 여백을 빼면 페블 화면과 거의 같은 비율) */
+    /** 크게 보기: 상단바를 숨기고(닫으면 설정대로) 그림의 바깥 흰 여백을 잘라 화면 폭·높이를 채운다(그림은 4:5, 여백을 빼면 페블 화면과 거의 같은 비율) */
     private fun showFull(on: Boolean) {
         full.visibility = if (on) View.VISIBLE else View.GONE
-        setStatusBarVisible(!on)
+        applyStatusBar()
+    }
+
+    /** 크게 보는 동안은 설정과 상관없이 숨긴다 */
+    override fun applyStatusBar() {
+        if (full.visibility == View.VISIBLE) setStatusBarVisible(false) else super.applyStatusBar()
     }
 
     /** 뒤로 가기: 크게 보는 중이면 먼저 닫는다 */

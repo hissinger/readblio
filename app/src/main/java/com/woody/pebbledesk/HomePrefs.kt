@@ -286,7 +286,7 @@ class HomePrefs(context: Context) {
         iconOverrides = if (icon == null) iconOverrides - key else iconOverrides + (key to icon)
     }
 
-    /** 홈에서도 기기 상단 바를 보인다. 처음은 꺼짐(홈은 상단 바를 숨기고 자체 상단을 그린다). */
+    /** 기기 상단 바 `보이기`: 모든 화면에서 보인다. 처음은 `숨기기`(모든 화면에서 숨기고 홈은 자체 상단을 그린다). 1.9.0 까지는 홈에서만 숨기고 이 값은 `홈에서도 보이기`. */
     var showStatusBar: Boolean
         get() = sp.getBoolean("show_status_bar", false)
         set(v) = sp.edit().putBoolean("show_status_bar", v).apply()
