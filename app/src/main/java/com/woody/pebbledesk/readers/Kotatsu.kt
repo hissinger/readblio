@@ -4,34 +4,44 @@ import android.graphics.Rect
 import android.view.accessibility.AccessibilityNodeInfo
 
 /**
- * Kotatsu(만화 앱, 9.4.1. 2025-11 저장소가 보관되어 GitHub 릴리스·F-Droid 에서 내려갔다)와 그 포크 Futon(9.9): 책 한 권은 만화 한 작품이다(화마다 따로 책을 만들지 않는다).
+ * Kotatsu(만화 앱, 9.4.1. 2025-11 저장소가 보관되어 GitHub 릴리스·F-Droid 에서 내려갔다)와 그 포크 Futon(9.9)·Kotatsu Redo(9.8.7): 책 한 권은 만화 한 작품이다(화마다 따로 책을 만들지 않는다).
  * Futon 은 Kotatsu 의 코드 이름공간(`org.koitharu.kotatsu` → `io.github.landwarderer.futon`)과 패키지만 바꿔, 화면 이름·요소 이름이 같다
  * (두 소스의 레이아웃을 맞춰 봤다. Futon 은 작품 상세에 흐린 배경 `imageView_blur_background` 가 더 있다).
  * Mihon 과 달리 XML 화면이라 요소 이름이 있어 바탕 규칙으로 읽는다:
  * - 서재 칸(내장 메모리·즐겨찾기·검색 목록의 격자 `item_manga_grid`·목록 `item_manga_list`, 최근에 본 만화 탭): 표지 `imageView_cover`, 제목 `textView_title`.
  *   탐색 탭의 소스 칸은 그림이 `imageView_icon` 이라 책 칸이 아니다. 격자 칸은 표지 위에 진행 고리 `progressView`·읽지 않은 화 수 `badge` 를 그려 자르지 않는다
  *   (깨끗한 표지는 작품 상세에서).
- * - 작품 상세(`details.ui.DetailsActivity`, [detail]): 같은 표지·제목과 표(`card_details`)의 저자 `textView_author`(로컬 만화는 없다)·작품 진행률
+ * - 작품 상세(`details.ui.DetailsActivity`, [detail]): 같은 표지·제목과 표(`card_details`, 글자 없는 카드 바탕이고 글자는 그 옆 형제)의 저자 `textView_author`(로컬 만화는 없다)·작품 진행률
  *   `textView_progress`(`33%`, 앱이 읽은 화·쪽으로 셈). 서재 칸을 누르면 이 상세가 뜨고(읽는 화면이 아니라 [openOnViewer]), 상세의 `지금 읽기`·`계속`(`button_read`)이나
- *   화 줄을 누르면 읽는 화면이 열린다: 그 작품([DetailReader]. 그 단추는 화 목록의 `textView_title` 들과 함께 있어 누른 칸으로는 잡히지 않는다, 2026-10-28 에뮬레이터).
+ *   화 줄을 누르면 읽는 화면이 열린다: 그 작품([DetailReader]. 그 단추는 화 목록의 `textView_title` 들과 함께 있어 누른 칸으로는 잡히지 않는다, 2026-10-28 에뮬레이터.
+ *   화 목록이 아직 없는 상세(Kotatsu Redo 의 Expressive 테마 내장 만화)에서는 그 작품 칸으로 잡히기도 하는데 같은 작품이다).
  *   최근에 본 만화 탭의 `계속` 단추는 상세 없이 바로 열어 책 모름이었다가 메뉴의 작품 이름으로 안다.
  * - 읽는 화면(`reader.ui.ReaderActivity`): 가운데를 눌러 메뉴를 띄우면 위 막대에 작품 이름과 화 이름([readViewer]). 진행률은 읽는 화면에 없다
  *   (아래 정보 줄 `infoBar` 는 그림으로 그리고, 쪽 막대는 그 화의 쪽뿐) → 작품 상세의 진행률.
  * Futon 의 소설·PDF 읽는 화면([extraViewers])은 읽은 시간을 센다(위 막대가 같은 모양이라 제목도 같은 길로 읽는다, 미확인).
+ * Kotatsu Redo(9.8.7)는 Kotatsu 가 보관된 뒤 이어 가는 포크로, 패키지만 바꾸고 코드 이름공간은 Kotatsu 그대로라([ns]) 화면 이름이 Kotatsu 와 같다
+ * (요소 이름의 앞은 패키지). 격자 칸에 테마(Expressive)에 따라 표지 위에 얹는 제목 `textView_title_overlay` 와 그 밑 그늘 `view_scrim`,
+ * 탐색의 `관심 없음` 단추 `button_dismiss`, 즐겨찾기·고정 표시가 더 있다([extraTitles]·[extraOverlays]).
  */
-/** 두 판 모두 코드 이름공간이 패키지 이름과 같아([pkg]) 화면 이름의 앞이 된다 */
-open class KotatsuApp(pkg: String, extraViewers: Set<String> = emptySet()) : ReaderApp(
-    pkg = pkg, classPrefix = pkg,
+/** [ns] 는 코드 이름공간(화면 이름의 앞): Kotatsu·Futon 은 패키지 이름과 같고 Kotatsu Redo 는 Kotatsu 의 것 */
+open class KotatsuApp(
+    pkg: String,
+    ns: String = pkg,
+    extraViewers: Set<String> = emptySet(),
+    extraTitles: List<String> = emptyList(),
+    extraOverlays: List<String> = emptyList(),
+) : ReaderApp(
+    pkg = pkg, classPrefix = ns,
     shelves = setOf(
-        "$pkg.main.ui.MainActivity",
-        "$pkg.details.ui.DetailsActivity",
-        "$pkg.search.ui.MangaListActivity",
-        "$pkg.search.ui.multi.SearchActivity",
-        "$pkg.favourites.ui.FavouritesActivity",
-        "$pkg.history.ui.HistoryActivity",
+        "$ns.main.ui.MainActivity",
+        "$ns.details.ui.DetailsActivity",
+        "$ns.search.ui.MangaListActivity",
+        "$ns.search.ui.multi.SearchActivity",
+        "$ns.favourites.ui.FavouritesActivity",
+        "$ns.history.ui.HistoryActivity",
     ),
-    viewers = setOf("$pkg.reader.ui.ReaderActivity") + extraViewers,
-    titles = listOf("textView_title"), thumbs = listOf("imageView_cover"), coverOverlays = listOf("progressView", "badge"),
+    viewers = setOf("$ns.reader.ui.ReaderActivity") + extraViewers,
+    titles = listOf("textView_title") + extraTitles, thumbs = listOf("imageView_cover"), coverOverlays = listOf("progressView", "badge") + extraOverlays,
     authors = listOf("textView_author"), progress = "textView_progress", due = null,
     viewerProgress = emptyList(), openOnViewer = true,
 ) {
@@ -58,7 +68,7 @@ open class KotatsuApp(pkg: String, extraViewers: Set<String> = emptySet()) : Rea
     }
 
     /**
-     * 작품 상세: 상세 표(`card_details`)가 있는 화면에서 넘기는 칸(`scrollView`) 안의 제목·표지와 표의 저자·작품 진행률. 표지가 위 막대 밑으로
+     * 작품 상세: 상세 표(`card_details`)가 있는 화면에서 넘기는 칸(`scrollView`) 안의 제목·표지와 표 자리의 저자·작품 진행률. 표지가 위 막대 밑으로
      * 넘어가 덜 보이면 표지는 자르지 않는다. 상세가 아니면 null
      */
     fun detail(root: AccessibilityNodeInfo): Cell? {
@@ -67,9 +77,20 @@ open class KotatsuApp(pkg: String, extraViewers: Set<String> = emptySet()) : Rea
         val title = find(scroll, "textView_title", 0)?.text?.let(::plain)?.takeIf { it.isNotEmpty() } ?: return null
         val area = scroll.bounds()
         val cover = find(scroll, "imageView_cover", 0)?.bounds()?.takeIf { usableThumb(it) && area.contains(it) }
-        val author = find(table, "textView_author", 0)?.text?.let(::plain).orEmpty()
-        val progress = find(table, "textView_progress", 0)?.text?.let(::percent) ?: -1
+        val author = tableText(table, "textView_author")?.let(::plain).orEmpty()
+        val progress = tableText(table, "textView_progress")?.let(::percent) ?: -1
         return Cell(title, author, progress, -1, cover, Rect())
+    }
+
+    /**
+     * 상세 표의 글자 [id]: 카드 안에 없으면 카드의 형제에서(`layout_details_table` 이 `<merge>` 로 글자 없는 카드 바탕과 글자를 나란히 둔다,
+     * Kotatsu Redo 에서 확인). 형제만 본다: 같은 묶음 깊이 들어 있는 관련 작품·댓글 칸에도 같은 이름(`item_manga_list_details`·`item_community_comment`)이 있어
+     * 저자 줄이 없는 작품(내장 만화)에서 다른 작품의 글자를 집지 않게
+     */
+    private fun tableText(table: AccessibilityNodeInfo, id: String): CharSequence? {
+        find(table, id, 0)?.let { return it.text }
+        val parent = table.parent ?: return null
+        return (0 until parent.childCount).firstNotNullOfOrNull { i -> parent.getChild(i)?.takeIf { it.viewIdResourceName == "$pkg:id/$id" } }?.text
     }
 
     /** [n] 아래에서 요소 이름이 [id] 인 첫 요소(읽는 화면의 그림 칸은 들어가지 않는다) */
@@ -95,6 +116,12 @@ object Futon : KotatsuApp(
 )
 
 object Kotatsu : KotatsuApp("org.koitharu.kotatsu")
+
+object KotatsuRedo : KotatsuApp(
+    "io.github.kotatsuredo.kotatsu", ns = "org.koitharu.kotatsu",
+    extraTitles = listOf("textView_title_overlay"),
+    extraOverlays = listOf("textView_title_overlay", "view_scrim", "button_dismiss", "iconsView", "imageView_favourite"),
+)
 
 /** 읽는 화면 메뉴의 위 막대와 그 안의 툴바, 그림 칸 */
 private const val BAR = "appbar_top"
