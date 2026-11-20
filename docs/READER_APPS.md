@@ -28,7 +28,7 @@ Readblio 가 이북 앱에서 무엇을 알아내고 무엇을 할 수 있는지
 | 우주 `com.inno.woojoo`(우주뷰어, 이노스페이스원. Librera Reader 를 고친 내 파일 리더) | `HorizontalViewActivity`(책 넘김)·`VerticalViewActivity`(스크롤) | O (`file://` 를 `com.inno.OpenerActivity` 로, 읽던 쪽으로) | O (그냥 열면 내 서재) | X | 사용자가 둔 곳(공유 저장소). 우주 기록은 `/sdcard/Woojoo` |
 | Google Play 북 `com.google.android.apps.books`(구글, 휴대폰 판 하나) | `com.google.android.apps.play.books.ebook.activity.ReadingActivity` | ? | 그냥 열면 홈 탭(읽던 책이 떠 있었으면 그 책) | ? | 앱 전용 저장소 (미확인) |
 | Mihon `app.mihon`·Kahon `com.amanoteam.kahon`(만화, 오픈소스. Kahon 은 Mihon 포크) | `eu.kanade.tachiyomi.ui.reader.ReaderActivity` | ? | 그냥 열면 마지막 화면 | X | 사용자가 고른 저장 폴더(로컬 만화 `<폴더>/local/<작품>/<화>.cbz`) |
-| Futon `io.github.landwarderer.futon`·Kotatsu `org.koitharu.kotatsu`(만화·소설, 오픈소스. Futon 은 Kotatsu 포크, Kotatsu 는 2025-11 저장소 보관·GitHub 릴리스·F-Droid 에서 내려감) | `<이름공간>.reader.ui.ReaderActivity`(Futon 은 소설·PDF `novel.ui.reader.NovelReaderActivity`·`…pdf.PdfReaderActivity` 도) | ? | 그냥 열면 마지막 화면 | X | 앱 전용 폴더(`Android/data/…/files/manga`, 불러오기로 복사) |
+| Futon `io.github.landwarderer.futon`·Kotatsu `org.koitharu.kotatsu`·Kotatsu Redo `io.github.kotatsuredo.kotatsu`(만화·소설, 오픈소스. Futon·Kotatsu Redo 는 Kotatsu 포크, Kotatsu 는 2025-11 저장소 보관·GitHub 릴리스·F-Droid 에서 내려감. Kotatsu Redo 의 화면 이름은 Kotatsu 그대로 `org.koitharu.kotatsu.…`) | `<이름공간>.reader.ui.ReaderActivity`(Futon 은 소설·PDF `novel.ui.reader.NovelReaderActivity`·`…pdf.PdfReaderActivity` 도) | ? | 그냥 열면 마지막 화면 | X | 앱 전용 폴더(`Android/data/…/files/manga`, 불러오기로 복사) |
 | Librera `com.foobnix.pdf.reader`(무료, 광고)·Librera Pro `com.foobnix.pro.pdf.reader`(Play 유료, GitHub·F-Droid 판도 이 패키지. 오픈소스 내 파일 리더, 우주의 원본) | `com.foobnix.pdf.search.activity.HorizontalViewActivity`(책 넘김)·`org.ebookdroid.ui.viewer.VerticalViewActivity`(스크롤) | O (`file://` 를 `com.foobnix.OpenerActivity` 로, 읽던 쪽으로) | O (그냥 열면 라이브러리) | ? | 사용자가 둔 곳(공유 저장소). Librera 기록은 `/sdcard/Librera`(모든 파일 액세스가 없으면 `Download/Librera`) |
 | LibreraX `com.librerax`(Librera 개발자가 새로 만든 내 파일 리더, Compose) | X (액티비티 하나 `ComposeMainActivity`. 읽는 화면은 쪽 막대가 있는 메뉴가 보이거나 누를 수 있는 것이 없는 동안) | O (LibreraX 가 쓰는 경로로: 허용한 폴더의 문서 주소, 다른 앱이 열어 준 책은 LibreraX 폴더의 사본 `file://`. 사용자 저장소의 `file://` 는 못 연다) | O (그냥 열면 라이브러리, 읽던 책이 있으면 읽는 화면) | ? | 사용자가 허용한 폴더(SAF). 기록은 앱 전용이라 읽을 수 없다 |
 | 아이리더 기본 리더 `com.zhangyue.iReader.Eink`(掌阅 iReader SmartOS 기기의 시스템 앱. Tango·Ocean 5C 에서 확인) | `com.zhangyue.iReader.Eink.Activity.ActivityRead`·`ActivityReadP1` | O (`ActivityAliasOpenBook` 에 파일 경로 `file`) | O (`ActivityAliasBookShelf`. 실행 화면은 기기에 따라 서점 별칭) | X | 앱 전용 DB |
@@ -92,7 +92,7 @@ Readblio 가 이북 앱에서 무엇을 알아내고 무엇을 할 수 있는지
 | Google Play 북 | 서재·스토어 상세 | 읽는 화면 | 서재·스토어 상세 | 읽는 화면·메뉴 | X |
 | Mihon·Kahon | 작품 상세 | 작품 상세·메뉴 | 작품 상세 | 메뉴(화 이름) | X |
 | Kobo Books | 서재·책 상세 | 서재(돌아왔을 때 맨 위 칸)·책 상세 | 서재·책 상세 | 메뉴 | X |
-| Futon·Kotatsu | 작품 상세 | 서재·작품 상세·메뉴 | 작품 상세 | 작품 상세(%)·메뉴(화 이름) | X |
+| Futon·Kotatsu·Kotatsu Redo | 작품 상세 | 서재·작품 상세·메뉴 | 작품 상세 | 작품 상세(%)·메뉴(화 이름) | X |
 | Librera·Librera Pro | 서재·파일 | 서재·메뉴·파일 | 서재·파일 | 서재·메뉴·파일 | X |
 | LibreraX | LibreraX 가 내주는 표지(미디어 서비스의 최근 책) | 메뉴 | 메뉴·서재 | 메뉴·상태 줄·서재(리스트 보기) | X |
 | iReader 기기 내장판 4.1.0 | 공개 Provider 의 표지 | 최근 책 Provider(펌웨어 식별자로 맞추거나, 없으면 맨 위 줄) | 최근 책 Provider | 저장한 진행률(`readpercent`, 읽는 화면을 나올 때) | X |
@@ -412,16 +412,16 @@ Readblio 가 이북 앱에서 무엇을 알아내고 무엇을 할 수 있는지
 - **반납일**: 없다.
 - **제약**: 홈에서 책을 누르면 Kobo 를 연다(책 바로 열기는 조사하지 않았다). 앱에 한국어가 없어 한국어 기기에서도 영어다. 탭·정렬 이름은 Kobo 의 문자열을 기기 언어로 읽어 맞춘다(다른 언어는 시험하지 않았다).
 
-### Futon `io.github.landwarderer.futon`·Kotatsu `org.koitharu.kotatsu`
+### Futon `io.github.landwarderer.futon`·Kotatsu `org.koitharu.kotatsu`·Kotatsu Redo `io.github.kotatsuredo.kotatsu`
 
 - **권한**: 공통.
 - **할 것**: 화는 작품 화면의 `지금 읽기`·`계속`이나 화 목록으로 연다. 다른 길(최근에 본 만화 탭의 `계속` 단추)로 연 화는 가운데를 눌러 메뉴를 한 번 띄운다.
-- **표지**: 작품 화면의 표지를 잘라 온다(넘겨서 위 막대 밑으로 들어가면 자르지 않는다). 서재·목록 격자 칸은 표지 위에 진행 고리·읽지 않은 화 수를 그려 자르지 않는다.
+- **표지**: 작품 화면의 표지를 잘라 온다(넘겨서 위 막대 밑으로 들어가면 자르지 않는다). 서재·목록 격자 칸은 표지 위에 진행 고리·읽지 않은 화 수를 그려 자르지 않는다(Kotatsu Redo 는 표지 위 제목·그늘·`관심 없음` 단추·즐겨찾기 표시가 있어도).
 - **제목**: 서재·목록 칸, 작품 화면, 읽는 화면 메뉴 위 막대.
-- **저자**: 작품 화면 표의 저자(로컬 만화는 없다).
+- **저자**: 작품 화면 표의 저자(로컬 만화는 없다). 표 `card_details` 는 글자 없는 카드 바탕이고 글자는 그 옆 형제라(`layout_details_table` 의 `<merge>`, Kotatsu 원본도 같다) 카드 안에 없으면 카드의 형제에서 찾는다(같은 묶음 깊이 있는 관련 작품·댓글 칸에도 같은 이름이 있어 형제만. 2026-11-21 Kotatsu Redo 온라인 작품에서 저자·진행률이 비어 있던 것을 고침. 그 전 Futon·Kotatsu 시험은 저자 없는 내장 만화뿐이었다).
 - **진행률**: 작품 화면 표의 진행률(`33%`, 앱이 읽은 화·쪽으로 셈). 읽는 화면에는 진행률이 없고, 메뉴 위 막대의 화 이름(`Unnamed chapter`·`1화`)을 읽는 화로 둔다(Mihon 과 같다). 화 이름을 알면 홈·목록·상세에는 % 대신 화 이름만 보인다.
 - **반납일**: 없다.
-- **제약**: 작품 하나를 책 한 권으로 본다. 홈에서 책을 누르면 앱을 연다. Kotatsu 는 두 소스의 레이아웃·읽는 화면 코드가 같아 같은 규칙을 쓴다(에뮬레이터에서도 확인). 시크릿 모드면 메뉴의 화 이름 자리에 `시크릿 모드` 가 보인다(그대로 들어간다).
+- **제약**: 작품 하나를 책 한 권으로 본다. 홈에서 책을 누르면 앱을 연다. Kotatsu 는 두 소스의 레이아웃·읽는 화면 코드가 같아 같은 규칙을 쓴다(에뮬레이터에서도 확인). Kotatsu Redo 도 같다(아래). 시크릿 모드면 메뉴의 화 이름 자리에 `시크릿 모드` 가 보인다(그대로 들어간다).
 
 ### Librera `com.foobnix.pdf.reader`·Librera Pro `com.foobnix.pro.pdf.reader`
 
@@ -947,6 +947,16 @@ Bilingify 의 오픈소스 리더(https://github.com/readest/readest, Tauri). �
 - **받기**: 2025-11 저장소가 보관되며 GitHub 릴리스·F-Droid 에서 내려갔다. 사용자가 Uptodown 에서 받은 APK(SHA-256 `79b5698c…376be184`)의 서명 인증서가 Kotatsu README 의 지문(SHA-1 `2C:19:C7:E8:07:61:2B:8E:94:51:1B:FD:72:67:07:64:5D:C2:58:AE`, `CN=Vasily Nikitin`)과 같아 깔았다.
 - **화면**: 처음 열면 `환영합니다` 시트(소스 언어·종류 고르기, 뒤로 닫음), 탐색 탭에서 맞춤 추천 묻기(`No thanks`). 소설 모드 단추가 없는 것 말고는 Futon 과 같다: 내장 메모리 격자 칸·작품 상세·읽는 화면 위 막대의 요소 이름과 자리까지 같았다(같은 시험 만화를 같은 길로 불러옴).
 - 에뮬레이터에서 확인: 내장 메모리 → `별빛 도서관` 상세 → `지금 읽기` 로 읽는 화면이 열린 때에 그 작품으로(편 책 기록에 같은 때 '책 모름' 다음 `별빛 도서관`), 메뉴의 화 이름 `Unnamed chapter`. Futon 으로 먼저 넣은 같은 제목의 책에 이어 붙었다(제목이 같으면 앱이 달라도 같은 책, #4).
+
+### Kotatsu Redo `io.github.kotatsuredo.kotatsu` (2026-11-21, 에뮬레이터 `CremaPebble_A11_Play`(안드로이드 11)·`CremaPebble_A13`(안드로이드 13), 9.8.7 (2049), **지원**, 이슈 #18)
+
+- **받기·앱**: Kotatsu 가 보관된 직후(2025-11-05) 시작한 포크로 계속 판이 나온다(GitHub 릴리스 `app-release.apk`, minSdk 23, 서명 `CN=uwu` SHA-256 `ffd9c991…a35c661a`). 사용자 댓글 요청.
+- **패키지·이름공간**: 패키지만 `io.github.kotatsuredo.kotatsu` 로 바꾸고 코드 이름공간(`namespace`)은 Kotatsu 그대로라 액티비티는 `org.koitharu.kotatsu.reader.ui.ReaderActivity`·`…details.ui.DetailsActivity` 등 Kotatsu 와 같다. 요소 이름의 앞(자원 패키지)은 앱 패키지(`aapt2 dump resources`: `Package name=io.github.kotatsuredo.kotatsu`). 그래서 Futon 과 달리 `KotatsuApp` 에 이름공간 `ns` 를 따로 준다. 소설 읽는 화면은 없다.
+- **화면**: 처음 열면 `환영합니다` 시트(지역 만화 디렉토리 단추가 있다), 커뮤니티(댓글·평점) 켜기 창(`Not now`), 탐색 탭 `Not interested` 안내(`Got it`). 탭은 최근에 본 만화·즐겨찾기·탐색·Source·피드, 내장 메모리는 Source 탭. 작품 상세(`activity_details`·`layout_details_table`)·읽는 화면 위 막대(`appbar_top` › `toolbar`)·격자·목록 칸의 요소 이름은 Kotatsu 와 같다(소스와 에뮬레이터). 더해진 것: 격자 칸의 표지 위 제목 `textView_title_overlay`·그늘 `view_scrim`(Expressive 테마에서만 보이고 그때 `textView_title` 은 숨는다. Expressive 는 동적 색이라 안드로이드 12 부터. 안드로이드 11 에뮬레이터에는 테마 목록에 없다. Expressive 에서는 아래 탭이 떠 있는 막대가 되고 최근에 본 만화·내장 메모리·탐색 격자가 모두 표지 위 제목이다), 탐색 표지의 `관심 없음` 단추 `button_dismiss`, 즐겨찾기 표시 `imageView_favourite`·고정·저장 표시 `iconsView`, 상세의 흐린 배경 `imageView_cover_bg`.
+- **시험 만화**: `Sea Song.cbz`(3쪽)를 `/sdcard/RedoManga` 에 넣고 `환영합니다` › 지역 만화 디렉토리 › 추가 → 모든 파일 액세스 허용 → 폴더 고르기(탭을 받지 않아 방향키·Enter, `이 폴더 사용` 은 탭) → 허용. 앱 폴더(`Android/data/…/files/manga`)에는 adb 로 넣을 수 없었다. `CremaPebble_A13`(google_apis, root)에서는 `adb root` 뒤 앱 안쪽 폴더 `/data/data/io.github.kotatsuredo.kotatsu/files/manga` 에 넣고 주인을 앱 uid 로(`chown`·`restorecon`) 바꾼 뒤 내장 메모리를 끌어내려 새로 고쳤다.
+- 에뮬레이터에서 확인(`CremaPebble_A11_Play`): Source › 내장 메모리 → `Sea Song` 상세 → `지금 읽기` 로 읽는 화면이 열린 때에 새 책 `Sea Song`(편 책 기록에 '책 모름' 다음 `Sea Song`, 표지 있음), 메뉴의 화 이름 `Unnamed chapter` 가 읽는 화. 이 에뮬레이터에서 고른 MangaDex 작품 둘은 `챕터 없음`(연재 전·고른 소스 언어의 화 없음)이라 읽지 못했다. 시험 순서 `tools/emu/watch-flows/kotatsu-redo.sh`.
+- 에뮬레이터에서 확인(`CremaPebble_A13`, 안드로이드 13, 영어, Expressive): 내장 메모리 격자(표지 위 제목·그늘)의 `Sea Song` 을 눌러 그 제목으로 읽고 상세 → `Read` 로 새 책, 표지는 상세에서 깨끗하게(표지 위 제목이 박히지 않음), 화 `Unnamed chapter`. 온라인 작품: 탐색 탭(표지마다 `관심 없음` 단추) → ArvenScans `Shadow Slave` 상세 → `Read` 로 새 책, 저자 `Guiltythree`·진행률 0%(상세 표)·표지·화 `Chapter 1`. `Secret Family`·`Solo Max-Level Newbie`(저자 `Maslow`)도 같다. MangaPill `Grand Blue` 는 저자 칸이 없고 그림을 서버가 막아 표지 없이 제목·화만(앱 화면에도 그림이 없다).
+- **읽는 화면 안내**: 처음 읽는 화면(앞에 크레딧·배너가 있는 화)에 `Erase what you never want to see` 안내가 뜨고 그 안의 손가락 그림이 계속 움직인다. 그동안은 화면이 잠잠해지지 않아(uiautomator 도 `could not get idle state`) 메뉴의 화 이름을 읽지 못한다(책은 상세로 안다). `Skip` 하거나 따라 해서 안내가 사라지면 다음부터 화 이름이 들어온다.
 
 ### Librera `com.foobnix.pro.pdf.reader` (2026-10-29, 에뮬레이터 `CremaPebble_A11_Play`(안드로이드 11) · WebView 155, GitHub 릴리스 Librera.Pro-10.0.7-mupdf-arm64(versionCode 7476)·Play 무료판 `com.foobnix.pdf.reader` 10.0.11(7492), **지원**)
 

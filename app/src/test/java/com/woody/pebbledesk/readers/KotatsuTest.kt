@@ -15,14 +15,15 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
 /**
- * Futon(9.9)·Kotatsu: 누른 칸(내장 메모리 격자 칸, 작품 상세의 `계속`, 탐색의 소스 칸), 읽는 화면 메뉴의 위 막대(작품 이름·화 이름, 불러오는 중), 두 판의 화면 이름.
+ * Futon(9.9)·Kotatsu·Kotatsu Redo(9.8.7): 누른 칸(내장 메모리 격자 칸, 작품 상세의 `계속`, 탐색의 소스 칸), 읽는 화면 메뉴의 위 막대(작품 이름·화 이름, 불러오는 중), 두 판의 화면 이름.
  * 화면은 크레마 페블 에뮬레이터(1072×1456)에서 본 모양 그대로. 서재 칸은 이름으로 찾는데 Robolectric 은 이름 찾기를 흉내 내지 않아, 칸을 눌렀을 때(직접 훑는다)로 본다
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class KotatsuTest {
     private val context: Context = RuntimeEnvironment.getApplication()
-    private val pkg = Futon.pkg
+    /** 요소 이름의 앞(앱 패키지) */
+    private var pkg = Futon.pkg
 
     private fun node(cls: String, l: Int, t: Int, r: Int, b: Int, id: String? = null, text: String? = null, vararg kids: AccessibilityNodeInfo) =
         AccessibilityNodeInfo.obtain().apply {
@@ -158,5 +159,81 @@ class KotatsuTest {
         assertFalse(Kotatsu.isViewer(context, "org.koitharu.kotatsu.novel.ui.reader.NovelReaderActivity"))
         assertTrue("org.koitharu.kotatsu.details.ui.DetailsActivity" in Kotatsu.shelves)
         assertTrue("io.github.landwarderer.futon.details.ui.DetailsActivity" in Futon.shelves)
+    }
+
+    /** Kotatsu Redo 격자 칸(Expressive 테마): 제목을 표지 위에 그늘과 함께 얹는다 */
+    @Test fun `Kotatsu Redo 의 표지 위 제목은 제목으로 읽고 그 표지는 자르지 않는다`() {
+        pkg = KotatsuRedo.pkg
+        val cell = node("android.view.ViewGroup", 30, 285, 260, 603, null, null,
+            node("android.widget.ImageView", 30, 285, 260, 603, "imageView_cover"),
+            node("android.view.View", 30, 520, 260, 603, "view_scrim"),
+            node("android.widget.TextView", 40, 530, 250, 595, "textView_title_overlay", "Sea Song"),
+        )
+        val root = screen(node("androidx.recyclerview.widget.RecyclerView", 0, 255, 1072, 1456, "recyclerView", null, cell))
+        val clicked = KotatsuRedo.clickedCell(cell.getChild(0), emptyList(), AppWindows(root, listOf(root)), null)!!
+        assertEquals("Sea Song", clicked.title)
+        assertNull(clicked.thumb)
+    }
+
+    @Test fun `Kotatsu Redo 의 작품 상세는 요소 이름 앞이 Redo 패키지`() {
+        pkg = KotatsuRedo.pkg
+        val cell = KotatsuRedo.detail(details(195, "1화").first)!!
+        assertEquals("Sea Song", cell.title)
+        assertEquals("김바다", cell.author)
+        assertEquals(33, cell.progress)
+        assertEquals("Sea Song", KotatsuRedo.readViewer(reader("Sea Song", "Chapter 3").let { AppWindows(it, listOf(it)) }).title)
+    }
+
+    /** 실제 상세 표: `card_details` 는 글자 없는 카드 바탕이고, 저자·진행률 글자는 그 옆 형제다(`<merge>`, Kotatsu Redo 9.8.7 안드로이드 13 에뮬레이터) */
+    @Test fun `저자·진행률이 카드 옆 형제여도 읽는다`() {
+        pkg = KotatsuRedo.pkg
+        val root = screen(node(
+            "android.widget.ScrollView", 0, 165, 1072, 1456, "scrollView", null,
+            node("android.view.ViewGroup", 0, 165, 1072, 1456, null, null,
+                node("android.widget.ImageView", 30, 195, 352, 640, "imageView_cover"),
+                node("android.widget.TextView", 382, 195, 1042, 247, "textView_title", "Secret Family"),
+                node("android.widget.FrameLayout", 30, 670, 1042, 983, "card_details"),
+                node("android.widget.TextView", 53, 740, 135, 772, "textView_author_label", "Author"),
+                node("android.widget.TextView", 211, 740, 640, 772, "textView_author", "Lee Hoon Young"),
+                node("android.widget.TextView", 53, 928, 158, 960, "textView_progress_label", "Progress"),
+                node("android.widget.TextView", 972, 928, 1012, 960, "textView_progress", "12%"),
+            ),
+        ))
+        val cell = KotatsuRedo.detail(root)!!
+        assertEquals("Secret Family", cell.title)
+        assertEquals("Lee Hoon Young", cell.author)
+        assertEquals(12, cell.progress)
+        assertEquals(Rect(30, 195, 352, 640), cell.thumb)
+    }
+
+    /** 저자 줄이 없는 작품(내장 만화): 같은 묶음 아래 관련 작품 칸(자세한 목록 `item_manga_list_details`)의 저자·진행률은 그 작품 것이 아니다 */
+    @Test fun `저자 줄이 없으면 관련 작품 칸의 저자를 집지 않는다`() {
+        pkg = KotatsuRedo.pkg
+        val root = screen(node(
+            "android.widget.ScrollView", 0, 165, 1072, 1456, "scrollView", null,
+            node("android.view.ViewGroup", 0, 165, 1072, 2400, null, null,
+                node("android.widget.TextView", 382, 195, 1042, 247, "textView_title", "Sea Song"),
+                node("android.widget.FrameLayout", 30, 670, 1042, 790, "card_details"),
+                node("androidx.recyclerview.widget.RecyclerView", 0, 1300, 1072, 1700, "recyclerView_related", null,
+                    node("android.view.ViewGroup", 30, 1300, 1042, 1500, null, null,
+                        node("android.widget.TextView", 300, 1310, 1000, 1360, "textView_title", "Other"),
+                        node("android.widget.TextView", 300, 1370, 1000, 1410, "textView_author", "Someone"),
+                        node("android.widget.TextView", 300, 1420, 1000, 1460, "textView_progress", "50%"),
+                    ),
+                ),
+            ),
+        ))
+        val cell = KotatsuRedo.detail(root)!!
+        assertEquals("Sea Song", cell.title)
+        assertEquals("", cell.author)
+        assertEquals(-1, cell.progress)
+    }
+
+    @Test fun `Kotatsu Redo 는 패키지만 다르고 화면 이름은 Kotatsu 그대로`() {
+        assertEquals("io.github.kotatsuredo.kotatsu", KotatsuRedo.pkg)
+        assertTrue(KotatsuRedo.isViewer(context, "org.koitharu.kotatsu.reader.ui.ReaderActivity"))
+        assertTrue("org.koitharu.kotatsu.details.ui.DetailsActivity" in KotatsuRedo.shelves)
+        assertEquals("org.koitharu.kotatsu", KotatsuRedo.classPrefix)
+        assertEquals(KotatsuRedo, ReaderApps.forPackage(context, KotatsuRedo.pkg))
     }
 }

@@ -19,6 +19,7 @@ import com.woody.pebbledesk.readers.IReader
 import com.woody.pebbledesk.readers.Kindle
 import com.woody.pebbledesk.readers.Kobo
 import com.woody.pebbledesk.readers.Kotatsu
+import com.woody.pebbledesk.readers.KotatsuRedo
 import com.woody.pebbledesk.readers.KyoboEbook
 import com.woody.pebbledesk.readers.KyoboEbookMobile
 import com.woody.pebbledesk.readers.KyoboLibrary
@@ -212,7 +213,7 @@ internal object ReaderGuide {
             listOf(R.string.guide_t_kobo_open, R.string.guide_t_progress_menu),
             cover = YES, title = yes(R.string.guide_n_kobo_title), author = YES, progress = READING_MENU, due = NO,
         )),
-        App(listOf(R.string.guide_futon, R.string.guide_kotatsu), listOf(Futon, Kotatsu), Info(
+        App(listOf(R.string.guide_futon, R.string.guide_kotatsu, R.string.guide_kotatsu_redo), listOf(Futon, Kotatsu, KotatsuRedo), Info(
             listOf(R.string.guide_t_kotatsu_open),
             cover = YES, title = YES, author = yes(R.string.guide_n_kotatsu_author),
             progress = yes(R.string.guide_n_kotatsu_progress), due = NO, note = R.string.guide_note_kotatsu,
