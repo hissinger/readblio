@@ -153,6 +153,9 @@
     <string name="wl_file">책 파일 찾음 \'%1$s\' · %2$s</string>
     <string name="wl_error">오류 %1$s · %2$s</string>
     <string name="wl_crash">앱 오류로 끝남 %2$s · %1$s</string>
+    <string name="wl_keyboard">입력 메뉴 키보드 %1$s · 가림 %2$sdp · 올라감 %3$sdp · %4$s</string>
+    <string name="wl_keyboard_shown">보임</string>
+    <string name="wl_keyboard_hidden">안 보임</string>
     <string name="wl_progress">진행률 %s</string>
     <string name="device_section_system">시스템 화면 시험 (이 앱이 여는 것)</string>
     <string name="device_rotation_lock">회전 고정 %1$s</string>

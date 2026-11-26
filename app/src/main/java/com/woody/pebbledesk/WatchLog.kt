@@ -47,6 +47,8 @@ object WatchLog {
         NOTE,
         /** 앱이 오류로 죽었다(다음에 뜰 때 [CrashLog] 가 남긴다, 때는 죽은 때). [Entry.arg] 는 예외, [Entry.detail] 은 이 앱 코드 자리 */
         CRASH,
+        /** 입력 메뉴의 키보드와 메뉴 자리([KeyboardLog]). [Entry.pkg] 는 키보드 앱, [Entry.arg] 는 키보드 보임(1·0), [Entry.detail] 은 `키보드가 메뉴를 가린 높이 메뉴가 올라온 만큼`(dp) */
+        KEYBOARD,
     }
 
     enum class Role { SHELF, VIEWER, OTHER }
