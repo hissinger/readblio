@@ -113,7 +113,7 @@ Pebble Desk 1.2.0 을 기본 홈으로 쓰는 E6 의 홈·설정·기기 정보 
 
 ## Viwoods AiPaper Mini
 
-선전 Viwoods Technology & Design(深圳, FCC 신청 회사 코드 `2BKO6`)의 8.2인치 필기용 전자잉크 태블릿, 모델 번호 **SE05**(2024-08 출시, 펜·케이스 포함 $429~549). 같은 회사의 10.65인치 AiPaper(조명 없음), 7.8인치 AiPaper Reader 와 펌웨어 계열이 다르다(아래).
+선전 Viwoods Technology & Design(深圳, FCC 신청 회사 코드 `2BKO6`)의 8.2인치 필기용 전자잉크 태블릿, 모델 번호 **SE05**(2024-08 출시, 펜·케이스 포함 $429~549). 같은 회사의 10.65인치 AiPaper(조명 없음), 6.13인치 바형 AiPaper Reader 와 펌웨어 계열이 다르다(아래).
 
 ### 사양 (리뷰·판매 페이지)
 
@@ -153,11 +153,12 @@ Pebble Desk 1.2.0 을 기본 홈으로 쓰는 E6 의 홈·설정·기기 정보 
 
 ### 같은 회사 AiPaper Reader 에서 알려진 것 (다른 펌웨어, 미니에 같은지는 **(미확인)**)
 
-AiPaper Reader(7.8", MediaTek Helio G99 MT8781, 펌웨어 1.x · 안드로이드 16)를 루팅해 고친 사람들의 기록(GitHub `magcrider/Viwoods-Notification-Unlocker`, MobileRead).
+AiPaper Reader(6.13" 바형, Carta 1300 824×1648 · 300ppi(컬러 판 Reader C 는 Kaleido 3), MediaTek Helio G99 MT8781, 펌웨어 1.x · 안드로이드 16)를 루팅해 고친 사람들의 기록(GitHub `magcrider/Viwoods-Notification-Unlocker`, MobileRead).
 
 - **알림 막기**: `services.jar` 의 `NotificationManagerService.enqueueNotificationInternal` 에 허용 목록(`ALLOWED_PKGS`)이 박혀 있어 목록 밖 앱 알림을 버린다(로그 `eink project,Blocked notification from package:`). Readblio 는 알림을 쓰지 않아 상관없다.
 - **백그라운드 앱 정리**: `com.viwoods.refresh.service` 가 백그라운드 프로세스를 세게 죽인다. 접근성 서비스(읽는 책 자동 추가)가 꺼지거나 멈출 수 있다 **(미확인)**. 대응은 배터리 최적화 제외(`cmd deviceidle whitelist +패키지`).
 - **adb 제한**: 1.3.4 에서 adb 와 버튼 바꾸기(Keymapper)를 막았다가 1.3.8 에서 Viwoods 인증 도구(PC 프로그램)로 기기를 매번 승인해야 쓰게 했다. 접근성 서비스도 중간 베타에서 막혔다가 1.3.8 에서 돌아왔다.
+- **입력 메뉴가 키보드에 가려짐**(2026-11-26 사용자 사진, Readblio 1.9.1): `제목 고치기` 를 열면 화면이 어두워지고 키보드만 보였다. 키보드를 닫았다 입력 칸을 다시 누르면 메뉴가 키보드 위에 보였다. 키보드 높이가 메뉴 창의 보이는 영역에만 들고 배치에는 들지 않아 adjustResize 로 창이 올라가지 않은 것으로 본다 **(추정)**. 같은 크기·안드로이드 16 에뮬(`ViwoodsReader_A16`, Gboard)에서는 재현되지 않았고, 안드로이드 10 에뮬에서 같은 모습(키보드 높이가 창의 보이는 영역에만 들고 창은 그 자리)이 재현돼 앱이 보이는 영역에 맞춰 메뉴를 직접 올리게 고쳤다. → [ISSUES.md](ISSUES.md) #18
 - 부트로더 잠김, AVB 강제. 펌웨어 백업·쓰기는 `mtkclient`(BROM 모드).
 - **Readblio 사용자 보고**: AiPaper Reader C(컬러 판으로 보인다 **(추정)**)에서 읽는 책 자동 추가가 된다(2026-10-25 Reddit 댓글, KOReader 책 두 권이 홈에 나옴). 펌웨어 판은 모른다. 접근성이 막히는 펌웨어가 있어 댓글에서 `앱 정보 › 오른쪽 위 메뉴 › 제한된 설정 허용` 을 먼저 안내했다.
 

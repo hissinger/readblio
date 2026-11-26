@@ -255,13 +255,16 @@ class Sheet(private val context: Context) {
         // 닫지 못하게 한 메뉴(받는 중 진행 막대)와 기록을 저장하지 않는 안내 창은 기록이 바뀌어도 닫지 않는다
         if (!locked && !keep) open += shown
         dialog.setOnDismissListener { open -= shown; onDismiss?.invoke() }
-        dialog.setContentView(root)
+        val withKeyboard = hasInput || review != null
+        dialog.setContentView(if (withKeyboard) liftAboveKeyboard(root) else root)
+        // 키보드가 메뉴를 가리는 기기를 기록 사진으로 가르려고 입력 메뉴의 키보드·메뉴 자리를 남긴다
+        if (withKeyboard) KeyboardLog.watch(root)
         dialog.window?.apply {
             setGravity(if (centered) Gravity.CENTER else Gravity.BOTTOM)
             val width = if (centered) centeredWidth() else ViewGroup.LayoutParams.MATCH_PARENT
             setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
             decorView.setPadding(0, 0, 0, 0)
-            // 입력 줄이 있으면 키보드를 띄우고, 메뉴가 키보드 위로 올라오게 한다.
+            // 입력 줄이 있으면 키보드를 띄우고, 메뉴가 키보드 위로 올라오게 한다(시스템이 올리지 않는 기기는 [liftAboveKeyboard]).
             if (hasInput) setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
             if (review != null) setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         }
@@ -274,6 +277,30 @@ class Sheet(private val context: Context) {
         }
         dialog.show()
         return dialog
+    }
+
+    /**
+     * 키보드와 같이 쓰는 메뉴([root])를 한 겹 감싸, 키보드가 메뉴를 가리면 그만큼 감싼 칸의 아래를 비워 메뉴를 키보드 위로 올린다.
+     * 키보드가 뜨면 안드로이드가 창을 올리거나(adjustResize) 줄이는데, 키보드 높이를 창의 보이는 영역에만 넣고 배치에는 넣지 않아
+     * 창이 그 자리에 남는 기기가 있다(안드로이드 10 에뮬 Poke3_A10: 입력 칸만 보이게 화면을 조금 밀 뿐. 2026-11-26 Viwoods AiPaper Reader 도 화면이 어두워진 채
+     * 키보드만 보였다). 그릴 때마다 보이는 영역의 아래 끝(키보드 위 끝)과 감싼 칸의 아래 끝을 견주어, 시스템이 이미 올린 기기에서는 0 이라 아무것도 하지 않는다.
+     * 비운 만큼 창(메뉴 높이)이 위로 자라 메뉴가 올라간다(비운 곳은 키보드 뒤라 보이지 않는다).
+     */
+    private fun liftAboveKeyboard(root: View): View = FrameLayout(context).apply {
+        addView(root, FrameLayout.LayoutParams(MATCH, WRAP))
+        val visible = android.graphics.Rect()
+        val at = IntArray(2)
+        viewTreeObserver.addOnPreDrawListener {
+            getWindowVisibleDisplayFrame(visible)
+            getLocationOnScreen(at)
+            // 화면을 민 만큼(입력 칸을 보이게 하려는 시스템 동작)은 자리에서 빠져 있어, 다음 그림에서 나머지를 더 비운다
+            val lift = if (visible.bottom > 0) (at[1] + height - visible.bottom).coerceAtLeast(0) else 0
+            if (lift == paddingBottom) true else {
+                setPadding(0, 0, 0, lift)
+                // 바뀐 자리로 다시 그린다(옛 자리를 한 번 그리지 않게)
+                false
+            }
+        }
     }
 
     /** 메뉴의 내용(머리·칸·별점 감상·입력·항목·닫기). 누르면 [dialog] 를 닫는다. */

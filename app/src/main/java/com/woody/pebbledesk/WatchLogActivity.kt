@@ -183,9 +183,14 @@ class WatchLogActivity : EinkActivity() {
             WatchLog.Kind.ERROR -> getString(R.string.wl_error, e.arg, e.detail)
             WatchLog.Kind.NOTE -> e.arg
             WatchLog.Kind.CRASH -> getString(R.string.wl_crash, e.arg, e.detail)
+            // 숫자가 잘리지 않게 키보드 앱 이름은 앞이 아니라 끝에
+            WatchLog.Kind.KEYBOARD -> e.detail.split(' ').let {
+                getString(R.string.wl_keyboard, getString(if (e.arg == "1") R.string.wl_keyboard_shown else R.string.wl_keyboard_hidden),
+                    it[0], it.getOrElse(1) { "?" }, WatchLog.shortPkg(e.pkg).ifEmpty { "-" })
+            }
         }
         val time = if (DateUtils.isToday(e.at)) clock(e.at) else "${MD.format(e.at)} ${clock(e.at)}"
-        val app = if (e.pkg.isEmpty()) "" else "  ${WatchLog.shortPkg(e.pkg)}"
+        val app = if (e.pkg.isEmpty() || e.kind == WatchLog.Kind.KEYBOARD) "" else "  ${WatchLog.shortPkg(e.pkg)}"
         return "$time$app  $text" + if (e.repeat > 1) "  ×${e.repeat}" else ""
     }
 
