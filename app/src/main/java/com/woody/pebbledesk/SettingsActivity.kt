@@ -165,6 +165,7 @@ class SettingsActivity : EinkActivity() {
         col = left
         section(getString(R.string.section_info))
         row(getString(R.string.device_info), Build.MODEL, next = true) { startActivity(DeviceInfoActivity.intent(this)) }
+        row(getString(R.string.support), null, next = true) { Support.show(this) }
         updateSlot = vbox().also { col.addView(it) }
         renderUpdate()
     }

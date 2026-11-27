@@ -82,6 +82,7 @@ adb install -r app/build/outputs/apk/release/Readblio-1.9.1-release.apk </dev/nu
 | Wallpaper / PickImage | 홈 배경 사진(설정 › 화면 › 배경 사진, 이슈 #16): 고른 사진을 `files/wallpaper.jpg` 에 복사, 홈 전체 바탕에 가운데 자르기·흰색과 섞기(진하기 0~100% `HomePrefs.wallpaperStrength`, 흑백 테마면 회색)·크레마 대비 되돌리기. 그릴 값 `Spec`(사진·진하기·컬러·대비)이 같으면 만들어 둔 그림을 쓰는 `Cache`(홈·설정 미리 보기). 홈 맨 바깥 뷰가 흰 바탕과 함께 직접 그리고, 사진이 있으면 홈 색면은 칠하지 않는다 / 기기에서 사진 고르기(고르기 창·돌려받은 주소·읽기·실패 진단, 배경 사진과 `기기에서 표지 고르기`) |
 | Palette | 색 테마(설정 › 화면 › 색): 흑백·컬러 테마 여섯(등불 아래·먹과 한지·이끼 돌담·겨울 동백·유채꽃 들판·새벽 호수, 색면 · 제목 색 두 색). 표지·아이콘 컬러 여부, 색면을 칠하는 화면 묶음(`Area`)과 제목을 테마 색으로 하는지, 완독(띠·도장)·큰 별 색. 설정 값 `theme`(1.7.9 까지의 `palette` 는 `HomePrefs.palette` 가 옮김). `Palette.current` 는 EinkActivity 가 정한다 |
 | Device / Crema | 기기 종류(크레마·메이북·기타)와 기기마다 다른 동작(빠른 설정·조명·시스템 속성·BOOX 얼린 앱 열기·이 앱이 BOOX 얼리기 대상인지 `booxAutoFreeze`·BOOX E-Ink 센터 열기 `openBooxOptimization`) / 크레마 전용 화면 보정(대비·가려지는 아래·로고) |
+| Support | 설정 › 정보 › 후원하기: 후원 수단 셋(카카오페이·Ko-fi·Buy Me a Coffee)의 QR 을 아래 메뉴에 한 줄로(토스는 QR 에 계좌번호가 들어가 넣지 않는다). QR 그림은 `tools/support_qr.py` 가 만든 모듈 1px PNG(`drawable-nodpi/support_*.png`)를 `QrView` 가 정수배로 필터 없이 키워 그린다. 앱 밖은 `.github/FUNDING.yml`·README `후원` 절 |
 | Update / UpdateSheets | 설정 › 업데이트·홈의 새 판 알림: GitHub 최신 릴리스 확인, APK 받기·확인(크기·SHA-256·서명 이력), 설치 세션·설치 창, 설치 뒤 홈 다시 띄우기 / 두 화면이 같이 쓰는 창(바뀐 점·`설치`·허용 안내·받는 중·실패, 홈의 `새 버전이 나왔습니다`) |
 | Storage / Db | 기기 보호 저장소와 예전 저장소에서 옮기기 / 앱 데이터 DB(SQLite)와 예전 JSON 옮기기 |
 

@@ -59,6 +59,10 @@
 | 모든 파일에 액세스 (선택) | `책 파일 읽기`: KOReader 의 기록, 책 파일의 표지, Readest 데이터. 읽기만 한다 |
 | 인터넷 | 표지 검색, 업데이트 확인, 만화 표지 풀기 도구(libarchive) 받기 |
 
+## 후원
+
+Readblio 가 마음에 드셨다면 커피 한 잔으로 응원해 주세요: [카카오페이](https://qr.kakaopay.com/FDngUrL7d) · [Ko-fi](https://ko-fi.com/hissinger) · [Buy Me a Coffee](https://buymeacoffee.com/hissinger). 기기에서는 설정 › 정보 › `후원하기`에 셋의 QR 이 있어 휴대폰 카메라로 찍으면 열린다.
+
 ## 빌드
 
 Android Studio의 JDK로 빌드한다(minSdk 28, targetSdk 34).

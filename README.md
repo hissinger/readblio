@@ -59,6 +59,10 @@ If something goes wrong, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) 
 | All files access (optional) | `Read book files`: KOReader's records, covers from book files, Readest data. Read only |
 | Internet | Cover search, update check, and downloading the comic cover unpacking tool (libarchive) |
 
+## Support
+
+If you enjoy Readblio, you can support it with a coffee: [Ko-fi](https://ko-fi.com/hissinger) · [Buy Me a Coffee](https://buymeacoffee.com/hissinger). In Korea, [KakaoPay](https://qr.kakaopay.com/FDngUrL7d). On the device, Settings › About › `Support` shows a QR code for each, to scan with your phone camera.
+
 ## Build
 
 Build with Android Studio's JDK (minSdk 28, targetSdk 34).
