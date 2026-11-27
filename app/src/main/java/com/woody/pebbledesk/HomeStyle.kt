@@ -13,7 +13,7 @@ import java.time.LocalDate
 
 /**
  * 홈 모양(설정 › 화면 › 홈 모양, DESIGN.md `홈 모양`): 책 자리를 어떻게 채우는가. 자주 쓰는 앱·상단·하단은 어느 모양이든 같다.
- * - [BASIC] 맨 앞 책 + 함께 읽는 책 3칸(글자와 함께, `홈 배치 규칙`). 처음 값.
+ * - [BASIC] 맨 앞 책 + 함께 읽는 책 3칸(큰 표지가 줄지 않고 들면 4칸, 글자와 함께, `홈 배치 규칙`). 처음 값.
  * - [COVER] 맨 앞 책 + 함께 읽는 책을 표지로만(4열, 높이에 드는 만큼 줄).
  * - [LIBRARY] 모든 책을 같은 크기 표지 격자로(3열, 칸마다 제목·진행률).
  */
@@ -52,6 +52,12 @@ object HomeShelf {
         if (mainW == mainMaxW) alsoW = minOf(cellW, maxOf(alsoW, (coversH - maxOf(mainW * 3 / 2, mainNeedH)) * 2 / 3))
         return mainW to alsoW
     }
+
+    /**
+     * 기본 모양 아래 글자(큰 표지) 함께 읽는 책을 더 많은 칸(4칸)에 둘 수 있는가: 3칸으로 고른 표지 폭 [alsoW] 가 그 칸 폭 [cellW] 에 그대로 들고
+     * 그 칸 폭이 [minCellW](제목이 한국어 6~7자 보이는 폭) 이상. 표지는 줄이지 않아 맨 앞 책과의 2 : 1 이 그대로다.
+     */
+    fun bigAlsoFits(cellW: Int, alsoW: Int, minCellW: Int): Boolean = cellW >= minCellW && alsoW <= cellW
 
     /** 기본 모양 큰 표지: 함께 읽는 책 표지 ÷ 맨 앞 책 표지(흑백에서 크기로 맨 앞 책을 드러낸다. 0.6·0.618·0.667 과 비교, `design-review/also-ratio/`) */
     const val BIG_ALSO_RATIO = 0.5f
