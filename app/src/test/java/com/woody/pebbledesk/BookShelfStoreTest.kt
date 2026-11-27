@@ -34,6 +34,8 @@ class BookShelfStoreTest {
         ReadingLog.clearCache()
         Db.closeForTest()
         Storage.of(app).getDatabasePath("pebble.db").parentFile?.deleteRecursively()
+        // 표지 파일도(Storage 가 저장소를 static 으로 잡아 다른 시험 클래스로 넘어간다)
+        java.io.File(Storage.of(app).filesDir, "books").deleteRecursively()
     }
 
     private fun dbFinishes() = db.rows("SELECT day, started, stars FROM finish WHERE book_id = 'b-1' ORDER BY day, at, id") {
@@ -576,7 +578,7 @@ class BookShelfStoreTest {
         assertEquals(before, BookShelf.list(app).map { it.id })
     }
 
-    @Test fun `직접 넣은 책은 표지 그림 없이 들어가고, 표지 다시 찾기로 표지·제목·저자를 바꾼다`() {
+    @Test fun `직접 넣은 책은 표지 그림 없이 들어가고, 인터넷에서 표지 찾기로 표지·제목·저자를 바꾼다`() {
         val png = java.util.Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=")
         val added = BookShelf.add(app, "모모", "")
         assertEquals(added.id, BookShelf.list(app).first().id)
@@ -587,6 +589,33 @@ class BookShelfStoreTest {
         assertTrue(cover.exists())
         BookShelf.clearCaches()
         assertEquals("미하엘 엔데", BookShelf.list(app).single { it.id == added.id }.author)
+    }
+
+    @Test fun `기기에서 고른 표지는 표지만 바꾸고 제목·저자는 그대로, 나간 책도`() {
+        val png = java.util.Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=")
+        val books = java.io.File(Storage.of(app).filesDir, "books")
+        val added = BookShelf.add(app, "모모", "미하엘 엔데")
+        // updatedAt 이 새로워지는지(홈이 표지를 다시 그리는 근거) 보려고 0 으로 둔다
+        db.execSQL("UPDATE shelf SET updated_at = 0")
+        BookShelf.clearCaches()
+        val before = BookShelf.list(app).single { it.id == added.id }
+        BookShelf.replaceCover(app, added.id, png)
+        assertTrue(java.io.File(books, "${added.id}.jpg").exists())
+        BookShelf.clearCaches()
+        val after = BookShelf.list(app).single { it.id == added.id }
+        assertTrue(after.updatedAt > 0)
+        assertEquals(before.copy(updatedAt = after.updatedAt), after)
+        // 나간 책
+        BookShelf.finish(app, "b-1", Review())
+        db.execSQL("UPDATE past SET updated_at = 0")
+        BookShelf.clearCaches()
+        val past = BookShelf.history(app).single { it.book.id == "b-1" }.book
+        BookShelf.replaceCover(app, "b-1", png)
+        assertTrue(java.io.File(books, "b-1.jpg").exists())
+        BookShelf.clearCaches()
+        val pastAfter = BookShelf.history(app).single { it.book.id == "b-1" }.book
+        assertTrue(pastAfter.updatedAt > 0)
+        assertEquals(past.copy(updatedAt = pastAfter.updatedAt), pastAfter)
     }
 
     /** 사용 기록 권한을 주고, 오늘 읽는 화면을 연 구간 하나를 사용 기록에 넣는다. 그 구간 길이(ms) */

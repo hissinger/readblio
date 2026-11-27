@@ -171,7 +171,8 @@ private fun Context.askRemoveFirst(book: ShelfBook) {
 
 /**
  * `책 정보 고치기`: 머리에 제목·저자, 읽고 있는 책이면 `읽고 있는 앱 바꾸기`, 그리고 `제목 고치기` / `저자 입력`(비어 있으면)·`저자 고치기` /
- * `표지 다시 찾기`. 목록에 없던 책은 고치는 순간 나간 책으로 적어 둔다(고친 것이 남게, [bookId]).
+ * `인터넷에서 표지 찾기`(1.9.1 까지 `표지 다시 찾기`, [BookSearchActivity]) / `기기에서 표지 고르기`([CoverPickActivity], 표지만).
+ * 목록에 없던 책은 고치는 순간 나간 책으로 적어 둔다(고친 것이 남게, [bookId]).
  */
 private fun Context.showEditMenu(r: BookRecord, onChange: () -> Unit) {
     val book = r.book
@@ -192,6 +193,7 @@ private fun Context.showEditMenu(r: BookRecord, onChange: () -> Unit) {
         val target = BookShelf.list(this).firstOrNull { it.id == id } ?: BookShelf.history(this).first { it.book.id == id }.book
         startActivity(BookSearchActivity.intent(this, replace = target))
     }
+    sheet.item(getString(R.string.cover_from_device)) { startActivity(CoverPickActivity.intent(this, bookId(r))) }
     sheet.show()
 }
 

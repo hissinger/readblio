@@ -16,6 +16,13 @@
         <item name="android:windowDisablePreview">true</item>
     </style>
 
+    <!-- 그리는 것 없는 화면(기기에서 표지 고르기): 뒤 화면이 그대로 보인다 -->
+    <style name="Theme.PebbleDesk.Pick">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
     <!-- 길게 누르기 메뉴: 아래에서 올라오는 시트, 뒤 화면은 흐리게 -->
     <style name="Sheet" parent="android:Theme.Material.Light.Dialog">
         <item name="android:windowBackground">@android:color/white</item>
