@@ -397,6 +397,7 @@
     <string name="guide_playbooks">Google Play Books</string>
     <string name="guide_mihon">Mihon</string>
     <string name="guide_kahon">Kahon</string>
+    <string name="guide_komikku">Komikku</string>
     <string name="guide_kobo">Kobo Books</string>
     <string name="guide_futon">Futon</string>
     <string name="guide_kotatsu">Kotatsu</string>
@@ -495,7 +496,7 @@
     <string name="guide_n_mihon_detail">Added when you view the series page, or with reading book files on</string>
     <string name="guide_n_mihon_chapter">Shows the chapter name from the menu instead of a percentage</string>
     <string name="guide_t_mihon_open">When you open a chapter, tap the middle once to open the menu.</string>
-    <string name="guide_note_mihon">Each series counts as one book (chapters don\'t become separate books). A cover taken from the library includes the title and badges (such as the unread count) Mihon draws on it. With reading book files on, local manga use the cover image in the series folder.</string>
+    <string name="guide_note_mihon">Each series counts as one book (chapters don\'t become separate books). A cover taken from the library includes the title and badges (such as the unread count) the app draws on it. With reading book files on, local manga use the cover image in the series folder.</string>
     <string name="guide_t_kotatsu_open">Open a chapter from the series page with Read now, Continue or the chapter list. For a chapter opened another way, tap the middle once to open the menu.</string>
     <string name="guide_n_kotatsu_author">Only for series that list an author</string>
     <string name="guide_n_kotatsu_progress">Once you open the menu, the chapter name shows instead of a percentage</string>

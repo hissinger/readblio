@@ -400,6 +400,7 @@
     <string name="guide_playbooks">Google Play 북</string>
     <string name="guide_mihon">Mihon</string>
     <string name="guide_kahon">Kahon</string>
+    <string name="guide_komikku">Komikku</string>
     <string name="guide_kobo">Kobo Books</string>
     <string name="guide_futon">Futon</string>
     <string name="guide_kotatsu">Kotatsu</string>
@@ -499,7 +500,7 @@
     <string name="guide_n_mihon_detail">작품 화면을 보거나 책 파일 읽기를 켜면 들어옵니다</string>
     <string name="guide_n_mihon_chapter">% 대신 메뉴에 보이는 화 이름 그대로 들어옵니다</string>
     <string name="guide_t_mihon_open">화를 펴면 가운데를 눌러 메뉴를 한 번 띄우세요.</string>
-    <string name="guide_note_mihon">작품 하나를 책 한 권으로 봅니다(화마다 따로 책을 만들지 않습니다). 서재 화면에서 가져온 표지에는 Mihon 이 표지 위에 그린 제목·표시(읽지 않은 화 수 등)도 함께 들어갑니다. 책 파일 읽기를 켜면 로컬 만화는 작품 폴더의 표지 그림을 씁니다.</string>
+    <string name="guide_note_mihon">작품 하나를 책 한 권으로 봅니다(화마다 따로 책을 만들지 않습니다). 서재 화면에서 가져온 표지에는 앱이 표지 위에 그린 제목·표시(읽지 않은 화 수 등)도 함께 들어갑니다. 책 파일 읽기를 켜면 로컬 만화는 작품 폴더의 표지 그림을 씁니다.</string>
     <string name="guide_t_kotatsu_open">작품 화면에서 지금 읽기·계속이나 화를 눌러 여세요. 다른 길로 연 화는 가운데를 눌러 메뉴를 한 번 띄우세요.</string>
     <string name="guide_n_kotatsu_author">저자가 있는 작품만 들어옵니다</string>
     <string name="guide_n_kotatsu_progress">메뉴를 띄우면 % 대신 읽는 화 이름이 보입니다</string>
