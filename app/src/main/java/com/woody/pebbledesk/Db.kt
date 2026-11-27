@@ -34,7 +34,7 @@ import java.time.LocalDate
  *   (없으면 줄이 없다, 책 하나에 하나). [Categories]. 버전 7에서 더했다.
  * - `round_drop`: 지운 회차(전체 기록의 회차 줄 휴지통, [BookShelf.forgetRound]). 그 책의 `after_day` 다음 날(null 이면 처음)부터
  *   `until_day` 까지 읽은 시간은 그 책의 기록·회차에 넣지 않는다(하루 합계·연속일에는 그대로). 버전 7에서 더했다.
- * - `past.time_dropped`: `기록에서 지우기` 할 때 읽은 시간까지 지운 책(1, 아니면 0. [BookShelf.forget]). 그 책 id 의 `reading_day` 줄은 남겨 두고
+ * - `past.time_dropped`: `Readblio에서 지우기` 할 때 읽은 시간까지 지운 책(1, 아니면 0. [BookShelf.forget]). 그 책 id 의 `reading_day` 줄은 남겨 두고
  *   셀 때 뺀다(하루 합계·연속일·목표 달성에서도, [ReadingLog.days]). 버전 8에서 더했다.
  * - `shelf.home_hidden`·`past.home_hidden`: 홈에서 숨긴 책(1, 아니면 0. [ShelfBook.homeHidden]). 읽고 있는 책 목록에는 남고 홈에만 보이지 않는다.
  *   나간 책에도 남겨 빼고 다시 펴 되살아나도 숨긴 그대로. 버전 9에서 더했다.

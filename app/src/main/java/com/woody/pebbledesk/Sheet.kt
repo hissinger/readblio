@@ -48,7 +48,7 @@ class Sheet(private val context: Context) {
         }
     }
 
-    private class Item(val label: String, val bold: Boolean, val right: String?, val swatch: List<Int>?, val action: () -> Unit)
+    private class Item(val label: String, val bold: Boolean, val right: String?, val swatch: List<Int>?, val sub: String?, val action: () -> Unit)
 
     /** 체크 줄([check]): 누르면 [onClick] 하고 메뉴는 그대로(모든 체크 칸을 [on] 으로 다시 본다) */
     private class Check(val label: String, val sub: String?, val tag: String?, val right: String?, val on: () -> Boolean, val onClick: () -> Unit)
@@ -133,9 +133,12 @@ class Sheet(private val context: Context) {
         this.title = title; this.subtitle = subtitle; this.app = app; this.image = image; subtitleLines = lines
     }
 
-    /** 항목 한 줄. [right] 가 있으면 오른쪽에 회색으로(지금 값 `소설 ›`), [swatch] 가 있으면 글자 앞에 그 색 칸들(색 테마). */
-    fun item(label: String, bold: Boolean = false, right: String? = null, swatch: List<Int>? = null, action: () -> Unit) =
-        apply { items += Item(label, bold, right, swatch, action) }
+    /**
+     * 항목 한 줄. [right] 가 있으면 오른쪽에 회색으로(지금 값 `소설 ›`), [swatch] 가 있으면 글자 앞에 그 색 칸들(색 테마),
+     * [sub] 가 있으면 이름 아래 작게 회색 설명(체크 줄의 설명과 같은 크기. 줄은 그대로이고 글자를 키워 넘치면 늘어난다. 책 상세의 숨기기·빼기·지우기 고르기).
+     */
+    fun item(label: String, bold: Boolean = false, right: String? = null, swatch: List<Int>? = null, sub: String? = null, action: () -> Unit) =
+        apply { items += Item(label, bold, right, swatch, sub, action) }
 
     /**
      * 체크 줄(왼쪽 체크 칸 · 이름([sub] 는 그 아래 작게, [tag] 는 뒤에 작게) · 오른쪽 회색 [right]). 누르면 [onClick] 하고 닫지 않는다.
@@ -449,10 +452,13 @@ class Sheet(private val context: Context) {
 
         // 항목·체크 줄(줄마다 위에 옅은 선). 두 칸이면 첫 줄 위 선은 두지 않는다(메뉴 위 굵은 선 바로 아래라)
         val rows = mutableListOf<View>()
+        // 줄 높이는 [Ui.ROW_DP] 이고, 이름 아래 설명이 있는 줄은 글자를 키워 넘치면 그만큼 늘어난다(설명이 잘리지 않게)
         fun row(i: Int, content: View) = c.vbox().apply {
             if (!split || i > 0) addView(c.hline(1, Ui.DIVIDER))
-            addView(content, lp(MATCH, c.rowDp(Ui.ROW_DP)))
+            content.minimumHeight = c.rowDp(Ui.ROW_DP)
+            addView(content, lp(MATCH, WRAP))
         }.also { rows += it }
+        fun ViewGroup.subPadding() = setPadding(0, c.dp(SUB_PAD_DP), 0, c.dp(SUB_PAD_DP))
         // 고르는 줄(체크)이 할 일(항목) 위에: 고른 뒤 아래 항목으로 정한다
         val marks = mutableListOf<Pair<CheckMark, Check>>()
         checks.forEach { check ->
@@ -468,7 +474,7 @@ class Sheet(private val context: Context) {
                         addView(c.text(check.label, 24f))
                         check.tag?.let { addView(c.text(it, 15f, color = Ui.GRAY), lp(WRAP, WRAP).apply { marginStart = c.dp(10); bottomMargin = c.dp(3) }) }
                     })
-                    check.sub?.let { addView(c.text(it, 15f, color = Ui.GRAY)) }
+                    check.sub?.let { addView(c.text(it, 15f, color = Ui.GRAY)); subPadding() }
                 }, lp(0, WRAP, 1f))
                 check.right?.let { addView(c.text(it, 21f, color = Ui.GRAY), lp(WRAP, WRAP).apply { marginStart = c.dp(16) }) }
                 setOnClickListener {
@@ -485,7 +491,9 @@ class Sheet(private val context: Context) {
                 item.swatch?.let { colors ->
                     addView(Swatch(c, colors), lp(c.dp(SWATCH_DP) * colors.size, c.dp(SWATCH_DP)).apply { marginEnd = c.dp(18) })
                 }
-                addView(c.text(item.label, 24f, if (item.bold) Ui.bold else Ui.regular), if (item.right == null) lp(MATCH, WRAP) else lp(WRAP, WRAP))
+                val name = c.text(item.label, 24f, if (item.bold) Ui.bold else Ui.regular)
+                val label = item.sub?.let { sub -> c.vbox().apply { addView(name); addView(c.text(sub, 15f, color = Ui.GRAY)); subPadding() } } ?: name
+                addView(label, if (item.right == null) lp(MATCH, WRAP) else lp(WRAP, WRAP))
                 item.right?.let { addView(c.text(it, 21f, color = Ui.GRAY).apply { gravity = Gravity.END }, lp(0, WRAP, 1f).apply { marginStart = c.dp(16) }) }
                 setOnClickListener { dismissThen(item.action) }
             })
@@ -625,6 +633,9 @@ private class Swatch(context: Context, private val colors: List<Int>) : View(con
 
 /** 체크 칸 크기 */
 private const val CHECK_DP = 24
+
+/** 설명이 붙은 줄([Sheet.item]·[Sheet.check] 의 sub)이 늘어날 때 위아래 선과 띄우는 만큼 */
+private const val SUB_PAD_DP = 8
 
 /** 머리의 표지 폭(책 상세. 띠 글자가 읽히게 크게) */
 const val SHEET_COVER_DP = 76

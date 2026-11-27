@@ -188,7 +188,7 @@
     <string name="also_reading">Also reading</string>
     <string name="finish_book">Finished</string>
     <string name="read_again">Read again</string>
-    <string name="forget_book">Remove from log</string>
+    <string name="forget_book">Delete from Readblio</string>
     <string name="year_books">Books this year</string>
     <string name="year_books_of">Books in %1$d</string>
     <string name="pick_year">Year</string>
@@ -197,11 +197,11 @@
     <string name="date_year_fmt">MMM d, yyyy</string>
     <string name="finish_nth">#%1$d</string>
     <string name="edit_book">Edit book info ›</string>
-    <string name="forget_confirm">Remove from your books read?</string>
+    <string name="forget_confirm">Delete from Readblio?</string>
+    <string name="forget_note_home">It leaves your home and your books read.</string>
+    <string name="forget_note">It leaves your books read.</string>
     <string name="forget_time">Also delete %1$s of reading time</string>
     <string name="forget_time_sub">Streaks and goals may change · can\'t be undone</string>
-    <string name="forget_on_home">Remove it from home first</string>
-    <string name="forget_on_home_note">A book on your home can\'t be removed from the log.</string>
     <string name="forget_round_confirm">Remove read %1$s?</string>
     <string name="forget_round">Remove this read</string>
     <string name="since_date">Since %1$s</string>
@@ -230,6 +230,12 @@
     <string name="home_unhide">Show on home</string>
     <string name="home_hide_confirm">Hide from home?</string>
     <string name="home_hide_note">Reading time and progress are still recorded.\nTo undo: Settings › Reading › Books I\'m reading</string>
+    <string name="book_manage">Hide · Remove · Delete ›</string>
+    <string name="book_manage_hidden">Show · Remove · Delete ›</string>
+    <string name="home_hide_sub">Still tracked, just not shown on home</string>
+    <string name="home_unhide_sub">Show it on home again</string>
+    <string name="remove_book_sub">Stop reading · your log stays</string>
+    <string name="forget_book_sub">Deletes this book and its reading log</string>
     <string name="home_hidden_tag">Hidden from home</string>
     <string name="review_stars_hint">Tap or slide to rate · optional</string>
     <string name="review_stars_set">%1$s / 5 · tap again to clear</string>
