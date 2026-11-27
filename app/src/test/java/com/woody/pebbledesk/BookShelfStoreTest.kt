@@ -222,6 +222,26 @@ class BookShelfStoreTest {
         assertEquals(listOf("b-1"), BookShelf.list(app).map { it.id })
     }
 
+    @Test fun `읽고 있는 책의 상세에서 지우면 읽고 있는 책에서 빼며 함께 지운다`() {
+        val day = today.minusDays(1).toEpochDay()
+        db.execSQL("INSERT INTO reading_day VALUES ($day, 'pkg', '데미안', 'b-1', 600000), ($day, 'pkg', '', '', 60000)")
+        ReadingLog.clearCache()
+        assertTrue(BookShelf.forget(app, "b-1", dropTime = true, fromShelf = true))
+        assertTrue(BookShelf.list(app).isEmpty())
+        // DB 에서 다시 읽어도 지운 책 하나(읽은 시간까지)
+        BookShelf.clearCaches()
+        ReadingLog.clearCache()
+        assertTrue(BookShelf.list(app).isEmpty())
+        assertEquals(listOf(Triple("b-1", true, true)), BookShelf.history(app).map { Triple(it.book.id, it.hidden, it.timeDropped) })
+        assertEquals(60000L, ReadingLog.savedDays(app).total(today.minusDays(1)))
+    }
+
+    @Test fun `읽고 있는 책의 상세에서 지웠는데 그사이 나갔으면 나간 책으로 지운다`() {
+        BookShelf.remove(app, "b-1")
+        assertTrue(BookShelf.forget(app, "b-1", fromShelf = true))
+        assertEquals(listOf("b-1" to true), BookShelf.history(app).map { it.book.id to it.hidden })
+    }
+
     @Test fun `나간 책을 지우면 지운 책으로 남고 표지를 버린다`() {
         BookShelf.remove(app, "b-1")
         assertTrue(BookShelf.forget(app, "b-1"))

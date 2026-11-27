@@ -646,20 +646,28 @@ object BookShelf {
     }
 
     /**
-     * 올해 읽은 책에서 지운다(다시 보이지 않게 나간 책에 지운 표시). [dropTime] 이면 그 책의 읽은 시간도 하루 합계·연속일에서 빼고([PastBook.timeDropped],
-     * DB 의 읽은 시간 줄은 남긴다), 아니면 합계에 그대로. 표지와 책 파일 경로는 버린다. 읽고 있는 책이면 지우지 않고 false.
+     * `Readblio에서 지우기`: 올해 읽은 책에서 지운다(다시 보이지 않게 나간 책에 지운 표시). [dropTime] 이면 그 책의 읽은 시간도 하루 합계·연속일에서 빼고
+     * ([PastBook.timeDropped], DB 의 읽은 시간 줄은 남긴다), 아니면 합계에 그대로. 표지와 책 파일 경로는 버린다.
+     * 읽고 있는 책은 [fromShelf](읽고 있는 책의 상세에서 지움)일 때만 읽고 있는 책에서 빼며 함께 지운다(한 트랜잭션), 아니면(나간 책 상세를 연 사이
+     * 이북 앱에서 다시 펴 읽고 있는 책이 됨) 지우지 않고 false.
      */
-    @Synchronized fun forget(context: Context, id: String, dropTime: Boolean = false): Boolean {
-        // 1.3.0~1.5.3 의 끊긴 저장으로 나간 책에도 같은 id 가 남아 있을 수 있다: 읽고 있는 책이면 그래도 지우지 않는다(표지를 버리지 않게)
-        if (list(context).any { it.id == id }) return false
-        val past = history(context)
-        if (past.none { it.book.id == id }) return false
-        // 이미 지운 책이면 그대로(지운 날을 덮지 않는다. 두 화면에서 지운 경우)
-        if (past.any { it.book.id == id && it.hidden }) return true
+    @Synchronized fun forget(context: Context, id: String, dropTime: Boolean = false, fromShelf: Boolean = false): Boolean {
+        // 1.3.0~1.5.3 의 끊긴 저장으로 나간 책에도 같은 id 가 남아 있을 수 있다: 나간 책을 지우려 했는데 읽고 있는 책이면 지우지 않는다(표지를 버리지 않게)
+        val reading = list(context).any { it.id == id }
+        if (reading && !fromShelf) return false
+        if (!reading) {
+            val past = history(context)
+            if (past.none { it.book.id == id }) return false
+            // 이미 지운 책이면 그대로(지운 날을 덮지 않는다. 두 화면에서 지운 경우)
+            if (past.any { it.book.id == id && it.hidden }) return true
+        }
         val now = System.currentTimeMillis()
-        writeHistory(context, past.map { if (it.book.id == id) it.copy(hidden = true, leftAt = now, timeDropped = dropTime) else it })
+        atomic(context) {
+            if (reading) leave(context, id)
+            writeHistory(context, history(context).map { if (it.book.id == id) it.copy(hidden = true, leftAt = now, timeDropped = dropTime) else it })
+            Db.get(context).tx { delete("book_file", "book_id = ?", arrayOf(id)) }
+        }
         dropFiles(context, id)
-        Db.get(context).tx { delete("book_file", "book_id = ?", arrayOf(id)) }
         return true
     }
 
