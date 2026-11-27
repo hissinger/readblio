@@ -16,26 +16,26 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 /**
- * 책 상세: 홈에서 책을 길게 누를 때와 올해 읽은 책에서 책을 누를 때 같은 화면. 머리·기록 칸·별점·감상 칸([bookSheet]) 아래
+ * 책 상세: 홈에서 책을 길게 누를 때와 올해 읽은 책에서 책을 누를 때 같은 화면(메뉴도 같다). 머리·기록 칸·별점·감상 칸([bookSheet]) 아래
  * 메뉴는 책 상태에 따라
- * - 읽고 있는 책(다시 읽는 책 포함): `카테고리  소설 ›` / `완독` / `책 정보 고치기 ›` / `홈에서 숨기기`(숨긴 책이면 `홈에 다시 보이기`, [askHide]) /
- *   홈에서 열면([onHome]) `홈에서 빼기`, 올해 읽은 책에서 열면 `기록에서 지우기`(홈에 있는 책은 지우지 않고 `홈에서 먼저 빼 주세요` 안내, [askRemoveFirst])
- * - 나간 책·목록에 없던 책: `카테고리  소설 ›` / `완독`(마지막 회차가 진행 중이면) / `다시 읽기` / `책 정보 고치기 ›` / `기록에서 지우기`
- * `완독`·`홈에서 빼기`는 확인 대신 별점·감상 메뉴([reviewSheet], 지금 회차의 것을 채워 띄우고 비워 두고 눌러도 된다), `기록에서 지우기`는 한 번 더 묻는다.
+ * - 읽고 있는 책(다시 읽는 책 포함): `카테고리  소설 ›` / `완독` / `책 정보 고치기 ›` / `숨기기 · 빼기 · 지우기 ›`(숨긴 책이면 `다시 보이기 · …`,
+ *   누르면 설명이 붙은 고르기 [manageSheet]: `홈에서 숨기기`([askHide]) / `홈에서 빼기` / `Readblio에서 지우기`)
+ * - 나간 책·목록에 없던 책: `카테고리  소설 ›` / `완독`(마지막 회차가 진행 중이면) / `다시 읽기` / `책 정보 고치기 ›` / `Readblio에서 지우기`
+ * `완독`·`홈에서 빼기`는 확인 대신 별점·감상 메뉴([reviewSheet], 지금 회차의 것을 채워 띄우고 비워 두고 눌러도 된다), `Readblio에서 지우기`는 한 번 더 묻는다([askForget]).
  * `완독`은 늘 오늘로 남긴다(완독한 날은 전체 기록의 회차 메뉴에서 고친다, [editRound]). 무엇이든 바뀌면 [onChange].
  */
-fun Context.showBookDetail(r: BookRecord, onHome: Boolean, onChange: () -> Unit) {
+fun Context.showBookDetail(r: BookRecord, onChange: () -> Unit) {
     val sub = detailSub(r)
-    val reopen = { showBookDetail(r.reload(this), onHome, onChange) }
+    val reopen = { showBookDetail(r.reload(this), onChange) }
     // 별점·감상 칸은 메뉴가 화면을 넘지 않는 만큼: 감상 5줄부터 줄여 보고(글자·줄 간격을 키우면 줄어든다), 별 줄도 안 들어가면 칸을 두지 않는다.
     val text = r.lastRound.review?.text?.isNotBlank() == true
-    val fit = (if (text) (5 downTo 0) else listOf(5)).asSequence().map { detailSheet(r, sub, it, onHome, onChange, reopen) }
+    val fit = (if (text) (5 downTo 0) else listOf(5)).asSequence().map { detailSheet(r, sub, it, onChange, reopen) }
         .firstOrNull { it.height() <= screenHeight() }
-    (fit ?: detailSheet(r, sub, -1, onHome, onChange, reopen)).show()
+    (fit ?: detailSheet(r, sub, -1, onChange, reopen)).show()
 }
 
 /** 상세 메뉴 하나(감상 [lines] 줄, -1 이면 별점·감상 칸 없이). 동작은 누르는 순간 책 id 로 저장소가 지금 상태를 보고 한다([BookShelf]). */
-private fun Context.detailSheet(r: BookRecord, sub: String?, lines: Int, onHome: Boolean, onChange: () -> Unit, reopen: () -> Unit): Sheet {
+private fun Context.detailSheet(r: BookRecord, sub: String?, lines: Int, onChange: () -> Unit, reopen: () -> Unit): Sheet {
     val book = r.book
     val sheet = bookSheet(r, sub, lines, onChange, reopen)
     // 메뉴는 누르는 순간의 상태로: 상세를 열어 둔 사이 책이 바뀌었으면(이북 앱에서 다시 펴 되살아남·다른 화면에서 완독 등) 그 동작 대신
@@ -45,7 +45,7 @@ private fun Context.detailSheet(r: BookRecord, sub: String?, lines: Int, onHome:
         val now = r.reload(this)
         val changed = now.state != r.state || now.hidden != r.hidden || now.book.homeHidden != r.book.homeHidden || now.rounds.size != r.rounds.size ||
             now.lastRound.finished != r.lastRound.finished || now.lastRound.review != r.lastRound.review
-        if (changed) { onChange(); if (alive()) showBookDetail(now, onHome, onChange) }
+        if (changed) { onChange(); if (alive()) showBookDetail(now, onChange) }
         else act()
     }
     // 완독하면 지금(완독하지 않은) 회차의 별점·감상이 그 회차의 것이 된다.
@@ -67,10 +67,9 @@ private fun Context.detailSheet(r: BookRecord, sub: String?, lines: Int, onHome:
     if (r.state == State.READING) {
         sheet.item(getString(R.string.finish_book), action = current { finish() })
         sheet.item(getString(R.string.edit_book), action = current { showEditMenu(r, onChange) })
-        if (book.homeHidden) sheet.item(getString(R.string.home_unhide), action = current { BookShelf.setHomeHidden(this, book.id, false); onChange() })
-        else sheet.item(getString(R.string.home_hide), action = current { askHide(book, onChange) })
-        if (onHome) sheet.item(getString(R.string.remove_book), action = current { removeBook(r, sub, onChange) })
-        else sheet.item(getString(R.string.forget_book), action = current { askRemoveFirst(book) })
+        // 숨기기·빼기·지우기는 한 줄로 묶어 고르기로(메뉴가 길어지지 않게). 고르기의 줄도 누르는 순간의 상태로([current]).
+        sheet.item(getString(if (book.homeHidden) R.string.book_manage_hidden else R.string.book_manage),
+            action = current { manageSheet(r, sub, onChange, reopen, ::current) })
         return sheet
     }
     // 나간 책도 마지막 회차가 진행 중이면(완독한 적 없거나 다시 읽다 뺀 책) 완독할 수 있다.
@@ -80,23 +79,43 @@ private fun Context.detailSheet(r: BookRecord, sub: String?, lines: Int, onHome:
         onChange()
     })
     sheet.item(getString(R.string.edit_book), action = current { showEditMenu(r, onChange) })
-    sheet.item(getString(R.string.forget_book), action = current { askForget(r, book.title, onChange, reopen) })
+    sheet.item(getString(R.string.forget_book), action = current { askForget(r, onChange, reopen) })
     return sheet
 }
 
 /**
- * `기록에서 지우기` 확인: `읽은 책 목록에서 지울까요?` / 책, 그 책을 1분 이상 읽었으면 체크 줄 `읽은 시간 20분도 지우기`(기본 켜짐, 아래 작게
- * `연속일·목표 달성이 바뀝니다 · 되돌릴 수 없습니다`), `기록에서 지우기`(굵게) / `취소`. 시간은 그 책의 기록 칸과 같은 시간(지운 회차 빼고).
+ * 읽고 있는 책의 `숨기기 · 빼기 · 지우기 ›`: 머리에 책 제목, 줄마다 아래 작게 설명 — `홈에서 숨기기` `계속 기록하고 홈에만 보이지 않습니다`
+ * (숨긴 책이면 `홈에 다시 보이기` `홈에 다시 보입니다`, 바로 보인다) / `홈에서 빼기` `그만 읽습니다 · 읽은 기록은 남습니다`([removeBook]) /
+ * `Readblio에서 지우기` `이 책과 읽은 기록을 지웁니다`([askForget]), 맨 아래 `닫기`. 줄은 누르는 순간 책 상태를 다시 본다([current]).
  */
-private fun Context.askForget(r: BookRecord, title: String, onChange: () -> Unit, reopen: () -> Unit) {
+private fun Context.manageSheet(r: BookRecord, sub: String?, onChange: () -> Unit, reopen: () -> Unit, current: (() -> Unit) -> () -> Unit) {
+    val book = r.book
+    val sheet = Sheet(this).header(book.title)
+    if (book.homeHidden) sheet.item(getString(R.string.home_unhide), sub = getString(R.string.home_unhide_sub),
+        action = current { BookShelf.setHomeHidden(this, book.id, false); onChange() })
+    else sheet.item(getString(R.string.home_hide), sub = getString(R.string.home_hide_sub), action = current { askHide(book, onChange) })
+    sheet.item(getString(R.string.remove_book), sub = getString(R.string.remove_book_sub), action = current { removeBook(r, sub, onChange) })
+    sheet.item(getString(R.string.forget_book), sub = getString(R.string.forget_book_sub), action = current { askForget(r, onChange, reopen) })
+    sheet.show()
+}
+
+/**
+ * `Readblio에서 지우기` 확인: `Readblio에서 지울까요?` / 책과 그 아래 읽고 있는 책이면 `홈과 읽은 책 목록에서 빠집니다.`, 나간 책이면
+ * `읽은 책 목록에서 빠집니다.`, 그 책을 1분 이상 읽었으면 체크 줄 `읽은 시간 20분도 지우기`(기본 켜짐, 아래 작게
+ * `연속일·목표 달성이 바뀝니다 · 되돌릴 수 없습니다`), `Readblio에서 지우기`(굵게) / `취소`. 시간은 그 책의 기록 칸과 같은 시간(지운 회차 빼고).
+ * 읽고 있는 책은 읽고 있는 책에서 빼며 함께 지운다(한 번에 저장, [BookShelf.forget]).
+ */
+private fun Context.askForget(r: BookRecord, onChange: () -> Unit, reopen: () -> Unit) {
+    val reading = r.state == State.READING
     val ms = r.dayMs.values.sum()
     var dropTime = ms >= 60_000
-    val sheet = Sheet(this).header(getString(R.string.forget_confirm), title)
+    val note = getString(if (reading) R.string.forget_note_home else R.string.forget_note)
+    val sheet = Sheet(this).header(getString(R.string.forget_confirm), "${r.book.title}\n$note")
     if (dropTime) sheet.check(getString(R.string.forget_time, duration(ms)), sub = getString(R.string.forget_time_sub), on = { dropTime }) { dropTime = !dropTime }
     sheet.item(getString(R.string.forget_book), bold = true) {
-        val forgotten = withBook(r) { BookShelf.forget(this, it, dropTime) }
+        val forgotten = withBook(r) { BookShelf.forget(this, it, dropTime, fromShelf = reading) }
         onChange()
-        // 그사이 읽고 있는 책이 됐으면(이북 앱에서 다시 폄) 지우지 않고 지금 상태로 다시 띄운다
+        // 나간 책을 연 사이 읽고 있는 책이 됐으면(이북 앱에서 다시 폄) 지우지 않고 지금 상태로 다시 띄운다
         if (!forgotten && alive()) reopen()
     }.item(getString(R.string.cancel)) {}.noClose().show()
 }
@@ -162,11 +181,6 @@ private fun Context.askHide(book: ShelfBook, onChange: () -> Unit) {
         BookShelf.setHomeHidden(this, book.id, true)
         onChange()
     }
-}
-
-/** 올해 읽은 책에서 홈에 있는 책의 `기록에서 지우기`: 지우지 않고 홈에서 먼저 빼 달라고 한다(홈에 있는 책은 기록이 있어야 한다) */
-private fun Context.askRemoveFirst(book: ShelfBook) {
-    Sheet(this).header(getString(R.string.forget_on_home), "${book.title}\n${getString(R.string.forget_on_home_note)}").show()
 }
 
 /**
