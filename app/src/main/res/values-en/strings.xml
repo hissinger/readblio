@@ -586,6 +586,7 @@
     <string name="onboarding_files_old_s1">Open the storage permission prompt.</string>
     <string name="onboarding_files_old_s2">Tap Allow and come back.</string>
     <string name="year_books_count">%1$d</string>
+    <string name="year_filter_join">" · "</string>
     <string name="boox_frozen_help">BOOX froze this app, so it couldn\'t open. Remove it from BOOX app freeze settings.</string>
     <string name="boox_freeze_settings">Open freeze settings</string>
     <string name="onboarding_books_boox_background">Set Stay active in the background to Unlimited. (EinkWise (app optimization), or long-press the icon in the BOOX app list › Optimize › Others tab)</string>
@@ -640,8 +641,23 @@
     <string name="category_rename">Rename</string>
     <string name="category_delete">Delete</string>
     <string name="category_delete_confirm">Delete this category?</string>
-    <string name="category_delete_sub">%1$d books become uncategorized. Reading records stay.</string>
-    <string name="category_delete_sub_one">1 book becomes uncategorized. Reading records stay.</string>
+    <plurals name="category_delete_none">
+        <item quantity="one">%1$d book becomes uncategorized.</item>
+        <item quantity="other">%1$d books become uncategorized.</item>
+    </plurals>
+    <plurals name="category_delete_from">
+        <item quantity="one">%1$d book loses this category.</item>
+        <item quantity="other">%1$d books lose this category.</item>
+    </plurals>
+    <plurals name="category_delete_some_none">
+        <item quantity="one">%1$d of them becomes uncategorized.</item>
+        <item quantity="other">%1$d of them become uncategorized.</item>
+    </plurals>
+    <plurals name="category_delete_counted">
+        <item quantity="one">This category is left out of stats. Deleting it brings the reading time of %1$d book into stats.</item>
+        <item quantity="other">This category is left out of stats. Deleting it brings the reading time of %1$d books into stats.</item>
+    </plurals>
+    <string name="category_delete_kept">Reading records stay.</string>
     <string name="category_count">%1$d</string>
     <string name="category_books">%1$d books</string>
     <string name="category_books_one">1 book</string>

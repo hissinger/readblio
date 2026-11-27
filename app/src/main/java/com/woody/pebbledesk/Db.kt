@@ -31,7 +31,7 @@ import java.time.LocalDate
  * - `finish.began`·`round_began`: 사용자가 고친 그 회차의 읽기 시작한 날(완독한 회차는 그 완독 줄에, 진행 중 회차는 책(id)마다 `round_began` 에.
  *   완독하면 그 완독 줄로 옮긴다). 앞 회차 완독한 날부터 끝 날(진행 중이면 오늘)까지 고친다([BookRecord.startDayRange]). 버전 6에서 더했다.
  * - `category`·`book_category`: 사용자가 만든 카테고리(이름·순서 `pos`·통계에서 빼기 `excluded`, 기기를 옮겨도 그대로인 `uid`)와 책(id)마다 붙인 카테고리
- *   (없으면 줄이 없다, 책 하나에 하나). [Categories]. 버전 7에서 더했다.
+ *   (없으면 줄이 없다). [Categories]. 버전 7에서 더했다. 버전 9 까지는 책 하나에 하나, 버전 10 부터 여러 개(키 `(book_id, category_id)`).
  * - `round_drop`: 지운 회차(전체 기록의 회차 줄 휴지통, [BookShelf.forgetRound]). 그 책의 `after_day` 다음 날(null 이면 처음)부터
  *   `until_day` 까지 읽은 시간은 그 책의 기록·회차에 넣지 않는다(하루 합계·연속일에는 그대로). 버전 7에서 더했다.
  * - `past.time_dropped`: `Readblio에서 지우기` 할 때 읽은 시간까지 지운 책(1, 아니면 0. [BookShelf.forget]). 그 책 id 의 `reading_day` 줄은 남겨 두고
@@ -43,7 +43,7 @@ import java.time.LocalDate
  */
 object Db {
     private const val NAME = "pebble.db"
-    private const val VERSION = 9
+    private const val VERSION = 10
 
     @Volatile private var db: SQLiteDatabase? = null
 
@@ -100,6 +100,7 @@ object Db {
         createRoundDrop(db)
         addTimeDropped(db)
         addHomeHidden(db)
+        multiCategory(db)
     }
 
     /** [oldVersion] 의 DB 를 지금 버전으로(SQLiteOpenHelper 가 한 트랜잭션으로 돌린다. 마이그레이션 테스트도 쓴다) */
@@ -148,6 +149,16 @@ object Db {
         if (oldVersion < 8) addTimeDropped(db)
         // 홈에서 숨긴 책
         if (oldVersion < 9) addHomeHidden(db)
+        // 책 하나에 카테고리 여러 개
+        if (oldVersion < 10) multiCategory(db)
+    }
+
+    /** 버전 10: 책 하나에 카테고리 여러 개(키가 책 id 하나에서 책·카테고리 둘로 바뀌어 표를 새로 만들어 옮긴다. 붙인 것은 그대로) */
+    private fun multiCategory(db: SQLiteDatabase) {
+        db.execSQL("ALTER TABLE book_category RENAME TO book_category_v9")
+        db.execSQL("CREATE TABLE book_category (book_id TEXT NOT NULL, category_id INTEGER NOT NULL, PRIMARY KEY (book_id, category_id))")
+        db.execSQL("INSERT INTO book_category (book_id, category_id) SELECT book_id, category_id FROM book_category_v9")
+        db.execSQL("DROP TABLE book_category_v9")
     }
 
     /** 버전 9: 읽고 있는 책·나간 책에 홈에서 숨겼는지 */
@@ -159,7 +170,7 @@ object Db {
     /** 버전 8: 나간 책에 읽은 시간까지 지웠는지 */
     private fun addTimeDropped(db: SQLiteDatabase) = db.execSQL("ALTER TABLE past ADD COLUMN time_dropped INTEGER NOT NULL DEFAULT 0")
 
-    /** 버전 7: 카테고리(이름·순서·통계에서 빼기)와 책마다 붙인 카테고리 */
+    /** 버전 7: 카테고리(이름·순서·통계에서 빼기)와 책마다 붙인 카테고리(책 하나에 하나, 버전 10 에서 [multiCategory]) */
     private fun createCategory(db: SQLiteDatabase) {
         db.execSQL(
             "CREATE TABLE category (id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT NOT NULL UNIQUE, name TEXT NOT NULL, pos INTEGER NOT NULL, " +

@@ -4,7 +4,7 @@
     python3 tools/emu/oldseed.py json OUT_DIR   # 1.2.1 까지: files/reading.json, files/books/books.json·표지, shared_prefs/reader_watch.xml
     python3 tools/emu/oldseed.py v1   OUT_DIR   # 1.3.0~1.4.2: databases/pebble.db (버전 1) + 표지
     python3 tools/emu/oldseed.py v2   OUT_DIR   # 1.5.0~1.5.3: databases/pebble.db (버전 2, review) + 표지
-    python3 tools/emu/oldseed.py check KIND DB  # 이 브랜치가 옮긴 DB(버전 9)를 기대와 대조
+    python3 tools/emu/oldseed.py check KIND DB  # 이 브랜치가 옮긴 DB(버전 10)를 기대와 대조
 
 OUT_DIR 아래를 앱 데이터 폴더(/data/user_de/0/com.woody.pebbledesk/)에 그대로 덮는다(루트 에뮬, tools/emu/oldmig.sh).
 날짜는 2026-10-16 을 오늘로 고정한다(에뮬 날짜가 같아야 기대가 맞는다).
@@ -166,7 +166,7 @@ def expect(name, got, want):
 def check(kind, path):
     db = sqlite3.connect(path)
     q = lambda s, *a: db.execute(s, a).fetchall()
-    expect("버전", q("PRAGMA user_version")[0][0], 9)
+    expect("버전", q("PRAGMA user_version")[0][0], 10)
     cols = lambda t: [r[1] for r in q(f"PRAGMA table_info({t})")]
     # 버전 5: 읽고 있는 책의 읽는 화(옛 판에서 온 책은 모두 빈 값)
     # 칸이 없으면(올리기가 안 된 DB) 대조가 멈추지 않고 어긋남으로 적히게 센다
@@ -194,6 +194,9 @@ def check(kind, path):
     for t in ("shelf", "past"):
         hid = q(f"SELECT count(*) FROM {t} WHERE home_hidden != 0")[0][0] if "home_hidden" in cols(t) else None
         expect(f"홈에서 숨긴 책 {t}.home_hidden(모두 0)", (cols(t)[-1:], hid), (["home_hidden"], 0))
+    # 버전 10: 책 하나에 카테고리 여러 개(키가 책·카테고리 둘)
+    pk = [r[1] for r in sorted(q("PRAGMA table_info(book_category)"), key=lambda r: r[5]) if r[5] > 0]
+    expect("책 카테고리 키 book_category(book_id, category_id)", pk, ["book_id", "category_id"])
     if kind == "json":
         shelf = q("SELECT pos, id, title, author, app, progress, due, seen_title FROM shelf ORDER BY pos")
         expect("읽고 있는 책 수", len(shelf), 3)
