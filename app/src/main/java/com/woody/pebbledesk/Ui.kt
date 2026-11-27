@@ -44,13 +44,19 @@ object Ui {
 
     /**
      * 마지막으로 [designDensityDpi] 가 정한 밀도. 화면이 실제로 다른 밀도로 그려지면 기기가 앱의 밀도를 덮어쓴 것이다
-     * (BOOX 앱 최적화의 앱별 DPI. Poke3 에서 300 대신 350 → 490×662dp). 홈이 알리고 기기 정보가 보여 준다.
+     * (BOOX 앱 최적화의 앱별 DPI. Poke3 에서 300 대신 350 → 490×662dp, iReader 펌웨어는 더 낮게). 기기 정보는 어긋나면 늘 보여 주고,
+     * 홈은 더 높을 때(화면이 작아짐)만 알린다([screenShrunk]).
      */
     @Volatile var designDpi = 0
         private set
 
-    /** [context] 가 앱이 맞춘 밀도([designDpi])로 그려지는가. 아니면 기기가 덮어쓴 것이다(BOOX 앱 최적화의 앱별 DPI 등). */
-    fun densityApplied(context: Context): Boolean = designDpi <= 0 || context.resources.displayMetrics.densityDpi == designDpi
+    /**
+     * [context] 가 앱이 맞춘 밀도([designDpi])보다 **높은** 밀도로 그려지는가: 기기가 앱의 밀도를 덮어써 화면이 설계(짧은 변 572dp)보다
+     * 좁고 낮아졌다(BOOX 앱 최적화의 앱별 DPI. Poke3 300 → 350). 홈은 틀을 고정하지 않고 `화면이 크게 보입니다` 로 알린다.
+     * 더 **낮은** 밀도는 넣지 않는다: iReader 펌웨어가 가끔 재부팅 전까지 앱의 밀도를 무시하고 기기 밀도로 그리는데(354 → 320, 이슈 #29)
+     * 그때는 화면이 오히려 넓어 틀을 고정할 수 있고, 크게 보이지도 않으며 사용자가 바꿀 곳도 없다.
+     */
+    fun screenShrunk(context: Context): Boolean = designDpi > 0 && context.resources.displayMetrics.densityDpi > designDpi
 
     /**
      * 글자 배율(설정 › 글자 · 간격, [HomePrefs.textScalePercent]). 모든 글자는 [setSp]·[spf] 로 이 배율을 곱해 그린다.

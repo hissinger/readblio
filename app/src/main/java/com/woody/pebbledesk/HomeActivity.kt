@@ -42,8 +42,9 @@ class HomeActivity : EinkActivity() {
     /**
      * 홈 틀(상단·책 자리·함께 읽는 책 줄·자주 쓰는 앱)을 글자 · 간격 설정과 상관없이 고정하는가. 기기가 앱의 밀도를 덮어써
      * 화면이 작아졌으면(BOOX 앱 최적화의 앱별 DPI) 고정하지 않고 글자 · 간격대로 잡는다(글자를 줄여 함께 읽는 책 줄을 맞출 수 있게).
+     * 덮어썼어도 화면이 오히려 넓어졌으면(iReader, 이슈 #29) 고정한다([Ui.screenShrunk]). 홈 모양은 이것과 상관없다([homeStyle]).
      */
-    private val fixedFrame by lazy { Ui.densityApplied(this) }
+    private val fixedFrame by lazy { !Ui.screenShrunk(this) }
 
     /** 틀 높이를 잴 때: 고정이면 기준 크기 글자로, 아니면 지금 글자대로 */
     private fun <T> frameText(block: () -> T): T = if (fixedFrame) Ui.atBaseText(block) else block()
@@ -72,8 +73,11 @@ class HomeActivity : EinkActivity() {
      */
     private var short = false
 
-    /** 홈 모양(설정 › 화면). 기기가 앱의 밀도를 덮어썼으면(틀을 고정하지 않음) 늘 기본 모양. */
-    private val homeStyle get() = if (fixedFrame) prefs.homeStyle else HomeStyle.BASIC
+    /**
+     * 홈 모양(설정 › 화면). 어떤 경우에도 고른 그대로다: 밀도를 덮어써도, 책 자리가 아주 낮아도 그 모양 안에서 줄인다([libraryShelf]·[coverShelf]).
+     * (1.9.1 까지는 덮어쓰거나 낮으면 기본 모양으로 그려, iReader 가 밀도를 무시하는 동안 고른 모양이 먹히지 않았다. 이슈 #29)
+     */
+    private val homeStyle get() = prefs.homeStyle
 
     /** 자주 쓰는 앱 격자 칸 수: 설정한 값([HomePrefs.favColumns]). 가로 페블처럼 오른쪽 칸이 좁으면 3칸. [refresh] 가 정한다 */
     private var gridColumns = HomePrefs.FAV_COLUMNS.first()
@@ -397,7 +401,8 @@ class HomeActivity : EinkActivity() {
     private var densityDialog: Dialog? = null
 
     /**
-     * 앱이 맞춘 밀도([Ui.designDpi])가 먹히지 않고 기기가 정한 밀도로 그려지면(BOOX 앱 최적화의 앱별 DPI 등) 홈에 돌아올 때마다 알린다.
+     * 앱이 맞춘 밀도([Ui.designDpi])가 먹히지 않고 기기가 정한 더 높은 밀도로 그려지면(BOOX 앱 최적화의 앱별 DPI 등, [Ui.screenShrunk]) 홈에 돌아올 때마다 알린다.
+     * 더 낮은 밀도(iReader 펌웨어가 재부팅 전까지 무시, 이슈 #29)는 화면이 작게 보여 알리지 않는다.
      * 화면 전체가 크게 보이고 홈의 함께 읽는 책 줄이 들지 않을 수 있다. 바꾸는 곳이 기기마다 달라 안내만 한다(BOOX 는 그 방법을 적는다).
      * `다시 보지 않기` 를 누르면 그 값(`지금/맞출 값`)으로는 다시 알리지 않는다.
      */
@@ -831,14 +836,12 @@ class HomeActivity : EinkActivity() {
         fillAlso = null
         // 홈 모양이 표지·서재면 책 자리를 표지로 채운다(책이 없으면 어느 모양이든 같은 스켈레톤)
         val style = homeStyle
-        // 표지 모양에서 책이 한 권이고 `크게`([HomePrefs.oneBookBig])면 기본 모양과 같이 맨 앞 책을 크게
+        // 표지 모양에서 책이 한 권이고 `크게`([HomePrefs.oneBookBig])면 기본 모양과 같이 맨 앞 책을 크게.
+        // 책 자리가 아주 낮아도 기본 모양으로 바꾸지 않는다(고른 모양 안에서 줄인다. 기본 모양이 더 높이가 든다, 이슈 #29)
         if (style != HomeStyle.BASIC && books.isNotEmpty() && !(style == HomeStyle.COVER && books.size == 1 && prefs.oneBookBig)) {
             if (heroHeight <= 0) return
-            // 책 자리가 아주 낮아 표지가 들지 않으면(null) 아래 기본 모양으로 그린다
-            (if (style == HomeStyle.LIBRARY) libraryShelf(books) else coverShelf(books, reading))?.let {
-                hero.addView(it, FrameLayout.LayoutParams(MATCH, MATCH))
-                return
-            }
+            hero.addView(if (style == HomeStyle.LIBRARY) libraryShelf(books) else coverShelf(books, reading), FrameLayout.LayoutParams(MATCH, MATCH))
+            return
         }
         // 함께 읽는 책(맨 앞 책 다음)을 [perPage] 권씩 쪽으로. 책이 바뀌었으면(누른 책이 맨 앞으로 올라감 등) 1쪽부터.
         // 칸 수는 모양을 3칸으로 고른 뒤 정한다(아래, [ALSO_COLS_BIG]). 책 자리 높이를 모를 때는 지난번 칸 수 그대로(쪽이 1쪽으로 돌아가지 않게).
@@ -1076,9 +1079,9 @@ class HomeActivity : EinkActivity() {
      * 서재 모양(DESIGN.md `홈 모양`): 모든 책을 같은 크기 표지 격자로. 구역 제목 `읽고 있는 책`(오른쪽 끝 쪽 표시) 아래 세로 3열 ·
      * 가로 두 줄, 칸마다 표지(반납일 딱지) · 제목 한 줄 · 진행률 막대(읽는 화를 알면 그 글자). 줄 수·표지 크기는 [HomeShelf].
      * 책 수와 상관없이 같은 크기라 책이 적으면 칸이 빈다. 넘치는 책은 쪽으로 넘긴다(함께 읽는 책과 같은 밀기·페이지 버튼).
-     * 책 자리가 아주 낮아 표지가 [SHELF_COVER_MIN_DP] 보다 작아지면 null(기본 모양으로 그린다).
+     * 책 자리가 아주 낮으면 한 줄까지 줄이고, 그래도 모자라면 표지를 더 작게(하한 없음. 기본 모양으로 바꾸지 않는다).
      */
-    private fun libraryShelf(books: List<ShelfBook>): View? {
+    private fun libraryShelf(books: List<ShelfBook>): View {
         val inner = hero.width - 2 * dp(Ui.MARGIN)
         val colGap = dp(GAP_DP)
         val (header, pageText) = pagedHeader(getString(R.string.now_reading), SHELF_TITLE_TOP_DP) { alsoPaged }
@@ -1093,10 +1096,12 @@ class HomeActivity : EinkActivity() {
         val padBottom = dp(if (short) SHORT_PAD_BOTTOM_DP else HERO_PAD_BOTTOM_DP)
         val room = heroHeight - header.layoutParams.height - dp(1) - dp(SHELF_CELL_TOP_DP) - padBottom
         val grid = if (wide) HomeShelf.libraryWide(room, textH, dp(LIB_ROW_GAP_DP), inner, colGap, dp(LIB_COVER_MAX_DP), dp(LIB_COVER_MIN_DP), LIB_COLS).let {
-            it.copy(coverW = minOf(it.coverW, (inner - (it.cols - 1) * colGap) / it.cols - dp(2)))
+            // 책 자리가 아주 낮아 표지가 [LIB_CELL_MIN_DP] 보다 작으면 열 수는 그 칸 폭으로 센다(표지 폭으로 세면 열이 수십 개가 되어 제목이 안 보인다)
+            val cols = if (it.coverW >= dp(LIB_CELL_MIN_DP)) it.cols else maxOf(LIB_COLS, (inner + colGap) / (dp(LIB_CELL_MIN_DP) + colGap))
+            it.copy(cols = cols, coverW = minOf(it.coverW, (inner - (cols - 1) * colGap) / cols - dp(2)))
         } else HomeShelf.library(room, textH, dp(LIB_ROW_GAP_DP), (inner - (LIB_COLS - 1) * colGap) / LIB_COLS - dp(2), dp(LIB_COVER_MAX_DP), dp(LIB_COVER_MIN_DP), LIB_COLS)
-        val w = grid.coverW
-        if (w < dp(SHELF_COVER_MIN_DP)) return null
+        // 표지 그림이 0 이 되지 않게(책 자리가 글자 줄보다도 낮을 때)
+        val w = maxOf(grid.coverW, dp(1))
         val pages = books.chunked(grid.cols * grid.rows)
         setPages(books, pages.size, grid.cols * grid.rows)
         // 진행률 막대는 읽는 화 글자 줄 높이의 가운데에(책마다 줄 높이가 같게)
@@ -1125,9 +1130,9 @@ class HomeActivity : EinkActivity() {
      * 표지 모양(DESIGN.md `홈 모양`): 맨 앞 책(기본 모양과 같은 표지 옆 글자) 아래 `함께 읽는 책`을 표지로만(세로 4열, 높이에 드는 만큼 줄,
      * 표지에 반납일 딱지 · 아래에 진행률 막대). 두 표지 크기는 [HomeShelf]: 맨 앞 책은 가장 긴 글자가 드는 높이(최소)를 먼저 지키고,
      * 책 수와 상관없이 같은 크기다(한 권이면 아래가 빈다. 한 권이고 [HomePrefs.oneBookBig] 면 부르지 않고 기본 모양의 한 권으로 그린다).
-     * 책 자리가 아주 낮아 함께 읽는 책 줄이 들지 않거나(세로) 맨 앞 책 표지가 [SHELF_COVER_MIN_DP] 보다 작아지면 null(기본 모양으로 그린다).
+     * 책 자리가 아주 낮아 함께 읽는 책 줄이 들지 않으면 맨 앞 책만 그린다(가로와 같다. 기본 모양으로 바꾸지 않는다).
      */
-    private fun coverShelf(books: List<ShelfBook>, reading: AppEntry?): View? {
+    private fun coverShelf(books: List<ShelfBook>, reading: AppEntry?): View {
         val inner = hero.width - 2 * dp(Ui.MARGIN)
         val colGap = dp(COVER_COL_GAP_DP)
         val rowGap = dp(COVER_ROW_GAP_DP)
@@ -1137,31 +1142,33 @@ class HomeActivity : EinkActivity() {
         val mainCapW = if (wide) mainMaxW() else inner - dp(24) - dp(COVER_INFO_MIN_DP) - dp(2)
         // 구역 제목 줄(컬러면 맨 앞 책 색면 아래 여백만큼 위 여백을 줄인다: [mainLevel] 에 따라 달라진다)
         fun header() = pagedHeader(getString(R.string.also_reading), belowFieldDp(COVER_TITLE_TOP_DP)) { alsoPaged }
+        // 함께 읽는 책 구역(제목 줄·선·위 여백)의 높이
+        fun alsoHead() = header().first.layoutParams.height + dp(1) + dp(SHELF_CELL_TOP_DP)
         // 두 표지와 줄들이 나눌 높이
-        fun room() = heroHeight - dp(heroPad) - dp(2) - dp(fieldBottom) - header().first.layoutParams.height - dp(1) - dp(SHELF_CELL_TOP_DP) - padBottom
+        fun room() = heroHeight - dp(heroPad) - dp(2) - dp(fieldBottom) - alsoHead() - padBottom
+        // 함께 읽는 책 줄이 들지 않으면(줄 0) 그 구역의 높이도 맨 앞 책에 준다(글자 간격도 이 높이로 고른다)
         fun shelf() = room().let { room ->
-            if (wide) HomeShelf.coverWide(room, rowExtra, inner, colGap, dp(COVER_WIDE_CELL_DP), COVER_COLS, dp(COVER_ALSO_MIN_DP), mainCapW * 3 / 2)
+            (if (wide) HomeShelf.coverWide(room, rowExtra, inner, colGap, dp(COVER_WIDE_CELL_DP), COVER_COLS, dp(COVER_ALSO_MIN_DP), mainCapW * 3 / 2)
             else HomeShelf.cover(
                 room, rowExtra, rowGap, COVER_COLS, minOf(dp(COVER_ALSO_MAX_DP), (inner - (COVER_COLS - 1) * colGap) / COVER_COLS - dp(2)),
                 dp(COVER_ALSO_MIN_DP), dp(MAIN_MAX_DP) * 3 / 2, mainNeedHeight(reading, MAIN_MIN, mainCapW), mainCapW * 3 / 2,
-            )
+            )).let { if (it.rows == 0) it.copy(mainH = minOf(room + alsoHead(), mainCapW * 3 / 2)) else it }
         }
         var shelf = shelf()
-        // 지금 간격(앱 위 12dp 까지 줄여)으로 글자가 다 들지 않으면 가장 줄인 간격으로 다시 잰다(색면 여백도 줄어 높이가 조금 는다)
-        if (shelf.mainH < mainNeedHeight(reading, MAIN_APP12, mainCapW)) {
+        // 지금 간격(앱 위 12dp 까지 줄여)으로 글자가 다 들지 않으면 가장 줄인 간격으로 다시 잰다(색면 여백도 줄어 높이가 조금 는다).
+        // 함께 읽는 책 줄이 들지 않을 때도 가장 줄인 간격으로 재 보고, 그래도 들지 않으면 지금 간격 그대로(맨 앞 책만)
+        val mainFits = shelf.mainH >= mainNeedHeight(reading, MAIN_APP12, mainCapW)
+        if (!mainFits || shelf.rows == 0) {
             mainLevel = MAIN_MIN
-            shelf = shelf()
-        }
-        if ((shelf.rows == 0 && !wide) || shelf.mainH * 2 / 3 < dp(SHELF_COVER_MIN_DP)) {
-            mainLevel = MAIN_NORMAL
-            return null
+            val tight = shelf()
+            if (!mainFits || tight.rows > 0) shelf = tight else mainLevel = MAIN_NORMAL
         }
         val rest = books.drop(1)
         val pages = if (shelf.rows == 0) emptyList() else rest.chunked(shelf.cols * shelf.rows)
         setPages(rest, pages.size, shelf.cols * shelf.rows)
         val w = shelf.alsoW
         val alsoH = if (shelf.rows == 0) 0 else shelf.rows * (w * 3 / 2 + rowExtra) + (shelf.rows - 1) * rowGap
-        val main = mainBook(books.first(), reading, shelf.mainH * 2 / 3, room() - alsoH)
+        val main = mainBook(books.first(), reading, maxOf(shelf.mainH * 2 / 3, dp(1)), if (shelf.rows == 0) room() + alsoHead() else room() - alsoH)
         return vbox().apply {
             addView(main)
             if (pages.isEmpty()) return@apply
@@ -1522,14 +1529,14 @@ class HomeActivity : EinkActivity() {
         private const val LIB_COVER_MAX_DP = 156
         private const val LIB_COVER_MIN_DP = 80
         private const val LIB_ROW_GAP_DP = 8
+        /** 서재 가로: 표지가 이보다 작아도(아주 낮은 책 자리) 열 수는 이 칸 폭으로 센다 */
+        private const val LIB_CELL_MIN_DP = 40
         /** 서재·표지 모양: 서재 구역 제목 위 여백, 선 아래 → 첫 줄 표지, 표지 → 제목, 제목 → 진행률 줄, 진행률 막대 높이 */
         private const val SHELF_TITLE_TOP_DP = 6
         private const val SHELF_CELL_TOP_DP = 12
         private const val SHELF_TITLE_GAP_DP = 6
         private const val SHELF_STATUS_GAP_DP = 4
         private const val SHELF_BAR_DP = 5
-        /** 서재·표지 모양: 표지(서재의 칸, 표지 모양의 맨 앞 책)가 이보다 작아지면 기본 모양으로 그린다 */
-        private const val SHELF_COVER_MIN_DP = 40
         /**
          * 표지 모양: 함께 읽는 책 세로 열 수(가로는 이 수부터 칸 [COVER_WIDE_CELL_DP] 가 드는 만큼), 표지 폭 상한·하한(더 작아지면 그 줄을 두지 않는다),
          * 칸 사이·줄 사이, 표지 아래(막대와 그 위아래) 높이, 표지 → 막대, 구역 제목 위 여백, 세로에서 맨 앞 책 옆 글자 칸에 남기는 폭.
