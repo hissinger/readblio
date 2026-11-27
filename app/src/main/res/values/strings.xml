@@ -202,7 +202,6 @@
     <string name="forget_book">Readblio에서 지우기</string>
     <string name="year_books">올해 읽은 책</string>
     <string name="year_books_of">%1$d년 읽은 책</string>
-    <string name="pick_year">해 고르기</string>
     <string name="year_books_link">올해 읽은 책 ›</string>
     <string name="year_books_empty">올해 읽은 책이 아직 없습니다. 책 메뉴의 완독으로 남기거나, 오늘 읽은 시간을 켜면 읽은 책이 모입니다.</string>
     <string name="date_year_fmt">yyyy년 M월 d일</string>
@@ -610,7 +609,6 @@
     <string name="recap_title">%1$s 결산</string>
     <string name="recap_month_fmt">M월</string>
     <string name="recap_month_year_fmt">yyyy년 M월</string>
-    <string name="recap_link">%1$s 결산 ›</string>
     <string name="recap_prev">‹ %1$s</string>
     <string name="recap_next">%1$s ›</string>
     <string name="recap_share">공유</string>
@@ -680,4 +678,27 @@
     <string name="filter_recap_sub">%1$s 읽은 시간</string>
     <string name="year_category_empty">고른 카테고리에 책이 없습니다.</string>
     <string name="category_same_name">같은 이름의 카테고리가 있습니다.</string>
+    <string name="filter_books_heading">읽은 책</string>
+    <string name="filter_finished_only">완독만</string>
+    <string name="filter_no_category">카테고리가 없습니다.</string>
+    <string name="filter_no_category_sub">책을 소설·만화처럼 나누면 여기서 골라 봅니다.</string>
+    <string name="category_make">카테고리 만들기 ›</string>
+    <string name="year_menu_recap">월 독서 결산 ›</string>
+    <string name="year_menu_year">년도</string>
+    <string name="year_menu_edit">편집</string>
+    <string name="menu">메뉴</string>
+    <string name="edit_count">%1$d권 고름</string>
+    <string name="select_all">모두 고르기</string>
+    <string name="select_none">모두 풀기</string>
+    <string name="edit_category">카테고리 ›</string>
+    <string name="edit_delete">지우기</string>
+    <string name="bulk_category_sub">고른 %1$d권</string>
+    <string name="category_all_of">%1$d권 모두</string>
+    <string name="category_remove">제거</string>
+    <string name="bulk_forget_confirm">%1$d권을 Readblio에서 지울까요?</string>
+    <string name="bulk_forget_note">모든 해의 읽은 책 목록·결산에서 빠집니다.</string>
+    <string name="bulk_forget_home">그중 %1$d권은 홈에서도 빠집니다.</string>
+    <string name="bulk_forget_more">%1$s 외 %2$d권</string>
+    <string name="bulk_forget_action">%1$d권 지우기</string>
+    <string name="bulk_forget_time_sub">모든 해의 시간 · 연속일·목표가 바뀝니다 · 되돌릴 수 없습니다</string>
 </resources>

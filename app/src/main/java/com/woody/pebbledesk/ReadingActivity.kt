@@ -28,17 +28,15 @@ import kotlin.math.sqrt
 
 /**
  * ⑫ 독서 기록: 연속일과 오늘 링, 최근 4주 목표 링 달력(애플 활동 앱처럼), 이번 달 목표 달성, 이번 주·이번 달·올해 합계, 이번 주 책별 시간.
- * 제목 오른쪽 `올해 읽은 책 ›` 은 올해 읽은 책([YearBooksActivity]).
+ * 하단 줄: 가운데 보기 거르기 `전체 ▾`, 오른쪽 `올해 읽은 책 ›`(올해 읽은 책, [YearBooksActivity]).
  * 홈 하단의 `오늘 42분`(바형은 `42분`)이나 설정 > 독서 기록으로 연다. 숫자는 [ReadingLog] 에서 온다.
  */
 class ReadingActivity : EinkActivity() {
     private lateinit var body: LinearLayout
     /** 이번 주 읽은 책(다섯 권이 넘으면 쪽을 넘긴다). 읽은 책이 없으면 null. */
     private var bookRows: PagedRows? = null
-    /** 제목 옆 보기 거르기 `전체 ▾`(카테고리가 있을 때만), 제목 줄과 오른쪽 `올해 읽은 책 ›`(다 들지 않으면 줄인다) */
+    /** 하단 가운데 보기 거르기 `전체 ▾`(카테고리가 없어도 같은 자리, 누르면 안내) */
     private lateinit var filterText: TextView
-    private lateinit var titleBar: LinearLayout
-    private lateinit var yearLink: TextView
 
     /**
      * 가로 화면: 왼쪽 요약 칸(연속일·오늘 링, 읽은 시간, 이번 주 읽은 책)과 오른쪽 달력·그래프(남는 높이를 채운다).
@@ -49,23 +47,21 @@ class ReadingActivity : EinkActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val root = vbox()
-        root.addView(titleRow(getString(R.string.reading_stats), Palette.Area.READING) { finish() }.apply {
-            filterText = text("", 21f, color = Ui.GRAY).apply { setPadding(dp(14), dp(20), dp(8), dp(20)) }
-            addView(filterText, lp(WRAP, WRAP).apply { topMargin = dp(6) })
-            addView(View(context), lp(0, 0, 1f))
-            // 올해 읽은 책
-            val link = text(getString(R.string.year_books_link), 17f, Ui.bold).apply {
-                setPadding(dp(16), dp(20), 0, dp(20))
-                setOnClickListener { startActivity(YearBooksActivity.intent(this@ReadingActivity)) }
-            }
-            addView(link, lp(WRAP, WRAP))
-            yearLink = link
-            titleBar = this
-            fitTitleLink(this, link)
-        })
+        root.addView(titleRow(getString(R.string.reading_stats), Palette.Area.READING) { finish() })
         root.addView(hline(2))
         body = vbox()
         root.addView(body, lp(MATCH, 0, 1f))
+        // 하단 줄: 가운데 보기 거르기, 오른쪽 `올해 읽은 책 ›`
+        root.addView(hline(1, inset = false))
+        root.addView(FrameLayout(this).apply {
+            filterText = filterButton()
+            addView(filterText, FrameLayout.LayoutParams(WRAP, MATCH, Gravity.CENTER_HORIZONTAL))
+            addView(text(getString(R.string.year_books_link), 21f, Ui.bold).apply {
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(dp(24), 0, dp(Ui.MARGIN), 0)
+                setOnClickListener { startActivity(YearBooksActivity.intent(this@ReadingActivity)) }
+            }, FrameLayout.LayoutParams(WRAP, MATCH, Gravity.END))
+        }, lp(MATCH, dp(Ui.FOOTER_DP)))
         // 가로면 달력과 그래프를 함께 둘지는 오른쪽 칸 폭으로 정한다(높이는 잴 필요 없다)
         if (wide) both = (resources.displayMetrics.widthPixels - summaryWidth()) / 2 - 2 * dp(Ui.MARGIN) >= dp(CAL_MIN_DP)
         checkRoom()
@@ -79,6 +75,13 @@ class ReadingActivity : EinkActivity() {
 
     /** 달력과 그래프를 함께 보이는가: 세로는 높이가 있으면(처음 그리기 전에 한 번 잰다, [checkRoom]), 가로는 오른쪽 칸 폭으로 만들 때 정한다. 모르면 null */
     private var both: Boolean? = null
+    /**
+     * 세로 화면에서 합계·이번 주 읽은 책을 위아래로 쌓는가(좁은 화면처럼 합계를 한 줄 세 칸, 책은 남는 높이에). 나란히 둔 칸이 하단 줄에 가려지면
+     * (글자를 키운 화면) 처음 그린 뒤 한 번 재고 바꾼다([checkRoom]).
+     */
+    private var stacked = false
+    /** 지금 그린 화면에서 쌓을지 이미 쟀는가(다시 만들 때마다 한 번만 잰다) */
+    private var roomMeasured = false
     /** 지금 화면에 달력이 있는가(사용 기록 권한이 없으면 안내 글뿐이라 높이를 재지 않는다) */
     private var hasCalendar = false
 
@@ -94,9 +97,10 @@ class ReadingActivity : EinkActivity() {
         // 보기 거르기(고른 카테고리의 책만, `전체`면 통계에서 뺀 카테고리의 책만 빼고). 화면 전체(연속일·링·달력·합계·이번 주 읽은 책)가 거른 기록으로 센다.
         val filter = StatsFilter.of(this, prefs.statsPicked(HomePrefs.StatsScreen.READING))
         // 지난날이 저장되거나 기록을 고치면 DB 순번이 바뀐다(세기가 날이 바뀐 지난날을 저장하므로 DB 순번은 센 뒤에 본다)
-        val state = listOf(raw?.get(today), today, Db.changes(), prefs.readingGoalMin, prefs.firstDayOfWeek, both, raw == null, filter.picked)
+        val state = listOf(raw?.get(today), today, Db.changes(), prefs.readingGoalMin, prefs.firstDayOfWeek, both, raw == null, filter.picked, stacked)
         if (state == shown) return
         shown = state
+        roomMeasured = false
         // 거르기는 다시 그릴 때만(모든 날을 거른 사본을 만든다)
         val days = raw?.let(filter::days)
         showFilter(filter, raw, today)
@@ -131,7 +135,7 @@ class ReadingActivity : EinkActivity() {
             topMargin = dp(HERO_GAP_DP - if (Palette.current.color) FIELD_BOTTOM_DP else 0)
         })
         val inner = resources.displayMetrics.widthPixels - 2 * dp(Ui.MARGIN)
-        val narrow = inner - dp(TOTALS_W * Ui.textGrow) - dp(BOOKS_GAP) < dp(BOOKS_MIN_DP)
+        val narrow = inner - dp(TOTALS_W * Ui.textGrow) - dp(BOOKS_GAP) < dp(BOOKS_MIN_DP) || stacked
         if (narrow || Ui.tallScreen) {
             // 바형·좁은 화면: 합계를 한 줄 세 칸으로, 그 아래 이번 주 읽은 책을 전체 폭으로.
             // 좁은 화면은 책을 남는 높이에 들어가는 만큼 한 쪽에(세로도 모자라다), 바형은 다섯 권씩(남는 높이에 그래프가 들게, [checkRoom])
@@ -151,21 +155,15 @@ class ReadingActivity : EinkActivity() {
         })
     }
 
-    /**
-     * 제목 옆 `전체 ▾`(카테고리를 하나도 만들지 않았으면 두지 않는다). 누르면 보기 메뉴(줄마다 그것만 골랐을 때 올해 읽은 시간).
-     * 제목 줄에 다 들지 않으면 `올해 읽은 책 ›` 을 줄인다(처음 크기부터 다시 잰다).
-     */
+    /** 하단 가운데 `전체 ▾`(카테고리가 없어도 둔다). 누르면 보기 메뉴(줄마다 그것만 골랐을 때 올해 읽은 시간, 카테고리가 없으면 안내). */
     private fun showFilter(filter: StatsFilter, raw: ReadingDays?, today: LocalDate) {
-        filterText.visibility = if (filter.categories.isEmpty()) View.GONE else View.VISIBLE
         filterText.text = "${filterName(filter)} ▾"
         filterText.setOnClickListener {
-            showStatsFilter(filter, getString(R.string.filter_reading_sub), { f ->
+            showStatsFilter(filter, getString(R.string.filter_reading_sub), { f, _ ->
                 val d = raw?.let(f::days).orEmpty()
                 duration(d.filterKeys { it.year == today.year && it <= today }.keys.sumOf { d.total(it) })
-            }) { prefs.setStatsPicked(HomePrefs.StatsScreen.READING, it); render() }
+            }) { cats, _ -> prefs.setStatsPicked(HomePrefs.StatsScreen.READING, cats); render() }
         }
-        yearLink.setSp(17f)
-        fitTitleLink(titleBar, yearLink)
     }
 
     /** 좌우 여백만큼 들인다 */
@@ -201,12 +199,30 @@ class ReadingActivity : EinkActivity() {
     /**
      * 처음 그리기 전에 아래 남는 높이를 재서, 그래프 하나(+ 사이)가 더 들어가면 달력과 그래프를 함께 보이게 다시 만든다
      * (세로가 긴 바형 화면. 넘친 화면을 한 번 그리지 않게 이번 그리기는 건너뛴다). 페블·글자를 키운 화면은 지금처럼 하나씩.
+     * 거꾸로 아래가 하단 줄에 가려지면(글자를 키운 페블) 합계·이번 주 읽은 책을 위아래로 쌓는다([stacked]).
      */
     private fun checkRoom() {
         body.viewTreeObserver.addOnPreDrawListener {
-            if (both != null || !hasCalendar) return@addOnPreDrawListener true
+            if (!hasCalendar || body.childCount == 0) return@addOnPreDrawListener true
             // 쓴 높이: 마지막 칸의 아래 끝(칸 사이 여백까지 든다)
-            val used = if (body.childCount == 0) 0 else body.getChildAt(body.childCount - 1).bottom
+            val used = body.getChildAt(body.childCount - 1).bottom
+            // 나란히 둔 합계·이번 주 읽은 책이 아래에서 잘리면(글자를 키운 화면) 위아래로 쌓아 다시 그린다. 세로 목록은 남는 높이만큼만 주므로
+            // 칸이 바라는 높이를 따로 잰다(배치는 그대로 두고 재기만 한다).
+            if (!wide && !stacked && both != true && !roomMeasured) {
+                roomMeasured = true
+                val last = body.getChildAt(body.childCount - 1)
+                last.measure(View.MeasureSpec.makeMeasureSpec(last.width, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+                if (last.top + last.measuredHeight > body.height) { stacked = true; render(); return@addOnPreDrawListener false }
+            }
+            // 쌓았는데도 이번 주 읽은 책이 제목과 한 줄도 들지 않으면(글자 150% 페블) 반쯤 잘린 칸을 두지 않고 감춘다(홈처럼 다 들지 않는 칸은 그리지 않는다)
+            if (stacked && !wide) {
+                val books = body.getChildAt(body.childCount - 1)
+                if (books.visibility == View.VISIBLE && books.height < dp(BOOKS_MIN_H_DP * Ui.textGrow)) {
+                    books.visibility = View.GONE
+                    return@addOnPreDrawListener false
+                }
+            }
+            if (both != null) return@addOnPreDrawListener true
             both = body.height - used >= ringCalendarHeight(this, WEEKS) + dp(GRAPH_GAP_DP)
             if (both == true) { render(); false } else true
         }
@@ -535,6 +551,8 @@ class ReadingActivity : EinkActivity() {
         private const val BOOKS_GAP = 24
         /** 오른쪽 책 칸이 이보다 좁아지면(dp) 합계를 한 줄로, 책을 그 아래 전체 폭으로 둔다 */
         private const val BOOKS_MIN_DP = 200
+        /** 쌓은 이번 주 읽은 책 칸이 보이려면 있어야 하는 높이(제목·선·책 한 줄, 100% 기준) */
+        private const val BOOKS_MIN_H_DP = 76
         /** 바형·좁은 화면: 합계 줄과 이번 주 읽은 책 사이(dp) */
         private const val STACK_GAP_DP = 20
         /** 이번 주 읽은 책 한 쪽의 줄 수와 줄 높이(dp) */

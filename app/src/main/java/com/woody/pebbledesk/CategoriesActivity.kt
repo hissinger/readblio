@@ -157,27 +157,62 @@ fun Context.filterName(f: StatsFilter): String {
 }
 
 /**
- * 보기 메뉴(독서 기록·올해 읽은 책·결산 제목 옆 `전체 ▾`): 머리 `보기` · 회색 [sub], 체크 줄 `전체`(통계에서 뺀 카테고리가 있으면 아래 `만화 빼고`) ·
- * 카테고리들(통계에서 뺐으면 뒤에 `통계에서 뺌`) · `분류 없음`, 줄마다 오른쪽에 그것만 골랐을 때의 값([measure], 읽은 시간·권수).
+ * 보기 메뉴(독서 기록·올해 읽은 책·결산 하단 가운데 `전체 ▾`): 머리 `보기` · 회색 [sub].
+ * [finished] 가 있으면(올해 읽은 책, 지금 `완독만` 인가) 먼저 소제목 `읽은 책` 아래 동그라미 줄 `전체` / `완독만`(둘 중 하나, 오른쪽에 권수), 그 아래 소제목 `카테고리`.
+ * 카테고리 줄: 체크 줄 `전체`(통계에서 뺀 카테고리가 있으면 아래 `만화 빼고`) · 카테고리들(통계에서 뺐으면 뒤에 `통계에서 뺌`) · `분류 없음`,
+ * 줄마다 오른쪽에 그것만 골랐을 때의 값([measure]: 거르기와 `완독만` 으로 센 읽은 시간·권수). 메뉴 안에서 고르는 대로 다시 센다
+ * (`완독만` 을 고르면 카테고리 권수도 완독한 책만, 카테고리를 고르면 `읽은 책` 줄도 그 카테고리만).
  * 여러 개를 고를 수 있다: `전체`를 누르면 나머지를 끄고, 다른 줄을 켜면 `전체`가 꺼지며, 다 끄면 `전체`. 켜진 `전체`를 한 번 더 누르면
  * 통계에서 빼지 않은 카테고리와 `분류 없음`을 모두 켠다([StatsFilter.selectable], 하나만 빼고 볼 때 나머지를 하나씩 누르지 않게).
- * 맨 아래 왼쪽 `카테고리 관리 ›`, 오른쪽 `확인`([onApply], 그대로 모두 켜져 있으면 `전체`로).
+ * 맨 아래 왼쪽 `카테고리 관리 ›`, 오른쪽 `확인`([onApply]: 고른 카테고리(그대로 모두 켜져 있으면 `전체`)와 `완독만`).
+ * 카테고리를 하나도 만들지 않았으면 카테고리 줄 대신 안내 `카테고리가 없습니다.`, 맨 아래 왼쪽 `카테고리 만들기 ›`, 오른쪽 `확인`([finished] 가 있을 때) 또는 `닫기`.
  */
-fun Context.showStatsFilter(f: StatsFilter, sub: String, measure: (StatsFilter) -> String, onApply: (Set<Long>) -> Unit) {
+fun Context.showStatsFilter(
+    f: StatsFilter, sub: String, measure: (StatsFilter, Boolean) -> String, finished: Boolean? = null,
+    onApply: (Set<Long>, Boolean) -> Unit,
+) {
     val picked = f.picked.toMutableSet()
+    var done = finished == true
     val sheet = Sheet(this).header(getString(R.string.filter_title), sub)
+    val catHeading = finished?.let { getString(R.string.category) }
+    if (finished != null) {
+        val heading = getString(R.string.filter_books_heading)
+        sheet.check(getString(R.string.filter_all), on = { !done }, heading = heading, radio = true,
+            rightNow = { measure(f.with(picked), false) }) { done = false }
+        sheet.check(getString(R.string.filter_finished_only), on = { done }, radio = true,
+            rightNow = { measure(f.with(picked), true) }) { done = true }
+    }
+    // 줄마다 오른쪽 값: `완독만` 이 있으면(올해 읽은 책, 권수만 세 가볍다) 메뉴에서 고르는 대로 다시 세고, 없으면(독서 기록·결산은 1년치 시간을
+    // 거른다) 열 때 한 번만 센다
+    fun value(g: StatsFilter): () -> String = if (finished != null) ({ measure(g, done) }) else measure(g, false).let { v -> { v } }
+    if (f.categories.isEmpty()) {
+        sheet.info(getString(R.string.filter_no_category), getString(R.string.filter_no_category_sub), heading = catHeading)
+            .footer(getString(R.string.category_make)) { startActivity(CategoriesActivity.intent(this)) }
+        if (finished != null) sheet.done(getString(R.string.filter_done)) { onApply(emptySet(), done) }
+        sheet.show()
+        return
+    }
     val excluded = f.categories.filter { it.excluded }.map { it.name }
     sheet.check(
         getString(R.string.filter_all), sub = excluded.takeIf { it.isNotEmpty() }?.let { getString(R.string.filter_all_but, it.joinToString("·")) },
-        right = measure(f.with(emptySet())), on = { picked.isEmpty() },
+        rightNow = value(f.with(emptySet())), on = { picked.isEmpty() }, heading = catHeading,
     ) { if (picked.isEmpty()) picked += f.selectable else picked.clear() }
     val options = f.categories.map { Triple(it.id, it.name, it.excluded) } + Triple(Categories.NONE, getString(R.string.category_uncategorized), false)
     options.forEach { (id, name, out) ->
-        sheet.check(name, tag = if (out) getString(R.string.category_excluded_tag) else null, right = measure(f.with(setOf(id))), on = { id in picked }) {
+        sheet.check(name, tag = if (out) getString(R.string.category_excluded_tag) else null, rightNow = value(f.with(setOf(id))), on = { id in picked }) {
             if (!picked.remove(id)) picked += id
         }
     }
     sheet.footer(getString(R.string.category_manage)) { startActivity(CategoriesActivity.intent(this)) }
-        .done(getString(R.string.filter_done)) { onApply(f.with(picked).picked) }
+        .done(getString(R.string.filter_done)) { onApply(f.with(picked).picked, done) }
         .show()
+}
+
+/**
+ * 하단 가운데 보기 거르기 단추(독서 기록·올해 읽은 책·결산): 굵은 `전체 ▾` · `소설 ▾` · `소설·에세이 ▾`([filterName]).
+ * 카테고리가 없어도 늘 같은 자리에 둔다(누르면 보기 메뉴의 안내).
+ */
+fun Context.filterButton(): android.widget.TextView = text("", 21f, Ui.bold).apply {
+    gravity = android.view.Gravity.CENTER_VERTICAL
+    setPadding(dp(24), 0, dp(24), 0)
 }
