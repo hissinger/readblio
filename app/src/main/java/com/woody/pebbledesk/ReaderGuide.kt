@@ -13,6 +13,7 @@ import com.woody.pebbledesk.readers.EasyViewFree
 import com.woody.pebbledesk.readers.EcoViewer
 import com.woody.pebbledesk.readers.Futon
 import com.woody.pebbledesk.readers.Kahon
+import com.woody.pebbledesk.readers.Komikku
 import com.woody.pebbledesk.readers.KOReader
 import com.woody.pebbledesk.readers.KOReaderFdroid
 import com.woody.pebbledesk.readers.IReader
@@ -179,7 +180,7 @@ internal object ReaderGuide {
         )),
         App(listOf(R.string.guide_ko), listOf(KOReader, KOReaderFdroid), Info(
             emptyList(),
-            cover = Field(R.string.guide_added_epub_comics, R.string.guide_n_comic_archives), title = YES, author = YES, progress = YES, due = OWN_FILE,
+            cover = Field(R.string.guide_added_epub_comics_pdf, R.string.guide_n_comic_archives), title = YES, author = YES, progress = YES, due = OWN_FILE,
             bookFiles = R.string.guide_files_required, note = R.string.guide_note_ko,
         )),
         App(listOf(R.string.guide_readest), listOf(Readest), Info(
@@ -203,7 +204,7 @@ internal object ReaderGuide {
             emptyList(),
             cover = yes(R.string.guide_n_playbooks_library), title = YES, author = yes(R.string.guide_n_playbooks_library), progress = YES, due = NO,
         )),
-        App(listOf(R.string.guide_mihon, R.string.guide_kahon), listOf(Mihon, Kahon), Info(
+        App(listOf(R.string.guide_mihon, R.string.guide_kahon, R.string.guide_komikku), listOf(Mihon, Kahon, Komikku), Info(
             listOf(R.string.guide_t_mihon_open),
             cover = yes(R.string.guide_n_mihon_cover), title = MENU, author = yes(R.string.guide_n_mihon_detail),
             progress = Field(R.string.guide_added_menu, R.string.guide_n_mihon_chapter), due = NO, bookFiles = R.string.guide_files_cover_info, note = R.string.guide_note_mihon,

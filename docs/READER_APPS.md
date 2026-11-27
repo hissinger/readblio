@@ -27,7 +27,7 @@ Readblio 가 이북 앱에서 무엇을 알아내고 무엇을 할 수 있는지
 | BookFusion `com.bookfusion.android.reader`(내 EPUB·PDF 를 올리거나 스토어에서. 계정 없이도 올려 읽을 수 있다) | `o.getLayoutResId`(EPUB)·`o.writePhotoListTofacebook_common_release`(PDF). 난독화 이름이라 판마다 바뀐다(2.24.0·2.23.15 확인) | X (읽는 화면은 앱 안에서만 열리고, 받는 링크는 로그인 `bookfusion://auth` 뿐) | 그냥 열면 Bookshelf(읽던 책이 떠 있었으면 그 책) | X | 앱 전용 저장소 (미확인) |
 | 우주 `com.inno.woojoo`(우주뷰어, 이노스페이스원. Librera Reader 를 고친 내 파일 리더) | `HorizontalViewActivity`(책 넘김)·`VerticalViewActivity`(스크롤) | O (`file://` 를 `com.inno.OpenerActivity` 로, 읽던 쪽으로) | O (그냥 열면 내 서재) | X | 사용자가 둔 곳(공유 저장소). 우주 기록은 `/sdcard/Woojoo` |
 | Google Play 북 `com.google.android.apps.books`(구글, 휴대폰 판 하나) | `com.google.android.apps.play.books.ebook.activity.ReadingActivity` | ? | 그냥 열면 홈 탭(읽던 책이 떠 있었으면 그 책) | ? | 앱 전용 저장소 (미확인) |
-| Mihon `app.mihon`·Kahon `com.amanoteam.kahon`(만화, 오픈소스. Kahon 은 Mihon 포크) | `eu.kanade.tachiyomi.ui.reader.ReaderActivity` | ? | 그냥 열면 마지막 화면 | X | 사용자가 고른 저장 폴더(로컬 만화 `<폴더>/local/<작품>/<화>.cbz`) |
+| Mihon `app.mihon`·Kahon `com.amanoteam.kahon`·Komikku `app.komikku`(만화, 오픈소스. Kahon·Komikku 는 Mihon 포크) | `eu.kanade.tachiyomi.ui.reader.ReaderActivity` | ? | 그냥 열면 마지막 화면 | X | 사용자가 고른 저장 폴더(로컬 만화 `<폴더>/local/<작품>/<화>.cbz`) |
 | Futon `io.github.landwarderer.futon`·Kotatsu `org.koitharu.kotatsu`·Kotatsu Redo `io.github.kotatsuredo.kotatsu`(만화·소설, 오픈소스. Futon·Kotatsu Redo 는 Kotatsu 포크, Kotatsu 는 2025-11 저장소 보관·GitHub 릴리스·F-Droid 에서 내려감. Kotatsu Redo 의 화면 이름은 Kotatsu 그대로 `org.koitharu.kotatsu.…`) | `<이름공간>.reader.ui.ReaderActivity`(Futon 은 소설·PDF `novel.ui.reader.NovelReaderActivity`·`…pdf.PdfReaderActivity` 도) | ? | 그냥 열면 마지막 화면 | X | 앱 전용 폴더(`Android/data/…/files/manga`, 불러오기로 복사) |
 | Librera `com.foobnix.pdf.reader`(무료, 광고)·Librera Pro `com.foobnix.pro.pdf.reader`(Play 유료, GitHub·F-Droid 판도 이 패키지. 오픈소스 내 파일 리더, 우주의 원본) | `com.foobnix.pdf.search.activity.HorizontalViewActivity`(책 넘김)·`org.ebookdroid.ui.viewer.VerticalViewActivity`(스크롤) | O (`file://` 를 `com.foobnix.OpenerActivity` 로, 읽던 쪽으로) | O (그냥 열면 라이브러리) | ? | 사용자가 둔 곳(공유 저장소). Librera 기록은 `/sdcard/Librera`(모든 파일 액세스가 없으면 `Download/Librera`) |
 | LibreraX `com.librerax`(Librera 개발자가 새로 만든 내 파일 리더, Compose) | X (액티비티 하나 `ComposeMainActivity`. 읽는 화면은 쪽 막대가 있는 메뉴가 보이거나 누를 수 있는 것이 없는 동안) | O (LibreraX 가 쓰는 경로로: 허용한 폴더의 문서 주소, 다른 앱이 열어 준 책은 LibreraX 폴더의 사본 `file://`. 사용자 저장소의 `file://` 는 못 연다) | O (그냥 열면 라이브러리, 읽던 책이 있으면 읽는 화면) | ? | 사용자가 허용한 폴더(SAF). 기록은 앱 전용이라 읽을 수 없다 |
@@ -90,7 +90,7 @@ Readblio 가 이북 앱에서 무엇을 알아내고 무엇을 할 수 있는지
 | BookFusion | 서재·책 상세 | 서재·책 상세 | 서재·책 상세 | 메뉴 | X |
 | 우주 | 서재·파일 | 서재·메뉴·파일 | 서재·파일 | 서재·메뉴·파일 | X |
 | Google Play 북 | 서재·스토어 상세 | 읽는 화면 | 서재·스토어 상세 | 읽는 화면·메뉴 | X |
-| Mihon·Kahon | 작품 상세 | 작품 상세·메뉴 | 작품 상세 | 메뉴(화 이름) | X |
+| Mihon·Kahon·Komikku | 작품 상세 | 작품 상세·메뉴 | 작품 상세 | 메뉴(화 이름) | X |
 | Kobo Books | 서재·책 상세 | 서재(돌아왔을 때 맨 위 칸)·책 상세 | 서재·책 상세 | 메뉴 | X |
 | Futon·Kotatsu·Kotatsu Redo | 작품 상세 | 서재·작품 상세·메뉴 | 작품 상세 | 작품 상세(%)·메뉴(화 이름) | X |
 | Librera·Librera Pro | 서재·파일 | 서재·메뉴·파일 | 서재·파일 | 서재·메뉴·파일 | X |
@@ -343,7 +343,7 @@ Readblio 가 이북 앱에서 무엇을 알아내고 무엇을 할 수 있는지
 
 - **권한**: 공통 + 책 파일 읽기(**꼭 필요**). 없으면 책을 넣지 않고 읽은 시간은 앱이 앞에 있던 동안을 책 없이 센다.
 - **할 것**: 따로 없다. KOReader 는 화면에 책을 드러내지 않아 KOReader 가 남기는 기록 파일을 읽는다.
-- **표지**: EPUB 이면 책 파일의 표지, ZIP 만화(CBZ·ZIP)는 묶음 안 첫 그림. CBR·CB7 등 압축 만화는 설정 › 독서 › 만화 표지(CBR·CB7) 압축 해제용 도구(libarchive)를 받으면 같은 첫 그림. PDF 등 그 밖의 형식은 표지가 없다.
+- **표지**: EPUB 이면 책 파일의 표지, ZIP 만화(CBZ·ZIP)는 묶음 안 첫 그림. CBR·CB7 등 압축 만화는 설정 › 독서 › 만화 표지(CBR·CB7) 압축 해제용 도구(libarchive)를 받으면 같은 첫 그림. PDF 는 첫 쪽을 그린 그림(다음 판부터, Librera 와 같은 `BookFiles.withPdf`. 암호가 걸린 PDF 는 없다). 그 밖의 형식(DjVu 등)은 표지가 없다.
 - **제목·저자**: 책 옆 `.sdr` 의 책 정보(KOReader 에서 고친 책 정보가 먼저). 처음 연 책은 EPUB 책 정보, 아니면 파일 이름.
 - **진행률**: `.sdr` 의 진행률. 책을 닫거나 KOReader 에서 나올 때 쓰여, 그 뒤 홈에 돌아오면 바뀐다.
 - **반납일**: 없다(내 파일).
@@ -391,7 +391,7 @@ Readblio 가 이북 앱에서 무엇을 알아내고 무엇을 할 수 있는지
 - **반납일**: 없다.
 - **제약**: 홈에서 책을 누르면 Play 북을 연다(책 바로 열기는 조사하지 않았다).
 
-### Mihon `app.mihon`·Kahon `com.amanoteam.kahon`
+### Mihon `app.mihon`·Kahon `com.amanoteam.kahon`·Komikku `app.komikku`
 
 - **권한**: 공통 + 책 파일 읽기(로컬 만화는 작품 폴더의 표지 그림. 온라인 소스 작품에는 쓸모가 없지만 책 파일 읽기가 필요한 앱으로 두어 시작하기·홈에서 묻는다).
 - **할 것**: 화를 펴면 가운데를 눌러 메뉴를 한 번 띄운다(작품 화면에서 화를 눌러 연 화는 띄우지 않아도 바로 들어온다).
@@ -898,9 +898,9 @@ Bilingify 의 오픈소스 리더(https://github.com/readest/readest, Tauri). �
   - 에뮬레이터에서 확인: 스토어 상세 → `무료 샘플` 로 연 `CSS Secrets` 가 새 책(3%), 상세에서 자른 표지가 붙고 상세를 다시 보자 저자 `Lea Verou`. 고치기 전에는 불러오는 동안의 창 제목 `Play 북` 이 책으로 먼저 들어갔다(앱 이름 `Google Play 북` 만 걸렀다). 고친 뒤 앱을 새로 띄워 연 `실무로 통하는 클린 코드`(1%)·`Clean Code Professional Certificate 시험 대비 가이드: 250개 객관식 문제`(저자 `FoxExams Korea`, 1%)는 바로 새 책으로, 표지도 붙었다. 메뉴 없이 쪽을 넘기면 진행률이 1% → 6%(6/110쪽, 앱은 5%)로 따라왔다.
   - 올린 책: 라이브러리 목록 칸을 눌러 연 `플레이 첫 책` 이 창 제목으로 새 책(24%, 라이브러리 `24% 완료` 와 같음). 라이브러리 칸을 읽게 고친 뒤 라이브러리를 보자 저자 `홍길동` 과 큰 격자의 표지(318×477)가 붙었다. 받지 않은 `플레이 둘째 책` 은 큰 격자에서 받기 아이콘이 겹쳐 표지를 자르지 않고, 칸을 눌러 열자 저자 `김철수` 와 함께 새 책으로(마지막으로 본 칸의 저자), 받은 뒤 라이브러리로 돌아오자 아이콘 없는 표지가 붙었다.
 
-### Mihon `app.mihon`·Kahon `com.amanoteam.kahon` (2026-10-26, 에뮬레이터 `CremaPebble_A11_Play`(안드로이드 11), Mihon GitHub 릴리스 v0.21.2 arm64·Kahon GitHub 릴리스 v0.20.6, **지원**)
+### Mihon `app.mihon`·Kahon `com.amanoteam.kahon`·Komikku `app.komikku` (2026-10-26, Komikku 는 2026-11-27, 에뮬레이터 `CremaPebble_A11_Play`(안드로이드 11), Mihon GitHub 릴리스 v0.21.2 arm64·Kahon GitHub 릴리스 v0.20.6, **지원**)
 
-- **앱**: Mihon 은 Tachiyomi 를 이은 오픈소스 만화 앱(확장으로 사이트의 만화를 읽거나 로컬 만화), Kahon 은 Mihon 포크(AmanoTeam, 패키지만 다르고 화면은 거의 같다). 처음 열면 `환영합니다!`(테마 → 저장 폴더 고르기(시스템 폴더 고르기, 에뮬레이터에서 항목을 누르면 반응이 없어 키보드로 골랐다) → 권한·익명 기록 보내기 → 시작). 시험 만화는 직접 만든 CBZ(`<폴더>/local/<작품>/Chapter N.cbz`, `cover.jpg`·`details.json` 의 제목·저자): `Red Moon Story`·`Blue Sky Manga`(화 셋), 저자 없는 `Green Leaf`, 화 열다섯 `Long Story`.
+- **앱**: Mihon 은 Tachiyomi 를 이은 오픈소스 만화 앱(확장으로 사이트의 만화를 읽거나 로컬 만화), Kahon 은 Mihon 포크(AmanoTeam, 패키지만 다르고 화면은 거의 같다). Komikku(`app.komikku`, GitHub 릴리스 v1.14.1, 이슈 #27)도 Mihon 포크로, 화면 이름(`eu.kanade.tachiyomi.ui.main.MainActivity`·`ui.reader.ReaderActivity`)·요소 이름(`reader_container`·`compose_overlay`, 이름공간은 패키지 `app.komikku`)·`unknown_author`(`작가 미상`)가 Mihon 과 같아 `MihonApp` 에 패키지만 준다(Kotatsu Redo 같은 `ns` 는 필요 없다). 찾아보기에 `피드`·`데이터 이전` 탭 등 Komikku 만의 화면이 더 있다(자동 추가는 보지 않는다). 처음 열면 `환영합니다!`(테마 → 저장 폴더 고르기(시스템 폴더 고르기, 에뮬레이터에서 항목을 누르면 반응이 없어 키보드로 골랐다) → 권한·익명 기록 보내기 → 시작). 시험 만화는 직접 만든 CBZ(`<폴더>/local/<작품>/Chapter N.cbz`, `cover.jpg`·`details.json` 의 제목·저자): `Red Moon Story`·`Blue Sky Manga`(화 셋), 저자 없는 `Green Leaf`, 화 열다섯 `Long Story`.
 - **화면**: 액티비티는 `eu.kanade.tachiyomi.ui.main.MainActivity`(서재·업데이트·기록·찾아보기·더 보기 탭과 작품 상세, 모두 Compose)와 읽는 화면 `ui.reader.ReaderActivity` 둘. Compose 라 요소 이름이 없고(읽는 화면의 `compose_overlay`·`reader_pager` 등 안드로이드 뷰만 이름이 있다) 눌러도 알림이 없다. 창 제목은 둘 다 `Mihon`.
 - **서재**: 격자 칸(누를 수 있는 묶음) 안에 표지 그림 자리·아래 그늘·제목 글자·소스 표시(로컬은 폴더 아이콘)가 겹친다(표지 위에 제목이 그려진다). 칸을 누르면 작품 상세가 같은 화면에 뜬다.
 - **작품 상세**: 뒤 그림 · 표지(Mihon: 설명 `표지` 인 단추, Kahon: 누를 수 있는 묶음 안에 설명 `표지` 인 요소와 단추) · 제목(누를 수 있는 글자) · 저자 줄(아이콘 + 저자, 모르면 `작가 미상`(`unknown_author`)) · 상태 줄(`연재 중 • 로컬 저장소`)이 형제로 이어진다. 그 아래 `서재에 추가됨`·설명·장르·`총 3화`·화 줄들, 오른쪽 아래 `시작`(읽던 화가 있으면 이어 읽기). 위로 넘기면 머리가 위 막대(`[0,0][1072,165]`) 밑으로 들어가는데 표지 자리는 가려진 채 그대로 온다. 가로 840dp 이상이면 왼쪽에 머리(큰 표지·제목·저자), 오른쪽에 화 목록인 두 칸이 되고 차례는 같다(에뮬레이터 밀도를 160 으로 낮춰 확인).
@@ -909,6 +909,7 @@ Bilingify 의 오픈소스 리더(https://github.com/readest/readest, Tauri). �
 - **Readblio**(`readers/Mihon.kt`): `DetailReader` 로 작품 상세를 기억해 그 뒤 열린 읽는 화면을 그 작품으로, 상세 없이 열리면 '책 모름', 메뉴 위 줄로 제목. `작가 미상` 은 저자로 넣지 않는다(`MihonReader`).
   - 에뮬레이터에서 확인(Mihon): 서재 → 상세 → 화로 `Blue Sky Manga · Kim Author`·`Red Moon Story · Lee Writer` 가 새 책(표지는 상세에서 자른 188×282), 기록 탭에서 연 화는 '책 모름' 뒤 메뉴로 `Blue Sky Manga` 가 맨 앞으로, `Green Leaf` 는 저자 없이, 상세를 끝까지 넘긴 채 연 `Long Story` 는 표지 없이 들어오고 상세를 맨 위로 되돌리자 표지가 붙었다. 시험 순서 `tools/emu/watch-flows/mihon.sh`.
   - 에뮬레이터에서 확인(Kahon): 처음에는 표지가 단추가 아니라 상세를 찾지 못했다. 표지 규칙을 넓힌 뒤 로컬 저장소 → `Red Moon Story` 상세 → 화로 그 작품이 맨 앞으로, 메뉴 위 줄로도 제목.
+  - 에뮬레이터에서 확인(Komikku, 2026-11-27, `CremaPebble_A11_Play` `-read-only`, GitHub 릴리스 v1.14.1 arm64): 처음 설정의 저장 폴더는 시스템 폴더 고르기에서 항목을 눌러도 반응이 없어 키보드로 새 폴더(`KomikkuData`)를 만들어 골랐다. 로컬 만화 두 권(`Red Moon Story`·`Blue Sky Manga`, `details.json` 저자·`cover.jpg`)을 찾아보기 › 로컬 저장소에서 길게 눌러 서재에 넣고, 서재 첫 칸 → 작품 상세 → `Ch. 2` → 가운데(메뉴 위 줄 `Red Moon Story`·`Ch. 2`) → 홈. 편 책 `app.komikku` · `Red Moon Story`, 함께 읽는 책에 `Red Moon Story · Kim Writer · Ch. 2`, 표지는 작품 폴더의 `cover.jpg` 로 바뀌었다(책 파일 읽기 켜짐).
   - 메뉴로 안 작품의 시간(2026-10-26): 기록 탭에서 `Red Moon Story` 를 열고 70초 뒤 메뉴를 띄우니 편 책 기록이 메뉴를 띄운 때(10:10:06)가 아니라 연 때(10:08:55)로 적혔고, 이어 4분 반 더 읽자 이번 주 읽은 책에 6분(연 때부터, 메뉴부터라면 4분대)으로 나왔다.
   - 상세에서 뒤로 나와 1초 안에 기록 탭의 다른 작품을 열기(2026-10-26): 고치기 전에는 앞 작품(`Blue Sky Manga`)으로 들어갔다(상세를 1초에 한 번 보고, 사라진 상세를 3초 더 기억). 앞 화면이 읽는 화면이 아닌데 상세가 없으면 0.2초 간격으로 바로 잊게 고친 뒤 같은 순서로 열자 '책 모름'으로 남았고, 메뉴로 `Red Moon Story` 를 연 때(10:22:10)부터 적었다. 상세 → 화로 여는 보통 길은 그대로 그 작품.
   - 기록 탭 표지·작품 화면 저자(2026-10-26): 새 작품 `Purple Night`(저자 `Park Artist`)을 작품 화면이 멈추기 전(1.3초)에 `시작` 으로 열어 표지 없이 들어온 뒤, 상세에서 멈추지 않고 기록 탭으로 가자 그 줄의 표지(100×150)가 붙었다. Kahon 기록 탭 줄은 표지가 단추가 아니라 그림·단추를 품은 묶음이었다(규칙을 넓힘). 메뉴로 먼저 들어온 작품의 저자는 작품 화면을 볼 때 채운다(단위 테스트).

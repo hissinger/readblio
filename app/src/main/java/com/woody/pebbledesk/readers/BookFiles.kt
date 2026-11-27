@@ -118,9 +118,9 @@ object BookFiles {
     }
 
     /**
-     * [base] 에 더해 PDF 는 첫 쪽을 그린 그림(안드로이드 기본 `PdfRenderer`). 쓰는 앱: Librera.
+     * [base] 에 더해 PDF 는 첫 쪽을 그린 그림(안드로이드 기본 `PdfRenderer`). 쓰는 앱: Librera·KOReader.
      * 있는지는 열지 않고 파일 머리(앞 1024바이트 안의 `%PDF-`)로만 본다(화면 스레드에서 묻는다). 그려 보다 못 그린 PDF(암호 등)는 기억해 두고 그 뒤로는 없다고 답한다
-     * (그 책은 화면에서 자른다). 큰 PDF 는 여는 데 오래 걸릴 수 있어 늘 뒤에서 꺼낸다
+     * (화면에서 표지를 자르는 앱은 화면에서 자르고, 아니면 빈 표지로 남는다). 큰 PDF 는 여는 데 오래 걸릴 수 있어 늘 뒤에서 꺼낸다
      */
     fun withPdf(base: Covers): Covers = object : Covers {
         override fun has(context: Context, path: String) = if (isPdf(path)) hasPdfCover(path) else base.has(context, path)
