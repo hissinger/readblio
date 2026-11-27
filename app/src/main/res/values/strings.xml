@@ -170,7 +170,7 @@
     <string name="on">켜짐</string>
     <string name="off">꺼짐</string>
     <string name="add_book_title">책 추가</string>
-    <string name="add_book_desc">인터넷 없이 넣습니다. 표지는 넣은 뒤 책 정보 고치기 › 표지 다시 찾기에서 붙입니다.</string>
+    <string name="add_book_desc">인터넷 없이 넣습니다. 표지는 넣은 뒤 책 정보 고치기에서 붙입니다.</string>
     <string name="add_book_author_hint">저자 (비워도 됩니다)</string>
     <string name="add_book_save">넣기</string>
     <string name="book_query_hint">책 제목</string>
@@ -182,6 +182,8 @@
     <string name="book_error">검색하지 못했습니다 (%1$s)</string>
     <string name="cover_loading">표지를 받는 중…</string>
     <string name="cover_error">표지를 받지 못했습니다 (%1$s)</string>
+    <string name="cover_from_device">기기에서 표지 고르기</string>
+    <string name="cover_device_pick">표지 사진 고르기</string>
     <string name="pick_reader_title">읽고 있는 앱 고르기</string>
     <string name="pick_reader_desc">이 책을 읽고 있는 앱을 고르세요. 홈에서 표지를 누르면 이 앱이 열립니다.</string>
     <string name="pick_reader_link">읽고 있는 앱 고르기  ›</string>
@@ -349,7 +351,7 @@
     <string name="wallpaper_remove">사진 지우기</string>
     <string name="wallpaper_strength">진하기</string>
     <string name="wallpaper_hint">고른 사진을 홈 전체 바탕에 흰색과 섞어 깝니다. 글자가 잘 읽히는 진하기를 고르세요.</string>
-    <string name="wallpaper_failed">사진을 열지 못했습니다</string>
+    <string name="picture_failed">사진을 열지 못했습니다</string>
     <string name="home_style_basic">기본</string>
     <string name="home_style_cover">표지</string>
     <string name="home_style_library">서재</string>
@@ -360,7 +362,7 @@
     <string name="due_tag_days">%1$d일</string>
     <string name="due_tag_today">오늘</string>
     <string name="due_tag_over">지남</string>
-    <string name="find_cover">표지 다시 찾기</string>
+    <string name="find_cover">인터넷에서 표지 찾기</string>
     <string name="auto_books_guide">자동 추가 안내</string>
     <string name="guide_tap_hint">앱을 누르면 필요한 권한과 자동으로 들어오는 책 정보가 나옵니다.</string>
     <string name="guide_apps">지원하는 앱</string>
