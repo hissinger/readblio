@@ -492,3 +492,27 @@ fun Context.appRow(
     addView(text(label, textSp, face, color), lp(0, WRAP, 1f))
     if (right != null) addView(right, lp(WRAP, WRAP).apply { marginStart = dp(12) })
 }
+
+/**
+ * 햄버거(가로 줄 셋, 올해 읽은 책 하단 오른쪽): 줄 폭 [LINE_DP]·굵기 2dp·사이 7dp, 오른쪽 여백 안 끝에 붙여 그린다.
+ * 누르는 자리는 뷰 전체(오른쪽 화면 끝까지, [TOUCH_DP] 이상). 글자 크기를 키우면 줄도 함께 키운다.
+ */
+class MenuIcon(context: Context) : View(context) {
+    private val paint = android.graphics.Paint().apply { color = Ui.BLACK; style = android.graphics.Paint.Style.FILL }
+
+    override fun onDraw(canvas: android.graphics.Canvas) {
+        val grow = Ui.textGrow
+        val w = context.dp(LINE_DP * grow).toFloat()
+        val t = context.dp(2 * grow).toFloat()
+        val gap = context.dp(7 * grow).toFloat()
+        val right = width - context.dp(Ui.MARGIN).toFloat()
+        val cy = height / 2f
+        for (k in -1..1) canvas.drawRect(right - w, cy + k * gap - t / 2, right, cy + k * gap + t / 2, paint)
+    }
+
+    companion object {
+        private const val LINE_DP = 22
+        /** 누르는 폭(오른쪽 여백 빼고) */
+        const val TOUCH_DP = 56
+    }
+}

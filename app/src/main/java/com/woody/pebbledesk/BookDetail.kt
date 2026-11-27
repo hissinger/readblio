@@ -145,7 +145,8 @@ internal fun categoryLabel(names: List<String>, more: String, paint: android.tex
 
 /**
  * 카테고리 고르기: 체크 줄 카테고리들(지금 붙은 것 켜짐, 통계에서 뺀 것은 오른쪽 회색 `통계에서 뺌`) / `+ 새 카테고리`(만들면 켜진 채로 다시 띄운다),
- * 맨 아래 왼쪽 `카테고리 관리 ›` · 오른쪽 `확인`. 줄을 누르면 그 칸만 바뀌고 `확인` 에서 한 번에 붙이고 상세를 다시 띄운다. 다 끄면 `없음`.
+ * 맨 아래 왼쪽 `취소`(바꾼 것을 버리고 상세로) · 오른쪽 `확인`(올해 읽은 책 편집의 여러 권 카테고리와 같은 꼴. 카테고리 관리는 설정 › 독서 › 카테고리).
+ * 줄을 누르면 그 칸만 바뀌고 `확인` 에서 한 번에 붙이고 상세를 다시 띄운다. 다 끄면 `없음`.
  * 바뀐 것이 없으면 저장도 다른 화면 다시 그리기도 없이 상세만. 목록에 없던 책은 붙이는 순간 나간 책으로 적어 둔다([bookId]).
  */
 private fun Context.pickCategory(r: BookRecord, onChange: () -> Unit, reopen: () -> Unit, picked: MutableSet<Long> = Categories.of(this, r.book.id).map { it.id }.toMutableSet()) {
@@ -156,7 +157,7 @@ private fun Context.pickCategory(r: BookRecord, onChange: () -> Unit, reopen: ()
         }
     }
     sheet.item(getString(R.string.category_new)) { askNew { picked += it.id; if (alive()) pickCategory(r, onChange, reopen, picked) } }
-        .footer(getString(R.string.category_manage)) { startActivity(CategoriesActivity.intent(this)) }
+        .footer(getString(R.string.cancel)) { if (alive()) reopen() }
         .done(getString(R.string.filter_done)) {
             if (picked != Categories.of(this, r.book.id).map { it.id }.toSet()) {
                 withBook(r) { Categories.assign(this, it, picked) }

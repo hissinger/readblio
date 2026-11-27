@@ -208,4 +208,39 @@ class CategoriesTest {
         assertEquals("소설 외 3  ›", categoryLabel(names, more, paint, 129))
         assertEquals("없음  ›", categoryLabel(listOf("없음"), more, paint, 50))
     }
+
+    @Test fun `여러 권 카테고리는 Gmail 라벨처럼 모두·일부·없음, 바꾼 줄만 붙이고 뗀다`() {
+        val novel = Categories.add(app, "소설")!!
+        val classic = Categories.add(app, "고전")!!
+        val essay = Categories.add(app, "에세이")!!
+        // 이방인 소설 · 인간 실격 소설·고전 · 유리알 유희 없음
+        Categories.assign(app, "b-1", setOf(novel.id))
+        Categories.assign(app, "b-2", setOf(novel.id, classic.id))
+        val books = listOf("b-1", "b-2", "b-3")
+        val bulk = BulkCategories.of(app, books)
+        assertEquals(3, bulk.total)
+        assertEquals(BulkCategories.Mark.SOME, bulk.mark(novel.id))
+        assertEquals(2, bulk.count(novel.id))
+        assertEquals(BulkCategories.Mark.SOME, bulk.mark(classic.id))
+        assertEquals(BulkCategories.Mark.NONE, bulk.mark(essay.id))
+        // 일부 → 모두 → 없음 → 일부(처음에 일부였던 줄만)
+        bulk.toggle(novel.id); assertEquals(BulkCategories.Mark.ALL, bulk.mark(novel.id))
+        bulk.toggle(novel.id); assertEquals(BulkCategories.Mark.NONE, bulk.mark(novel.id))
+        bulk.toggle(novel.id); assertEquals(BulkCategories.Mark.SOME, bulk.mark(novel.id))
+        // 없음 ↔ 모두
+        bulk.toggle(essay.id); assertEquals(BulkCategories.Mark.ALL, bulk.mark(essay.id))
+        bulk.toggle(essay.id); assertEquals(BulkCategories.Mark.NONE, bulk.mark(essay.id))
+        assertTrue(bulk.add.isEmpty() && bulk.remove.isEmpty())
+        // 소설은 모두에서 떼고, 고전은 모두에 붙이고, 에세이는 그대로
+        bulk.toggle(novel.id); bulk.toggle(novel.id)
+        bulk.toggle(classic.id)
+        assertEquals(setOf(classic.id), bulk.add)
+        assertEquals(setOf(novel.id), bulk.remove)
+        assertEquals(3, Categories.change(app, books, bulk.add, bulk.remove))
+        books.forEach { assertEquals(listOf("고전"), Categories.of(app, it).map { c -> c.name }) }
+        // 바뀌는 것이 없는 책은 세지 않는다, 없는 카테고리는 붙이지 않는다
+        assertEquals(0, Categories.change(app, books, setOf(classic.id, 99L), emptySet()))
+        assertEquals(1, Categories.change(app, listOf("b-1", "b-1"), emptySet(), setOf(classic.id)))
+        assertTrue(Categories.of(app, "b-1").isEmpty())
+    }
 }

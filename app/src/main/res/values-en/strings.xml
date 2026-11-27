@@ -191,7 +191,6 @@
     <string name="forget_book">Delete from Readblio</string>
     <string name="year_books">Books this year</string>
     <string name="year_books_of">Books in %1$d</string>
-    <string name="pick_year">Year</string>
     <string name="year_books_link">Books this year ›</string>
     <string name="year_books_empty">No books this year yet. Mark a book Finished from its menu, or turn on Reading time to collect the books you read.</string>
     <string name="date_year_fmt">MMM d, yyyy</string>
@@ -597,7 +596,6 @@
     <string name="recap_title">%1$s recap</string>
     <string name="recap_month_fmt">MMMM</string>
     <string name="recap_month_year_fmt">MMMM yyyy</string>
-    <string name="recap_link">%1$s recap ›</string>
     <string name="recap_prev">‹ %1$s</string>
     <string name="recap_next">%1$s ›</string>
     <string name="recap_share">Share</string>
@@ -671,4 +669,27 @@
     <string name="filter_recap_sub">Read in %1$s</string>
     <string name="year_category_empty">No books in the chosen categories.</string>
     <string name="category_same_name">A category with this name already exists.</string>
+    <string name="filter_books_heading">Books</string>
+    <string name="filter_finished_only">Finished only</string>
+    <string name="filter_no_category">No categories yet.</string>
+    <string name="filter_no_category_sub">Group books, like novels or comics, to pick them here.</string>
+    <string name="category_make">Create categories ›</string>
+    <string name="year_menu_recap">Monthly recap ›</string>
+    <string name="year_menu_year">Year</string>
+    <string name="year_menu_edit">Edit</string>
+    <string name="menu">Menu</string>
+    <string name="edit_count">%1$d selected</string>
+    <string name="select_all">Select all</string>
+    <string name="select_none">Clear all</string>
+    <string name="edit_category">Category ›</string>
+    <string name="edit_delete">Delete</string>
+    <string name="bulk_category_sub">%1$d selected</string>
+    <string name="category_all_of">All %1$d</string>
+    <string name="category_remove">Remove</string>
+    <string name="bulk_forget_confirm">Delete %1$d books from Readblio?</string>
+    <string name="bulk_forget_note">They leave your books read and recaps for every year.</string>
+    <string name="bulk_forget_home">%1$d of them also leave Home.</string>
+    <string name="bulk_forget_more">%1$s +%2$d</string>
+    <string name="bulk_forget_action">Delete %1$d books</string>
+    <string name="bulk_forget_time_sub">All years · streaks and goals may change · can\'t be undone</string>
 </resources>
