@@ -18,15 +18,16 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 /**
- * ⑮ 월간 결산(올해 읽은 책 제목 오른쪽 `10월 결산 ›`). 그달의 독서를 한 장으로 그린 그림([RecapImage])을 보여 주고,
- * 아래 줄 `‹ 9월` · `공유` · `11월 ›`(밀기·페이지 버튼도)로 달을 넘긴다. 기록을 시작한 달보다 앞, 이번 달보다 뒤로는 가지 않는다.
+ * ⑮ 월간 결산(올해 읽은 책 하단 햄버거 › `월 독서 결산 ›`). 그달의 독서를 한 장으로 그린 그림([RecapImage])을 보여 주고,
+ * 아래 줄 `‹ 9월` · 보기 거르기 `전체 ▾` · `11월 ›`(밀기·페이지 버튼도)로 달을 넘긴다. 기록을 시작한 달보다 앞, 이번 달보다 뒤로는 가지 않는다.
+ * 제목 줄 오른쪽 `공유`.
  * 그림을 누르면 화면 가득 크게(상단바·제목·아래 줄·그림 바깥 여백 없이), 다시 누르거나 뒤로 가면 돌아온다. 크게 본 채로도 밀어서 달을 넘긴다.
  * `공유`는 아래 메뉴: 파일로 저장(위치 고르기) · 다른 앱으로 보내기. 저장·보내는 그림은 휴대폰에서 볼 그림이라 화면이 흑백이어도 늘 컬러.
  */
 class RecapActivity : EinkActivity() {
     private var month: YearMonth = YearMonth.now()
     private lateinit var titleText: TextView
-    /** 제목 옆 보기 거르기 `전체 ▾`(카테고리가 있을 때만) */
+    /** 하단 가운데 보기 거르기 `전체 ▾`(카테고리가 없어도 같은 자리) */
     private lateinit var filterText: TextView
     private lateinit var preview: PictureView
     /** 그림 크게 보기(화면 전체를 덮는다, 그림의 바깥 여백을 잘라 [RecapImage.content]) */
@@ -49,8 +50,12 @@ class RecapActivity : EinkActivity() {
         val root = vbox()
         root.addView(titleRow("", Palette.Area.LIBRARY) { finish() }.apply {
             titleText = getChildAt(1) as TextView
-            filterText = text("", 21f, color = Ui.GRAY).apply { setPadding(dp(14), dp(20), dp(8), dp(20)) }
-            addView(filterText, lp(WRAP, WRAP).apply { topMargin = dp(6) })
+            addView(View(context), lp(0, 0, 1f))
+            // 제목 줄 오른쪽 `공유`(파일로 저장·다른 앱으로 보내기)
+            addView(text(getString(R.string.recap_share), 21f, Ui.bold).apply {
+                setPadding(dp(16), dp(20), 0, dp(20))
+                setOnClickListener { share() }
+            }, lp(WRAP, WRAP))
         })
         root.addView(hline(2))
         preview = PictureView(this).apply {
@@ -66,11 +71,9 @@ class RecapActivity : EinkActivity() {
             setOnClickListener { move(-1) }
         }
         footer.addView(prev, FrameLayout.LayoutParams(WRAP, MATCH, Gravity.START))
-        footer.addView(text(getString(R.string.recap_share), 21f, Ui.bold).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(24), 0, dp(24), 0)
-            setOnClickListener { share() }
-        }, FrameLayout.LayoutParams(WRAP, MATCH, Gravity.CENTER_HORIZONTAL))
+        // 가운데 보기 거르기
+        filterText = filterButton()
+        footer.addView(filterText, FrameLayout.LayoutParams(WRAP, MATCH, Gravity.CENTER_HORIZONTAL))
         next = text("", 21f, Ui.bold).apply {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(24), 0, dp(Ui.MARGIN), 0)
@@ -157,18 +160,17 @@ class RecapActivity : EinkActivity() {
         next.setTextColor(if (canNext) Ui.BLACK else Ui.DIVIDER)
     }
 
-    /** 제목 옆 `전체 ▾`(카테고리가 없으면 두지 않는다). 누르면 보기 메뉴(줄마다 그것만 골랐을 때 그달 읽은 시간). */
+    /** 하단 가운데 `전체 ▾`(카테고리가 없어도 둔다). 누르면 보기 메뉴(줄마다 그것만 골랐을 때 그달 읽은 시간, 카테고리가 없으면 안내). */
     private fun showFilter(filter: StatsFilter) {
-        filterText.visibility = if (filter.categories.isEmpty()) View.GONE else View.VISIBLE
         filterText.text = "${filterName(filter)} ▾"
         filterText.setOnClickListener {
             val raw = Recap.days(this)
             val shown = month
             val monthName = shown.format(DateTimeFormatter.ofPattern(getString(R.string.month_fmt), resources.configuration.locales[0]))
-            showStatsFilter(filter, getString(R.string.filter_recap_sub, monthName), { f ->
+            showStatsFilter(filter, getString(R.string.filter_recap_sub, monthName), { f, _ ->
                 val d = f.days(raw)
                 duration((1..shown.lengthOfMonth()).sumOf { d.total(shown.atDay(it)) })
-            }) { prefs.setStatsPicked(HomePrefs.StatsScreen.RECAP, it); render() }
+            }) { cats, _ -> prefs.setStatsPicked(HomePrefs.StatsScreen.RECAP, cats); render() }
         }
     }
 
@@ -254,12 +256,6 @@ class RecapActivity : EinkActivity() {
             val res = if (month.year == YearMonth.now().year) R.string.recap_month_fmt else R.string.recap_month_year_fmt
             val f = DateTimeFormatter.ofPattern(context.getString(res), context.resources.configuration.locales[0])
             return context.getString(R.string.recap_title, month.format(f))
-        }
-
-        /** 올해 읽은 책 제목 줄의 `10월 결산 ›` */
-        fun link(context: Context, month: YearMonth): String {
-            val f = DateTimeFormatter.ofPattern(context.getString(R.string.month_fmt), context.resources.configuration.locales[0])
-            return context.getString(R.string.recap_link, month.format(f))
         }
     }
 }

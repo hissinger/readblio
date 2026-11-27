@@ -120,6 +120,28 @@ object Categories {
     }
 
     /**
+     * 여러 책([books])에 [add] 를 붙이고 [remove] 를 뗀다(올해 읽은 책의 편집, 한 트랜잭션). 다른 카테고리는 그대로, 없는 카테고리는 붙이지 않는다.
+     * 바뀐 책 수.
+     */
+    fun change(context: Context, books: Collection<String>, add: Set<Long>, remove: Set<Long>): Int {
+        val ids = list(context).map { it.id }.toSet()
+        val now = books(context)
+        var changed = 0
+        Db.get(context).tx {
+            for (book in books.distinct()) {
+                val before = now[book].orEmpty()
+                val after = (before + add.filter { it in ids }) - remove
+                if (after == before) continue
+                (before - after).forEach { delete("book_category", "book_id = ? AND category_id = ?", arrayOf(book, it.toString())) }
+                (after - before).forEach { insertOrThrow("book_category", null, Db.values("book_id" to book, "category_id" to it)) }
+                changed++
+            }
+        }
+        cache = null
+        return changed
+    }
+
+    /**
      * 카테고리마다 붙은 책 수(읽고 있는 책과 기록에서 지우지 않은 나간 책만. 여러 카테고리의 책은 그 카테고리마다 센다)와
      * 그중 그 카테고리 하나만 붙은 책 수(지우면 `분류 없음`이 되는 책), 통계에서 뺀 카테고리면 그것 말고는 통계에서 뺀 카테고리가 없는 책 수
      * (지우면 읽은 시간이 통계에 나오는 책)
@@ -143,6 +165,53 @@ object Categories {
 
     /** 카테고리 이름 길이 한도 */
     private const val MAX_NAME = 30
+}
+
+/**
+ * 여러 권 카테고리 메뉴(올해 읽은 책의 편집, Gmail 라벨처럼)의 줄 상태. 처음에는 고른 [total] 권 중 붙은 수([counts])로
+ * 모두([Mark.ALL]) · 일부([Mark.SOME]) · 없음([Mark.NONE]). 누르면 일부 → 모두 → 없음 → 일부(처음에 일부였던 줄만 일부로 돌아온다),
+ * 처음부터 모두·없음이던 줄은 둘 사이만. `확인` 하면 바꾼 줄만: 모두 = 고른 책 모두에 붙이고([add]), 없음 = 모두에서 떼고([remove]), 일부 = 그대로.
+ */
+class BulkCategories(val total: Int, private val counts: Map<Long, Int>) {
+    enum class Mark { ALL, SOME, NONE }
+
+    private val now = HashMap<Long, Mark>()
+
+    /** 고른 책 중 [id] 가 붙은 수(처음) */
+    fun count(id: Long): Int = counts[id] ?: 0
+
+    /** 처음 상태 */
+    fun initial(id: Long): Mark = count(id).let { n -> if (n <= 0) Mark.NONE else if (n >= total) Mark.ALL else Mark.SOME }
+
+    /** 지금 상태 */
+    fun mark(id: Long): Mark = now[id] ?: initial(id)
+
+    fun toggle(id: Long) {
+        now[id] = when (mark(id)) {
+            Mark.SOME -> Mark.ALL
+            Mark.ALL -> Mark.NONE
+            Mark.NONE -> if (initial(id) == Mark.SOME) Mark.SOME else Mark.ALL
+        }
+    }
+
+    /** 새로 만든 카테고리는 켜진 채로(모두에 붙임) */
+    fun set(id: Long, mark: Mark) { now[id] = mark }
+
+    /** 모두에 붙일 것(처음에 모두가 아니던 줄을 모두로) */
+    val add: Set<Long> get() = now.filter { (id, m) -> m == Mark.ALL && initial(id) != Mark.ALL }.keys
+
+    /** 모두에서 뗄 것(처음에 없음이 아니던 줄을 없음으로) */
+    val remove: Set<Long> get() = now.filter { (id, m) -> m == Mark.NONE && initial(id) != Mark.NONE }.keys
+
+    companion object {
+        /** 책들([books])에 붙은 카테고리로 */
+        fun of(context: Context, books: Collection<String>): BulkCategories {
+            val all = Categories.books(context)
+            val counts = HashMap<Long, Int>()
+            books.distinct().forEach { b -> all[b].orEmpty().forEach { counts[it] = (counts[it] ?: 0) + 1 } }
+            return BulkCategories(books.distinct().size, counts)
+        }
+    }
 }
 
 /**

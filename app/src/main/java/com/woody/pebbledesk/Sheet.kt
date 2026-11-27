@@ -50,9 +50,19 @@ class Sheet(private val context: Context) {
 
     private class Item(val label: String, val bold: Boolean, val right: String?, val swatch: List<Int>?, val sub: String?, val rightFit: FitText.Fit?, val action: () -> Unit)
 
-    /** 체크 줄([check]): 누르면 [onClick] 하고 메뉴는 그대로(모든 체크 칸을 [on] 으로 다시 본다) */
-    private class Check(val label: String, val sub: String?, val tag: String?, val right: String?, val on: () -> Boolean, val onClick: () -> Unit)
+    /**
+     * 체크 줄([check]): 누르면 [onClick] 하고 메뉴는 그대로(모든 체크 칸을 [on]·[mixed] 로, 오른쪽 글자를 [rightNow] 로 다시 본다).
+     * [heading] 이 있으면 줄 위에 작은 회색 소제목(보기 메뉴의 `읽은 책` · `카테고리`), [radio] 면 동그라미(둘 중 하나 고르기).
+     */
+    private class Check(
+        val label: String, val sub: String?, val tag: String?, val right: String?, val on: () -> Boolean, val onClick: () -> Unit,
+        val heading: String?, val radio: Boolean, val mixed: () -> Boolean, val rightNow: (() -> String?)?,
+    )
     private val checks = mutableListOf<Check>()
+
+    /** 누르지 않는 안내 줄([info]): 체크 줄 아래, 항목 위. 앞에 [heading] 소제목을 둘 수 있다. */
+    private class Info(val text: String, val sub: String?, val heading: String?)
+    private val infos = mutableListOf<Info>()
 
     /** 맨 아래 줄 왼쪽 글자와 누르면 할 일(닫고 한다). 없으면 오른쪽 `닫기`만. */
     private var footLeft: Pair<String, () -> Unit>? = null
@@ -147,8 +157,14 @@ class Sheet(private val context: Context) {
      * 체크 줄(왼쪽 체크 칸 · 이름([sub] 는 그 아래 작게, [tag] 는 뒤에 작게) · 오른쪽 회색 [right]). 누르면 [onClick] 하고 닫지 않는다.
      * 한 줄을 누르면 다른 줄의 칸도 바뀔 수 있어(`전체`) 모든 칸을 다시 본다. 맨 아래 [done] 으로 정한다.
      */
-    fun check(label: String, sub: String? = null, tag: String? = null, right: String? = null, on: () -> Boolean, onClick: () -> Unit) =
-        apply { checks += Check(label, sub, tag, right, on, onClick) }
+    fun check(
+        label: String, sub: String? = null, tag: String? = null, right: String? = null, on: () -> Boolean,
+        heading: String? = null, radio: Boolean = false, mixed: () -> Boolean = { false }, rightNow: (() -> String?)? = null,
+        onClick: () -> Unit,
+    ) = apply { checks += Check(label, sub, tag, right, on, onClick, heading, radio, mixed, rightNow) }
+
+    /** 누르지 않는 안내 줄(카테고리가 없을 때 보기 메뉴의 `카테고리가 없습니다.`). 체크 줄 아래에 둔다. */
+    fun info(text: String, sub: String? = null, heading: String? = null) = apply { infos += Info(text, sub, heading) }
 
     /** 맨 아래 줄 왼쪽 글자(`카테고리 관리 ›`): 누르면 닫고 [action] */
     fun footer(label: String, action: () -> Unit) = apply { footLeft = label to action }
@@ -179,7 +195,10 @@ class Sheet(private val context: Context) {
     }
 
     /** 가로 화면에서 두 칸으로 나누는가: 아래에 붙는 메뉴이고 항목이 있으며 별점·감상·입력 칸이 없을 때(키보드와 함께 쓰는 메뉴는 한 칸) */
-    private val split get() = !centered && review == null && !hasInput && (items.isNotEmpty() || checks.isNotEmpty()) && context.landscape()
+    private val split get() = !centered && !headless && review == null && !hasInput && (items.isNotEmpty() || checks.isNotEmpty() || infos.isNotEmpty()) && context.landscape()
+
+    /** 제목이 없는 메뉴(올해 읽은 책의 햄버거): 머리를 두지 않고 바로 항목부터, 가로 화면에서도 한 칸(왼쪽 칸이 비지 않게) */
+    private val headless get() = title.isEmpty() && subtitle == null && app == null && image == null && notes.isEmpty()
 
     /** 두 칸 메뉴의 오른쪽(항목) 칸 폭 */
     private fun menuWidth() = maxOf(context.dp(SPLIT_MENU_DP), (context.resources.displayMetrics.widthPixels * SPLIT_MENU_RATIO).toInt())
@@ -237,7 +256,8 @@ class Sheet(private val context: Context) {
      * 별점·입력이 있는 메뉴는 나누지 않는다. 칸([note])이 있는 메뉴(책 상세)는 부르는 쪽이 칸을 먼저 줄여 맞추고, 그래도 넘치면 줄을 나눈다.
      */
     private fun fitRows() {
-        val count = items.size + checks.size
+        // 소제목도 한 줄로 쪽에 들어간다(layout 의 heading)
+        val count = items.size + checks.size + infos.size + checks.count { it.heading != null } + infos.count { it.heading != null }
         if (perPage != null || count < 2 || centered || review != null || hasInput) return
         val avail = (context as? android.app.Activity)?.findViewById<View>(android.R.id.content)?.height?.takeIf { it > 0 }
             ?: context.resources.displayMetrics.heightPixels
@@ -349,7 +369,7 @@ class Sheet(private val context: Context) {
         if (stamped) { root.clipChildren = false; info.clipChildren = false }
 
         val head = head()
-        info.addView(head)
+        if (!headless) info.addView(head)
         notes.forEach { n ->
             info.addView(c.hline(1, Ui.DIVIDER))
             info.addView(FrameLayout(c).apply {
@@ -457,15 +477,22 @@ class Sheet(private val context: Context) {
         val rows = mutableListOf<View>()
         // 줄 높이는 [Ui.ROW_DP] 이고, 이름 아래 설명이 있는 줄은 글자를 키워 넘치면 그만큼 늘어난다(설명이 잘리지 않게)
         fun row(i: Int, content: View) = c.vbox().apply {
-            if (!split || i > 0) addView(c.hline(1, Ui.DIVIDER))
+            if ((!split && !headless) || i > 0) addView(c.hline(1, Ui.DIVIDER))
             content.minimumHeight = c.rowDp(Ui.ROW_DP)
             addView(content, lp(MATCH, WRAP))
         }.also { rows += it }
         fun ViewGroup.subPadding() = setPadding(0, c.dp(SUB_PAD_DP), 0, c.dp(SUB_PAD_DP))
         // 고르는 줄(체크)이 할 일(항목) 위에: 고른 뒤 아래 항목으로 정한다
         val marks = mutableListOf<Pair<CheckMark, Check>>()
+        val rights = mutableListOf<Pair<android.widget.TextView, Check>>()
+        // 소제목(보기 메뉴의 `읽은 책` · `카테고리`): 누르지 않는 작은 회색 줄. 쪽을 나눌 때는 한 줄로 센다.
+        fun heading(text: String) = c.vbox().apply {
+            if ((!split && !headless) || rows.isNotEmpty()) addView(c.hline(1, Ui.DIVIDER))
+            addView(c.text(text, 15f, Ui.bold, Ui.GRAY).apply { setPadding(c.dp(Ui.MARGIN), c.dp(14), c.dp(Ui.MARGIN), c.dp(8)) })
+        }.also { rows += it }
         checks.forEach { check ->
-            val mark = CheckMark(c).apply { on = check.on() }
+            check.heading?.let { heading(it) }
+            val mark = CheckMark(c).apply { radio = check.radio; on = check.on(); mixed = check.mixed() }
             marks += mark to check
             row(rows.size, c.hbox().apply {
                 setPadding(c.dp(Ui.MARGIN), 0, c.dp(Ui.MARGIN), 0)
@@ -479,12 +506,29 @@ class Sheet(private val context: Context) {
                     })
                     check.sub?.let { addView(c.text(it, 15f, color = Ui.GRAY)); subPadding() }
                 }, lp(0, WRAP, 1f))
-                check.right?.let { addView(c.text(it, 21f, color = Ui.GRAY), lp(WRAP, WRAP).apply { marginStart = c.dp(16) }) }
+                (check.rightNow?.invoke() ?: check.right).let { r ->
+                    val view = c.text(r.orEmpty(), 21f, color = Ui.GRAY)
+                    if (check.rightNow != null) rights += view to check
+                    if (r != null || check.rightNow != null) addView(view, lp(WRAP, WRAP).apply { marginStart = c.dp(16) })
+                }
                 setOnClickListener {
                     check.onClick()
-                    // 바뀐 칸만 다시 그린다
-                    marks.forEach { (m, ch) -> ch.on().let { v -> if (m.on != v) m.on = v } }
+                    // 바뀐 칸·글자만 다시 그린다
+                    marks.forEach { (m, ch) ->
+                        ch.on().let { v -> if (m.on != v) m.on = v }
+                        ch.mixed().let { v -> if (m.mixed != v) m.mixed = v }
+                    }
+                    rights.forEach { (v, ch) -> ch.rightNow?.invoke().orEmpty().let { t -> if (v.text.toString() != t) v.text = t } }
                 }
+            })
+        }
+        infos.forEach { info ->
+            info.heading?.let { heading(it) }
+            row(rows.size, c.vbox().apply {
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(c.dp(Ui.MARGIN), c.dp(SUB_PAD_DP), c.dp(Ui.MARGIN), c.dp(SUB_PAD_DP))
+                addView(c.text(info.text, 21f, color = Ui.GRAY, lines = 3))
+                info.sub?.let { addView(c.text(it, 15f, color = Ui.GRAY, lines = 3), lp(WRAP, WRAP).apply { topMargin = c.dp(4) }) }
             })
         }
         items.forEach { item ->
@@ -590,16 +634,39 @@ private class RowPager(private val box: LinearLayout, private val rows: List<Vie
     }
 }
 
-/** 체크 칸([Sheet.check]): 꺼지면 검은 테두리, 켜지면 검게 칠하고 흰 ✓ */
-private class CheckMark(context: Context) : View(context) {
+/**
+ * 체크 칸([Sheet.check], 올해 읽은 책의 편집): 꺼지면 검은 테두리, 켜지면 검게 칠하고 흰 ✓, [mixed](고른 책 중 일부에만)면 테두리 안 굵은 −.
+ * [radio] 면 동그라미(켜지면 가운데 검은 점). [ring] 이면 둘레에 흰 테두리(표지 위에 얹을 때).
+ */
+internal class CheckMark(context: Context) : View(context) {
     var on = false
         set(v) { field = v; invalidate() }
+    var mixed = false
+        set(v) { field = v; invalidate() }
+    var radio = false
+    var ring = 0
     private val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
 
     override fun onDraw(canvas: android.graphics.Canvas) {
-        val s = minOf(width, height).toFloat()
+        if (ring > 0) {
+            paint.style = android.graphics.Paint.Style.FILL
+            paint.color = android.graphics.Color.WHITE
+            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+            canvas.translate(ring.toFloat(), ring.toFloat())
+        }
+        val s = minOf(width, height).toFloat() - 2 * ring
         val stroke = s * 0.09f
         paint.color = Ui.BLACK
+        if (radio) {
+            paint.style = android.graphics.Paint.Style.STROKE
+            paint.strokeWidth = stroke
+            canvas.drawCircle(s / 2, s / 2, s / 2 - stroke / 2, paint)
+            if (on) {
+                paint.style = android.graphics.Paint.Style.FILL
+                canvas.drawCircle(s / 2, s / 2, s * 0.25f, paint)
+            }
+            return
+        }
         if (on) {
             paint.style = android.graphics.Paint.Style.FILL
             canvas.drawRect(0f, 0f, s, s, paint)
@@ -613,6 +680,10 @@ private class CheckMark(context: Context) : View(context) {
             paint.style = android.graphics.Paint.Style.STROKE
             paint.strokeWidth = stroke
             canvas.drawRect(stroke / 2, stroke / 2, s - stroke / 2, s - stroke / 2, paint)
+            if (mixed) {
+                paint.style = android.graphics.Paint.Style.FILL
+                canvas.drawRect(s * 0.25f, s * 0.44f, s * 0.75f, s * 0.56f, paint)
+            }
         }
     }
 }
