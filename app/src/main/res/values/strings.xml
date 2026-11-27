@@ -53,6 +53,13 @@
     <string name="set_default_home">기본 홈 앱</string>
     <string name="device_settings">기기 설정 열기</string>
     <string name="device_info">기기 정보</string>
+    <string name="support">후원하기</string>
+    <string name="support_title">후원하기</string>
+    <string name="support_desc">Readblio 가 마음에 드셨다면 커피 한 잔으로 응원해 주세요.\n휴대폰 카메라로 QR 을 찍으면 열립니다.</string>
+    <string name="support_kakaopay">카카오페이</string>
+    <string name="support_kakaopay_note">국내</string>
+    <string name="support_kofi_note">해외 · PayPal</string>
+    <string name="support_bmc_note">해외 · 카드</string>
     <string name="update">업데이트</string>
     <string name="update_install_failed">설치하지 못했습니다</string>
     <string name="update_install_failed_desc">새 버전을 받거나 확인하지 못했습니다. 잠시 뒤 업데이트를 다시 눌러 보세요.</string>
