@@ -14,7 +14,7 @@ import java.util.zip.ZipFile
 import kotlin.math.abs
 
 /**
- * Mihon(만화 앱, 0.21.2)과 그 포크 Kahon(0.20.6, 패키지만 다르고 화면이 같다): 책 한 권은 만화 한 작품이다(화마다 따로 책을 만들지 않는다).
+ * Mihon(만화 앱, 0.21.2)과 그 포크 Kahon(0.20.6)·Komikku(1.14.1). 포크는 패키지만 다르고 화면이 같다: 책 한 권은 만화 한 작품이다(화마다 따로 책을 만들지 않는다).
  * 서재·찾아보기·기록·작품 상세가 모두 `ui.main.MainActivity` 하나의 Compose 화면이라 요소 이름이 없고, 눌러도 알림이 없다.
  * 작품은 서재 칸을 누르면 뜨는 작품 상세(표지([MihonApp.isCover]) 바로 뒤에 제목, 그 뒤 줄에 저자)에서 안다: 상세에서 화를 누르거나 `시작`·`이어 읽기`로
  * 읽는 화면(`ui.reader.ReaderActivity`)을 열면 그 작품([DetailReader]). 기록·업데이트 탭에서 바로 연 화는 책 모름으로 두고, 읽는 화면 가운데를 눌러
@@ -485,6 +485,9 @@ object Mihon : MihonApp("app.mihon")
 
 /** Kahon(Mihon 포크, F-Droid·GitHub 판 같은 패키지) */
 object Kahon : MihonApp("com.amanoteam.kahon")
+
+/** Komikku(Mihon 포크, GitHub 판 1.14.1. 화면 이름은 Mihon 그대로, 요소 이름공간은 패키지와 같다) */
+object Komikku : MihonApp("app.komikku")
 
 /**
  * 빈 표지([MihonApp.placeholder]) 바탕으로 볼 수 있는 밝기(0~255): 어두운 테마의 바탕(약 32)부터, 흰 표지(255)는 아니게.

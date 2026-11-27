@@ -214,7 +214,8 @@ open class ReaderApp(
 
     /**
      * 이 앱이 연 책 파일에서 표지를 꺼내는 길([BookFiles.Covers]): 꺼낼 수 있는 책은 화면에서 표지를 자르지 않는다.
-     * 기본은 EPUB·그림 폴더([BookFiles.BOOKS]), 만화를 여는 앱은 그 앱 파일에서 [BookFiles.WITH_COMICS] 를 고른다.
+     * 기본은 EPUB·그림 폴더([BookFiles.BOOKS]), 만화를 여는 앱은 그 앱 파일에서 [BookFiles.WITH_COMICS] 를,
+     * PDF 첫 쪽도 쓰는 앱은 [BookFiles.withPdf] 로 감싼 것을 고른다.
      */
     open val fileCovers: BookFiles.Covers get() = BookFiles.BOOKS
 
