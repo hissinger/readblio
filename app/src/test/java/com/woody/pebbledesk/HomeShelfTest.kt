@@ -2,6 +2,7 @@ package com.woody.pebbledesk
 
 import android.content.Context
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -38,6 +39,15 @@ class HomeShelfTest {
     @Test fun `기본 - 바형처럼 넉넉하면 함께 읽는 책은 칸 폭까지`() = assertEquals(230 to 156, big(need = 220, coversH = 645, mainMax = 230))
 
     @Test fun `기본 - 맨 앞 책 글자가 상한 표지보다 높으면 그 몫을 남긴다`() = assertEquals(180 to 66, big(need = 300, coversH = 400))
+
+    // 4칸 칸 폭은 (572 − 2×40 − 3×12) / 4 − 2 = 112, 최소 108
+    @Test fun `기본 - 페블 세로 큰 표지는 4칸`() = assertTrue(HomeShelf.bigAlsoFits(cellW = 112, alsoW = 77, minCellW = 108))
+
+    @Test fun `기본 - 표지가 4칸 폭보다 크면 줄이지 않고 3칸(바형)`() = assertFalse(HomeShelf.bigAlsoFits(cellW = 112, alsoW = 154, minCellW = 108))
+
+    @Test fun `기본 - 표지가 4칸 폭과 같으면 4칸`() = assertTrue(HomeShelf.bigAlsoFits(cellW = 112, alsoW = 112, minCellW = 108))
+
+    @Test fun `기본 - 4칸 칸이 좁으면 3칸`() = assertFalse(HomeShelf.bigAlsoFits(cellW = 107, alsoW = 60, minCellW = 108))
 
     @Test fun `색면 아래 구역 제목 여백 - 흑백은 그대로, 컬러는 색면만큼 줄이되 10dp 는 남긴다`() {
         assertEquals(28, HomeShelf.belowField(28, 0, 10))

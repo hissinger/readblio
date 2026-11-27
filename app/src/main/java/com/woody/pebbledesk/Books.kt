@@ -357,7 +357,7 @@ fun ReadingDays.firstReadDays(): Map<String, LocalDate> {
  * 목록은 DB([Db]) `shelf`, 나간 책은 `past`, 표지는 books/<id>.jpg.
  */
 object BookShelf {
-    /** 홈 책 자리 한 쪽의 책 수: 맨 앞 책 + 함께 읽는 책 3칸(나머지는 함께 읽는 책 다음 쪽) */
+    /** 홈 책 자리 한 쪽의 책 수: 맨 앞 책 + 함께 읽는 책 3칸(나머지는 함께 읽는 책 다음 쪽). 기본 모양 큰 표지가 줄지 않고 들면 함께 읽는 책이 4칸이라 5권(HomeActivity `ALSO_COLS_BIG`) */
     const val HOME = 4
     /** 줄인 표지(바이트로 재서 앱 메모리의 1/8 까지. 권수로 재면 큰 홈 표지가 작은 목록 표지 몇 장에 밀려난다) */
     private val covers = object : LruCache<String, Bitmap>((Runtime.getRuntime().maxMemory() / 8).toInt()) {
