@@ -34,7 +34,11 @@ class ReadingBookIdTest {
 
     private val BOOK get() = BookResult("y1", "데미안", "헤르만 헤세", "", "")
 
-    @Before fun setUp() = BookShelf.clearCaches()
+    @Before fun setUp() {
+        BookShelf.clearCaches()
+        // 앞 시험(다른 클래스 포함, Storage 가 저장소를 static 으로 잡는다)이 남긴 표지가 있으면 '표지가 없다' 시험이 순서에 따라 깨진다
+        java.io.File(Storage.of(app).filesDir, "books").deleteRecursively()
+    }
 
     @After fun tearDown() {
         BookShelf.clearCaches()
@@ -291,13 +295,13 @@ class ReadingBookIdTest {
         assertEquals(listOf(id), db.rows("SELECT book_id FROM finish") { it.getString(0) })
     }
 
-    @Test fun `표지 다시 찾기는 없는 책이면 아무것도 안 한다`() {
+    @Test fun `인터넷에서 표지 찾기는 없는 책이면 아무것도 안 한다`() {
         BookShelf.replace(app, "b-없음", BOOK, png)
         assertTrue(!BookShelf.hasCover(app, "b-없음"))
         assertTrue(BookShelf.list(app).isEmpty())
     }
 
-    @Test fun `표지 다시 찾기에서 책 정보 저장이 실패하면 표지도 예전 것으로`() {
+    @Test fun `인터넷에서 표지 찾기에서 책 정보 저장이 실패하면 표지도 예전 것으로`() {
         shelf(0, "b-1", "데미안")
         BookShelf.clearCaches()
         BookShelf.setCover(app, "b-1", png)
@@ -318,7 +322,7 @@ class ReadingBookIdTest {
         assertFalse(BookShelf.hasCover(app, "b-1"))
     }
 
-    @Test fun `표지 다시 찾기에서 표지를 쓰지 못하면 예전 표지 그대로, 백업 파일도 남지 않는다`() {
+    @Test fun `인터넷에서 표지 찾기에서 표지를 쓰지 못하면 예전 표지 그대로, 백업 파일도 남지 않는다`() {
         shelf(0, "b-1", "데미안")
         BookShelf.clearCaches()
         BookShelf.setCover(app, "b-1", png)

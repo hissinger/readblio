@@ -150,7 +150,7 @@ object BookSearch {
 
     /**
      * Open Library 의 검색어(`q`)는 느슨하게 맞춰 상관없는 책(셰익스피어 등)이 뒤에 붙으므로, 검색어의 낱말이 제목·저자에 모두 든 것만 둔다
-     * (제목 검색 `title` 은 `표지 다시 찾기` 처럼 저자를 붙인 검색어를 못 찾는다).
+     * (제목 검색 `title` 은 `인터넷에서 표지 찾기` 처럼 저자를 붙인 검색어를 못 찾는다).
      */
     internal fun parseOpenLibrary(json: String, query: String): List<BookResult> {
         val words = query.lowercase().split(Regex("""[^\p{L}\p{N}]+""")).filter { it.isNotEmpty() }
@@ -357,7 +357,7 @@ fun ReadingDays.firstReadDays(): Map<String, LocalDate> {
  * 목록은 DB([Db]) `shelf`, 나간 책은 `past`, 표지는 books/<id>.jpg.
  */
 object BookShelf {
-    /** 홈 책 자리 한 쪽의 책 수: 맨 앞 책 + 함께 읽는 책 3칸(나머지는 함께 읽는 책 다음 쪽) */
+    /** 홈 책 자리 한 쪽의 책 수: 맨 앞 책 + 함께 읽는 책 3칸(나머지는 함께 읽는 책 다음 쪽). 기본 모양 큰 표지가 줄지 않고 들면 함께 읽는 책이 4칸이라 5권(HomeActivity `ALSO_COLS_BIG`) */
     const val HOME = 4
     /** 줄인 표지(바이트로 재서 앱 메모리의 1/8 까지. 권수로 재면 큰 홈 표지가 작은 목록 표지 몇 장에 밀려난다) */
     private val covers = object : LruCache<String, Bitmap>((Runtime.getRuntime().maxMemory() / 8).toInt()) {
@@ -646,20 +646,28 @@ object BookShelf {
     }
 
     /**
-     * 올해 읽은 책에서 지운다(다시 보이지 않게 나간 책에 지운 표시). [dropTime] 이면 그 책의 읽은 시간도 하루 합계·연속일에서 빼고([PastBook.timeDropped],
-     * DB 의 읽은 시간 줄은 남긴다), 아니면 합계에 그대로. 표지와 책 파일 경로는 버린다. 읽고 있는 책이면 지우지 않고 false.
+     * `Readblio에서 지우기`: 올해 읽은 책에서 지운다(다시 보이지 않게 나간 책에 지운 표시). [dropTime] 이면 그 책의 읽은 시간도 하루 합계·연속일에서 빼고
+     * ([PastBook.timeDropped], DB 의 읽은 시간 줄은 남긴다), 아니면 합계에 그대로. 표지와 책 파일 경로는 버린다.
+     * 읽고 있는 책은 [fromShelf](읽고 있는 책의 상세에서 지움)일 때만 읽고 있는 책에서 빼며 함께 지운다(한 트랜잭션), 아니면(나간 책 상세를 연 사이
+     * 이북 앱에서 다시 펴 읽고 있는 책이 됨) 지우지 않고 false.
      */
-    @Synchronized fun forget(context: Context, id: String, dropTime: Boolean = false): Boolean {
-        // 1.3.0~1.5.3 의 끊긴 저장으로 나간 책에도 같은 id 가 남아 있을 수 있다: 읽고 있는 책이면 그래도 지우지 않는다(표지를 버리지 않게)
-        if (list(context).any { it.id == id }) return false
-        val past = history(context)
-        if (past.none { it.book.id == id }) return false
-        // 이미 지운 책이면 그대로(지운 날을 덮지 않는다. 두 화면에서 지운 경우)
-        if (past.any { it.book.id == id && it.hidden }) return true
+    @Synchronized fun forget(context: Context, id: String, dropTime: Boolean = false, fromShelf: Boolean = false): Boolean {
+        // 1.3.0~1.5.3 의 끊긴 저장으로 나간 책에도 같은 id 가 남아 있을 수 있다: 나간 책을 지우려 했는데 읽고 있는 책이면 지우지 않는다(표지를 버리지 않게)
+        val reading = list(context).any { it.id == id }
+        if (reading && !fromShelf) return false
+        if (!reading) {
+            val past = history(context)
+            if (past.none { it.book.id == id }) return false
+            // 이미 지운 책이면 그대로(지운 날을 덮지 않는다. 두 화면에서 지운 경우)
+            if (past.any { it.book.id == id && it.hidden }) return true
+        }
         val now = System.currentTimeMillis()
-        writeHistory(context, past.map { if (it.book.id == id) it.copy(hidden = true, leftAt = now, timeDropped = dropTime) else it })
+        atomic(context) {
+            if (reading) leave(context, id)
+            writeHistory(context, history(context).map { if (it.book.id == id) it.copy(hidden = true, leftAt = now, timeDropped = dropTime) else it })
+            Db.get(context).tx { delete("book_file", "book_id = ?", arrayOf(id)) }
+        }
         dropFiles(context, id)
-        Db.get(context).tx { delete("book_file", "book_id = ?", arrayOf(id)) }
         return true
     }
 
@@ -828,7 +836,7 @@ object BookShelf {
 
     /**
      * 사용자가 적은 제목·저자로 새 책([manual], 지원하지 않는 이북 앱용)을 맨 앞에 넣는다. 인터넷을 쓰지 않아 표지 그림은 없고(제목으로 그린 빈 표지),
-     * 표지는 나중에 책 정보 고치기의 `표지 다시 찾기`([replace])로 붙인다.
+     * 표지는 나중에 책 정보 고치기의 `인터넷에서 표지 찾기`([replace])·`기기에서 표지 고르기`([replaceCover])로 붙인다.
      * 책은 사용자가 직접 뺄 때만 빠진다(자동으로 밀어내지 않는다).
      * 같은 제목의 책이 있어도 늘 새 책이고, 제목으로 다른 책·읽은 시간과 잇지 않는다(그 제목으로 읽은 어느 책에도 붙지 않은 시간도 가져오지 않는다.
      * 그 시간은 지원하는 앱에서 읽은 것이라 자동 추가가 넣은 책의 것이다).
@@ -889,6 +897,17 @@ object BookShelf {
     @Synchronized fun replace(context: Context, id: String, book: BookResult, coverBytes: ByteArray) {
         if (list(context).none { it.id == id } && history(context).none { it.book.id == id }) return
         withCover(context, id, coverBytes) { edit(context, id) { it.copy(title = book.title, author = book.author) } }
+    }
+
+    /**
+     * 기기에서 고른 사진으로 표지만 바꾼 책(읽고 있는 책·나간 책, [CoverPickActivity]): 제목·저자·자리·앱·진행률은 그대로.
+     * 바뀐 표지가 다시 그려지도록 updatedAt 만 새로(줄인 표지는 원본이 새로워 다시 만든다).
+     */
+    @Throws(IOException::class)
+    @Synchronized fun replaceCover(context: Context, id: String, coverBytes: ByteArray) {
+        if (list(context).none { it.id == id } && history(context).none { it.book.id == id }) return
+        // 제목을 고친 것이 아니라 seenTitle 은 그대로
+        withCover(context, id, coverBytes) { edit(context, id, keepSeen = true) { it } }
     }
 
     /**
@@ -1099,11 +1118,11 @@ object BookShelf {
 
     /**
      * 읽고 있는 책 또는 나간 책의 제목·저자를 고친다. 표지가 다시 그려지도록 updatedAt 도 새로.
-     * 처음 고칠 때 원래 제목을 [ShelfBook.seenTitle] 로 남겨 이북 앱이 보여 주는 제목으로 계속 찾는다(읽은 시간·자동 추가).
+     * 처음 고칠 때 원래 제목을 [ShelfBook.seenTitle] 로 남겨 이북 앱이 보여 주는 제목으로 계속 찾는다(읽은 시간·자동 추가). [keepSeen] 이면 남기지 않는다(표지만 바꿀 때).
      */
-    @Synchronized private fun edit(context: Context, id: String, change: (ShelfBook) -> ShelfBook) {
+    @Synchronized private fun edit(context: Context, id: String, keepSeen: Boolean = false, change: (ShelfBook) -> ShelfBook) {
         val now = System.currentTimeMillis()
-        fun ShelfBook.changed() = change(this).copy(updatedAt = now, seenTitle = seenTitle.ifEmpty { title })
+        fun ShelfBook.changed() = change(this).copy(updatedAt = now, seenTitle = if (keepSeen) seenTitle else seenTitle.ifEmpty { title })
         val books = list(context)
         val past = history(context)
         if (books.any { it.id == id }) write(context, books.map { if (it.id == id) it.changed() else it })

@@ -166,7 +166,7 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="add_book_title">Add a book</string>
-    <string name="add_book_desc">No internet needed. Add a cover later from Edit book info › Find cover again.</string>
+    <string name="add_book_desc">No internet needed. Add a cover later from Edit book info.</string>
     <string name="add_book_author_hint">Author (optional)</string>
     <string name="add_book_save">Add</string>
     <string name="book_query_hint">Book title</string>
@@ -178,6 +178,8 @@
     <string name="book_error">Search failed (%1$s)</string>
     <string name="cover_loading">Downloading cover…</string>
     <string name="cover_error">Couldn\'t download the cover (%1$s)</string>
+    <string name="cover_from_device">Choose cover from device</string>
+    <string name="cover_device_pick">Choose a cover picture</string>
     <string name="pick_reader_title">Choose reading app</string>
     <string name="pick_reader_desc">Pick the app you read this book in. Tapping the cover on Home opens it.</string>
     <string name="pick_reader_link">Choose reading app  ›</string>
@@ -186,7 +188,7 @@
     <string name="also_reading">Also reading</string>
     <string name="finish_book">Finished</string>
     <string name="read_again">Read again</string>
-    <string name="forget_book">Remove from log</string>
+    <string name="forget_book">Delete from Readblio</string>
     <string name="year_books">Books this year</string>
     <string name="year_books_of">Books in %1$d</string>
     <string name="pick_year">Year</string>
@@ -195,11 +197,11 @@
     <string name="date_year_fmt">MMM d, yyyy</string>
     <string name="finish_nth">#%1$d</string>
     <string name="edit_book">Edit book info ›</string>
-    <string name="forget_confirm">Remove from your books read?</string>
+    <string name="forget_confirm">Delete from Readblio?</string>
+    <string name="forget_note_home">It leaves your home and your books read.</string>
+    <string name="forget_note">It leaves your books read.</string>
     <string name="forget_time">Also delete %1$s of reading time</string>
     <string name="forget_time_sub">Streaks and goals may change · can\'t be undone</string>
-    <string name="forget_on_home">Remove it from home first</string>
-    <string name="forget_on_home_note">A book on your home can\'t be removed from the log.</string>
     <string name="forget_round_confirm">Remove read %1$s?</string>
     <string name="forget_round">Remove this read</string>
     <string name="since_date">Since %1$s</string>
@@ -228,6 +230,12 @@
     <string name="home_unhide">Show on home</string>
     <string name="home_hide_confirm">Hide from home?</string>
     <string name="home_hide_note">Reading time and progress are still recorded.\nTo undo: Settings › Reading › Books I\'m reading</string>
+    <string name="book_manage">Hide · Remove · Delete ›</string>
+    <string name="book_manage_hidden">Show · Remove · Delete ›</string>
+    <string name="home_hide_sub">Still tracked, just not shown on home</string>
+    <string name="home_unhide_sub">Show it on home again</string>
+    <string name="remove_book_sub">Stop reading · your log stays</string>
+    <string name="forget_book_sub">Deletes this book and its reading log</string>
     <string name="home_hidden_tag">Hidden from home</string>
     <string name="review_stars_hint">Tap or slide to rate · optional</string>
     <string name="review_stars_set">%1$s / 5 · tap again to clear</string>
@@ -346,7 +354,7 @@
     <string name="wallpaper_remove">Remove picture</string>
     <string name="wallpaper_strength">Strength</string>
     <string name="wallpaper_hint">The picture fills the whole Home background, blended with white. Pick a strength that keeps the text easy to read.</string>
-    <string name="wallpaper_failed">Couldn\'t open the picture</string>
+    <string name="picture_failed">Couldn\'t open the picture</string>
     <string name="home_style_basic">Standard</string>
     <string name="home_style_cover">Covers</string>
     <string name="home_style_library">Library</string>
@@ -357,7 +365,7 @@
     <string name="due_tag_days">%1$dd</string>
     <string name="due_tag_today">Today</string>
     <string name="due_tag_over">Overdue</string>
-    <string name="find_cover">Find cover again</string>
+    <string name="find_cover">Find cover online</string>
     <string name="auto_books_guide">How auto-add works</string>
     <string name="guide_tap_hint">Tap an app to see the permissions it needs and the book info added automatically.</string>
     <string name="guide_apps">Supported apps</string>

@@ -10,7 +10,7 @@ import android.widget.TextView
 
 /**
  * 읽고 있는 책 목록(설정 > 읽고 있는 책). 줄마다 표지·제목·읽고 있는 앱, 오른쪽에 `↑ ↓`(순서)와 `빼기`.
- * 위 [BookShelf.HOME]권이 홈에 바로 보인다(맨 위 책은 크게, 나머지는 함께 읽는 책 다음 쪽). 줄을 누르면 그 책의 앱을 바꾸고, 하단 `책 추가 ›` 로 책을 찾는다.
+ * 위 [BookShelf.HOME]권(함께 읽는 책이 4칸이면 5권)이 홈에 바로 보인다(맨 위 책은 크게, 나머지는 함께 읽는 책 다음 쪽). 줄을 누르면 그 책의 앱을 바꾸고, 하단 `책 추가 ›` 로 책을 찾는다.
  * 홈에서 숨긴 책([ShelfBook.homeHidden])도 제자리에 흐리게(표지·제목, 앱 줄 앞에 `홈에서 숨김`) 보이고 `↑ ↓` 대신 `보이기`(홈에 다시 보이게).
  * 순서는 홈에 보이는 책끼리 바꾼다(숨긴 책은 건너뛴다, [BookShelf.move]).
  * 한 화면에 다 들어가지 않으면 페이지로 넘긴다(하단 오른쪽 `‹ 1 / 2 ›`).
@@ -89,7 +89,7 @@ class BooksActivity : EinkActivity() {
         return hbox().apply {
             gravity = Gravity.CENTER_VERTICAL
             // 오른쪽 `↑ ↓`·`보이기`·`빼기` 는 줄 높이 전체, `빼기` 는 오른쪽 끝까지([reachRowEnd]).
-            // 줄 누르기(읽는 앱 고르기)·길게 누르기(표지 다시 찾기)는 표지·제목 쪽만.
+            // 줄 누르기(읽는 앱 고르기)·길게 누르기(인터넷에서 표지 찾기)는 표지·제목 쪽만.
             setPadding(dp(Ui.MARGIN), 0, 0, 0)
             val w = dp(COVER_DP)
             addView(coverImage(BookShelf.cover(context, book, w)).apply { if (hidden) alpha = HIDDEN_ALPHA }, lp(w + dp(2), w * 3 / 2 + dp(2)))
@@ -133,7 +133,7 @@ class BooksActivity : EinkActivity() {
 
 /**
  * ⑨ 책 추가(지원하지 않는 이북 앱용): 아래 메뉴에 제목·저자(비워도 됨) 두 줄을 적고 `넣기` 면 인터넷 없이 표지 그림 없는 새 책으로 맨 앞에 넣고([BookShelf.add])
- * 그 책의 읽고 있는 앱을 고르러 간다. 표지는 나중에 책 정보 고치기의 `표지 다시 찾기`. 읽고 있는 책 목록의 `책 추가 ›` 와 빈 홈의 `직접 추가 ›` 가 부른다.
+ * 그 책의 읽고 있는 앱을 고르러 간다. 표지는 나중에 책 정보 고치기의 `인터넷에서 표지 찾기`·`기기에서 표지 고르기`. 읽고 있는 책 목록의 `책 추가 ›` 와 빈 홈의 `직접 추가 ›` 가 부른다.
  */
 fun Context.addBookSheet() {
     Sheet(this).header(getString(R.string.add_book_title), getString(R.string.add_book_desc))

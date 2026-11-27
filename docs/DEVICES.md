@@ -617,7 +617,7 @@ jadx --no-res -d src/framework fs/system/system/framework/framework.jar
 
 - 자동 추가·접근성이 켜져 있는데 표지가 보이지 않는다. 쓰는 앱은 **밀리의서재 E ink·부커스**(사용자 댓글). 홈 사진에서 책은 들어왔다(제목·앱·진행률 `73% 읽음`, 부커스 책은 반납일까지). 표지만 빈 표지다.
 - 원인: 서재 표지는 접근성 서비스의 화면 캡처(`AccessibilityService.takeScreenshot`)로 잘라 오는데, 이 함수는 **안드로이드 11(API 30)부터** 있다. 안드로이드 10 에서는 자르지 않고 넘어간다(`ReaderWatchService.captureCovers`). 그래서 안드로이드 9·10 기기(BOOX Leaf·Poke3 도)는 화면에서 자르는 표지가 모두 빈 표지다. 책 파일·앱 데이터에서 꺼내는 표지(책 파일 읽기를 켠 문리더·네오리더·이지뷰어·채리뷰어의 EPUB, KOReader, 데이터를 옮긴 Readest)는 들어온다. 기본 홈 여부와는 상관없다.
-- 우회: 책 상세 › `책 정보 고치기` › `표지 다시 찾기`(docs/TROUBLESHOOTING.md).
+- 우회: 책 상세 › `책 정보 고치기` › `인터넷에서 표지 찾기`(docs/TROUBLESHOOTING.md).
 
 ## Bigme B7 Pro 사용자 댓글 (2026-10-26, Reddit Dapper-Researcher299)
 
