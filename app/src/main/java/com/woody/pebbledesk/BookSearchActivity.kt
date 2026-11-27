@@ -17,7 +17,7 @@ import android.widget.ImageView
 import android.widget.TextView
 
 /**
- * 표지 다시 찾기: 책 제목(과 저자)으로 표지를 찾아([BookSearch]: 한국어는 YES24, 그 밖은 Apple Books·Open Library) 고르면 그 책의 표지·제목·저자를 바꾼다
+ * 인터넷에서 표지 찾기(1.9.1 까지 `표지 다시 찾기`): 책 제목(과 저자)으로 표지를 찾아([BookSearch]: 한국어는 YES24, 그 밖은 Apple Books·Open Library) 고르면 그 책의 표지·제목·저자를 바꾼다
  * (자리·앱·진행률은 그대로). 결과는 표지 4열 그리드(한 페이지 두 줄)로 보여 주고 페이지로 넘긴다. 책 추가는 인터넷 없이 제목·저자만 적는다([addBookSheet]).
  */
 class BookSearchActivity : EinkActivity() {
@@ -194,7 +194,7 @@ class BookSearchActivity : EinkActivity() {
         private const val EXTRA_REPLACE = "replace"
         private const val EXTRA_QUERY = "query"
 
-        /** [replace] 의 표지 다시 찾기(제목·저자로 바로 검색) */
+        /** [replace] 의 인터넷에서 표지 찾기(제목·저자로 바로 검색) */
         fun intent(context: Context, replace: ShelfBook) = Intent(context, BookSearchActivity::class.java).apply {
             putExtra(EXTRA_REPLACE, replace.id); putExtra(EXTRA_QUERY, listOf(replace.title, replace.author).filter(String::isNotBlank).joinToString(" "))
         }
