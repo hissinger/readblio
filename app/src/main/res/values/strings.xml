@@ -583,6 +583,7 @@
     <string name="onboarding_files_old_s1">저장소 권한 창을 엽니다.</string>
     <string name="onboarding_files_old_s2">허용을 누르고 돌아옵니다.</string>
     <string name="year_books_count">%1$d권</string>
+    <string name="year_filter_join">" "</string>
     <string name="boox_frozen_help">BOOX 가 얼려 둔 앱이라 열지 못했어요. BOOX 얼리기(freeze) 설정에서 이 앱을 빼 주세요.</string>
     <string name="boox_freeze_settings">얼리기(freeze) 설정 열기</string>
     <string name="onboarding_books_boox_background">백그라운드에서 활성화 상태를 무제한으로 바꿉니다. (E-Ink 센터(앱 최적화) 또는 BOOX 앱 목록에서 아이콘을 길게 눌러 최적화 › 기타 탭)</string>
@@ -637,8 +638,19 @@
     <string name="category_rename">이름 바꾸기</string>
     <string name="category_delete">지우기</string>
     <string name="category_delete_confirm">카테고리를 지울까요?</string>
-    <string name="category_delete_sub">책 %1$d권은 분류 없음이 됩니다. 읽은 기록은 남습니다.</string>
-    <string name="category_delete_sub_one">책 1권은 분류 없음이 됩니다. 읽은 기록은 남습니다.</string>
+    <plurals name="category_delete_none">
+        <item quantity="other">책 %1$d권은 분류 없음이 됩니다.</item>
+    </plurals>
+    <plurals name="category_delete_from">
+        <item quantity="other">책 %1$d권에서 빠집니다.</item>
+    </plurals>
+    <plurals name="category_delete_some_none">
+        <item quantity="other">그중 %1$d권은 분류 없음이 됩니다.</item>
+    </plurals>
+    <plurals name="category_delete_counted">
+        <item quantity="other">통계에서 뺀 카테고리입니다.\n지우면 책 %1$d권의 읽은 시간이 통계에 나옵니다.</item>
+    </plurals>
+    <string name="category_delete_kept">읽은 기록은 남습니다.</string>
     <string name="category_count">%1$d개</string>
     <string name="category_books">%1$d권</string>
     <string name="category_books_one">1권</string>

@@ -16,7 +16,7 @@ Formerly Pebble Desk (up to 1.8.1).
 - **Finish a book**: rate it in half stars and write a few words. Read it again and each round keeps its own record.
 - **Books this year**: every book you read or finished, as a list or a cover grid, for any year.
 - **Monthly recap**: a month's reading time and books, with covers, on one picture. Save it or share it to another app (Books this year › `October recap`).
-- **Categories**: give each book a category (novels, study, comics and so on) to see the reading log, Books this year and the recap by category, or leave a category out of the stats.
+- **Categories**: give each book one or more categories (novels, study, comics and so on) to see the reading log, Books this year and the recap by category, or leave a category out of the stats.
 - **Favorites and All apps**: your own order and names, list or grid (4–6 per row, names optional), two heights (the shorter one gives book covers more room). All apps by page with a letter index. Hide apps you don't use.
 - **Made for E Ink**: black and white, no animation, pages instead of scrolling, and only what changed is redrawn. To turn pages with hardware buttons (volume keys, page buttons), press the buttons you want in Settings.
 - **Display**: text size 70–150% and line spacing 80–150%, six color themes for color E Ink, icon packs (such as Arcticons) with per-app icons, landscape and tall (bar-shaped) screens.

@@ -27,7 +27,7 @@ class DbMigrationTest {
         rows("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name != 'android_metadata' ORDER BY name") { it.getString(0) }
             .associateWith { columns(it) }
 
-    @Test fun `v1~v8 에서 올린 표가 새로 설치한 표와 같다(Libby 읽는 화면 viewer_mark, 네오리더 책 파일 book_file, 읽는 화 chapter, 고친 시작일 began, 카테고리·지운 회차 round_drop, 읽은 시간까지 지운 책 time_dropped, 홈에서 숨긴 책 home_hidden 포함)`() {
+    @Test fun `v1~v9 에서 올린 표가 새로 설치한 표와 같다(Libby 읽는 화면 viewer_mark, 네오리더 책 파일 book_file, 읽는 화 chapter, 고친 시작일 began, 카테고리·지운 회차 round_drop, 읽은 시간까지 지운 책 time_dropped, 홈에서 숨긴 책 home_hidden 포함)`() {
         val fresh = SQLiteDatabase.create(null).apply { Db.create(this) }.schema()
         assertEquals(listOf("at", "pkg", "shown"), fresh["viewer_mark"])
         assertEquals(fresh, v1().apply { Db.upgrade(this, 1) }.schema())
@@ -38,6 +38,7 @@ class DbMigrationTest {
         assertEquals(fresh, SQLiteDatabase.create(null).apply { OldSchemas.v6(this); Db.upgrade(this, 6) }.schema())
         assertEquals(fresh, SQLiteDatabase.create(null).apply { OldSchemas.v7(this); Db.upgrade(this, 7) }.schema())
         assertEquals(fresh, SQLiteDatabase.create(null).apply { OldSchemas.v8(this); Db.upgrade(this, 8) }.schema())
+        assertEquals(fresh, SQLiteDatabase.create(null).apply { OldSchemas.v9(this); Db.upgrade(this, 9) }.schema())
         assertEquals(listOf("time_dropped", "home_hidden"), fresh["past"]?.takeLast(2))
         assertEquals(listOf("chapter", "home_hidden"), fresh["shelf"]?.takeLast(2))
         assertEquals(listOf("id", "uid", "name", "pos", "excluded"), fresh["category"])
@@ -56,6 +57,23 @@ class DbMigrationTest {
         assertEquals(listOf("b-1|1|0", "b-2|0|0"), db.rows("SELECT id, hidden, time_dropped FROM past ORDER BY pos") {
             "${it.getString(0)}|${it.getInt(1)}|${it.getInt(2)}"
         })
+    }
+
+    @Test fun `v9 에서 올리면 붙인 카테고리는 그대로이고 책 하나에 여러 개를 붙일 수 있다`() {
+        val db = SQLiteDatabase.create(null).apply {
+            OldSchemas.v9(this)
+            execSQL("INSERT INTO book_category VALUES ('b-1', 1), ('b-2', 2)")
+            Db.upgrade(this, 9)
+            execSQL("INSERT INTO book_category VALUES ('b-1', 2)")
+        }
+        assertEquals(listOf("b-1|1", "b-1|2", "b-2|2"), db.rows("SELECT book_id, category_id FROM book_category ORDER BY book_id, category_id") {
+            "${it.getString(0)}|${it.getLong(1)}"
+        })
+        // 같은 책·카테고리는 한 줄
+        assertTrue(runCatching { db.execSQL("INSERT INTO book_category VALUES ('b-1', 1)") }.isFailure)
+        // 새로 설치한 표도 같은 키
+        val fresh = SQLiteDatabase.create(null).apply { Db.create(this) }
+        assertEquals(listOf("book_id", "category_id"), fresh.rows("PRAGMA table_info(book_category)") { it.getString(1) to it.getInt(5) }.filter { it.second > 0 }.sortedBy { it.second }.map { it.first })
     }
 
     @Test fun `v8 에서 올리면 읽고 있는 책·나간 책은 그대로이고 모두 홈에 보인다`() {

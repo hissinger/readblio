@@ -48,7 +48,7 @@ class Sheet(private val context: Context) {
         }
     }
 
-    private class Item(val label: String, val bold: Boolean, val right: String?, val swatch: List<Int>?, val action: () -> Unit)
+    private class Item(val label: String, val bold: Boolean, val right: String?, val swatch: List<Int>?, val rightFit: FitText.Fit?, val action: () -> Unit)
 
     /** 체크 줄([check]): 누르면 [onClick] 하고 메뉴는 그대로(모든 체크 칸을 [on] 으로 다시 본다) */
     private class Check(val label: String, val sub: String?, val tag: String?, val right: String?, val on: () -> Boolean, val onClick: () -> Unit)
@@ -133,9 +133,12 @@ class Sheet(private val context: Context) {
         this.title = title; this.subtitle = subtitle; this.app = app; this.image = image; subtitleLines = lines
     }
 
-    /** 항목 한 줄. [right] 가 있으면 오른쪽에 회색으로(지금 값 `소설 ›`), [swatch] 가 있으면 글자 앞에 그 색 칸들(색 테마). */
-    fun item(label: String, bold: Boolean = false, right: String? = null, swatch: List<Int>? = null, action: () -> Unit) =
-        apply { items += Item(label, bold, right, swatch, action) }
+    /**
+     * 항목 한 줄. [right] 가 있으면 오른쪽에 회색으로(지금 값 `소설 ›`), [rightFit] 이면 그 자리 글자를 남는 폭에 맞춰 정한다([FitText]),
+     * [swatch] 가 있으면 글자 앞에 그 색 칸들(색 테마).
+     */
+    fun item(label: String, bold: Boolean = false, right: String? = null, swatch: List<Int>? = null, rightFit: FitText.Fit? = null, action: () -> Unit) =
+        apply { items += Item(label, bold, right, swatch, rightFit, action) }
 
     /**
      * 체크 줄(왼쪽 체크 칸 · 이름([sub] 는 그 아래 작게, [tag] 는 뒤에 작게) · 오른쪽 회색 [right]). 누르면 [onClick] 하고 닫지 않는다.
@@ -485,8 +488,9 @@ class Sheet(private val context: Context) {
                 item.swatch?.let { colors ->
                     addView(Swatch(c, colors), lp(c.dp(SWATCH_DP) * colors.size, c.dp(SWATCH_DP)).apply { marginEnd = c.dp(18) })
                 }
-                addView(c.text(item.label, 24f, if (item.bold) Ui.bold else Ui.regular), if (item.right == null) lp(MATCH, WRAP) else lp(WRAP, WRAP))
-                item.right?.let { addView(c.text(it, 21f, color = Ui.GRAY).apply { gravity = Gravity.END }, lp(0, WRAP, 1f).apply { marginStart = c.dp(16) }) }
+                addView(c.text(item.label, 24f, if (item.bold) Ui.bold else Ui.regular), if (item.right == null && item.rightFit == null) lp(MATCH, WRAP) else lp(WRAP, WRAP))
+                val right = item.rightFit?.let { FitText(c, it).style(21f, color = Ui.GRAY) } ?: item.right?.let { c.text(it, 21f, color = Ui.GRAY) }
+                right?.let { addView(it.apply { gravity = Gravity.END }, lp(0, WRAP, 1f).apply { marginStart = c.dp(16) }) }
                 setOnClickListener { dismissThen(item.action) }
             })
         }

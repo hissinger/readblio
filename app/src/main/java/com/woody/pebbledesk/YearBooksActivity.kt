@@ -179,9 +179,9 @@ class YearBooksActivity : EinkActivity() {
             titleCount.setOnClickListener(null)
             titleCount.isClickable = false
         } else {
-            // `19권 ▾`(전체) · `소설 7권 ▾` · 고른 카테고리에 책이 없으면 `소설 ▾`
+            // `19권 ▾`(전체) · `소설 7권 ▾` · 고른 카테고리에 책이 없으면 `소설 ▾`. 영어는 권수가 숫자만이라 `Novel +2 · 3 ▾`
             val name = if (filter.all && count.isNotEmpty()) "" else filterName(filter)
-            titleCount.text = listOf(name, count).filter { it.isNotEmpty() }.joinToString(" ") + " ▾"
+            titleCount.text = listOf(name, count).filter { it.isNotEmpty() }.joinToString(getString(R.string.year_filter_join)) + " ▾"
             titleCount.setOnClickListener {
                 showStatsFilter(filter, getString(R.string.filter_year_sub, year), { f ->
                     getString(R.string.year_books_count, yearAll.count { f.keepsBook(it.book.id) && (!finishedOnly || it.doneInYear) })

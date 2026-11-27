@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
+import android.text.TextUtils
 import android.view.Gravity
 import android.view.TouchDelegate
 import android.view.View
@@ -61,9 +62,11 @@ private fun Context.detailSheet(r: BookRecord, sub: String?, lines: Int, onHome:
             }
         }
     }
-    // 카테고리(붙이지 않았으면 `없음`): 누르면 고르기([pickCategory])
-    val category = Categories.of(this, r.book.id)?.name ?: getString(R.string.category_none)
-    sheet.item(getString(R.string.category), right = "$category  ›", action = current { pickCategory(r, onChange, reopen) })
+    // 카테고리(붙이지 않았으면 `없음`, 여럿이면 칸에 드는 만큼 [categoryLabel]): 누르면 고르기([pickCategory])
+    val names = Categories.of(this, r.book.id).map { it.name }.ifEmpty { listOf(getString(R.string.category_none)) }
+    val more = getString(R.string.filter_more)
+    sheet.item(getString(R.string.category), rightFit = { paint, width -> categoryLabel(names, more, paint, width) },
+        action = current { pickCategory(r, onChange, reopen) })
     if (r.state == State.READING) {
         sheet.item(getString(R.string.finish_book), action = current { finish() })
         sheet.item(getString(R.string.edit_book), action = current { showEditMenu(r, onChange) })
@@ -102,24 +105,46 @@ private fun Context.askForget(r: BookRecord, title: String, onChange: () -> Unit
 }
 
 /**
- * 카테고리 고르기: `없음` / 카테고리들(지금 것 ✓) / `+ 새 카테고리`, 맨 아래 왼쪽 `카테고리 관리 ›`. 고르면 붙이고 상세를 다시 띄운다.
- * 목록에 없던 책은 고르는 순간 나간 책으로 적어 둔다([bookId]).
+ * 책 상세의 카테고리 글자: 이름들을 `·` 로 이어 [width] 에 다 들면 그대로(`소설·에세이·인문  ›`), 넘치면 드는 만큼 앞에서부터와 나머지 수
+ * (`소설·에세이 외 3  ›`, [more] 는 `%1$s 외 %2$d`). 첫 이름 하나도 들지 않으면(이름이 하나뿐이어도) 그 이름의 끝을 `…` 로 줄인다
+ * (`›` 는 늘 남긴다). 이름은 카테고리 순서.
  */
-private fun Context.pickCategory(r: BookRecord, onChange: () -> Unit, reopen: () -> Unit) {
-    val now = Categories.of(this, r.book.id)?.id
-    fun assign(id: Long?) {
-        withBook(r) { Categories.assign(this, it, id) }
-        onChange()
-        if (alive()) reopen()
+internal fun categoryLabel(names: List<String>, more: String, paint: android.text.TextPaint, width: Int): String {
+    val arrow = "  ›"
+    fun fits(s: String) = paint.measureText(s + arrow) <= width
+    val all = names.joinToString("·")
+    if (fits(all)) return all + arrow
+    if (names.size == 1) return TextUtils.ellipsize(all, paint, maxOf(0f, width - paint.measureText(arrow)), TextUtils.TruncateAt.END).toString() + arrow
+    for (k in names.size - 1 downTo 1) {
+        val s = more.format(names.take(k).joinToString("·"), names.size - k)
+        if (fits(s)) return s + arrow
     }
+    val rest = more.format("", names.size - 1)
+    val first = TextUtils.ellipsize(names[0], paint, maxOf(0f, width - paint.measureText(rest + arrow)), TextUtils.TruncateAt.END)
+    return more.format(first, names.size - 1) + arrow
+}
+
+/**
+ * 카테고리 고르기: 체크 줄 카테고리들(지금 붙은 것 켜짐, 통계에서 뺀 것은 오른쪽 회색 `통계에서 뺌`) / `+ 새 카테고리`(만들면 켜진 채로 다시 띄운다),
+ * 맨 아래 왼쪽 `카테고리 관리 ›` · 오른쪽 `확인`. 줄을 누르면 그 칸만 바뀌고 `확인` 에서 한 번에 붙이고 상세를 다시 띄운다. 다 끄면 `없음`.
+ * 바뀐 것이 없으면 저장도 다른 화면 다시 그리기도 없이 상세만. 목록에 없던 책은 붙이는 순간 나간 책으로 적어 둔다([bookId]).
+ */
+private fun Context.pickCategory(r: BookRecord, onChange: () -> Unit, reopen: () -> Unit, picked: MutableSet<Long> = Categories.of(this, r.book.id).map { it.id }.toMutableSet()) {
     val sheet = Sheet(this).header(getString(R.string.category), r.book.title)
-    sheet.item(getString(R.string.category_none) + if (now == null) "  ✓" else "", bold = now == null) { assign(null) }
     Categories.list(this).forEach { c ->
-        sheet.item(c.name + if (c.id == now) "  ✓" else "", bold = c.id == now,
-            right = if (c.excluded) getString(R.string.category_excluded_tag) else null) { assign(c.id) }
+        sheet.check(c.name, right = if (c.excluded) getString(R.string.category_excluded_tag) else null, on = { c.id in picked }) {
+            if (!picked.remove(c.id)) picked += c.id
+        }
     }
-    sheet.item(getString(R.string.category_new)) { askNew { assign(it.id) } }
+    sheet.item(getString(R.string.category_new)) { askNew { picked += it.id; if (alive()) pickCategory(r, onChange, reopen, picked) } }
         .footer(getString(R.string.category_manage)) { startActivity(CategoriesActivity.intent(this)) }
+        .done(getString(R.string.filter_done)) {
+            if (picked != Categories.of(this, r.book.id).map { it.id }.toSet()) {
+                withBook(r) { Categories.assign(this, it, picked) }
+                onChange()
+            }
+            if (alive()) reopen()
+        }
         .show()
 }
 

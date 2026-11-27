@@ -185,14 +185,35 @@ fun Context.text(
     face: Typeface = Ui.regular,
     color: Int = Ui.BLACK,
     lines: Int = 1,
-): TextView = TextView(this).apply {
-    text = value
+): TextView = TextView(this).style(sp, face, color, lines).apply { text = value }
+
+/** [Context.text] 의 글자 모양(크기·굵기·색·줄 수, 넘치면 끝을 `…`) */
+fun <T : TextView> T.style(sp: Float, face: Typeface = Ui.regular, color: Int = Ui.BLACK, lines: Int = 1): T = apply {
     setSp(sp)
     typeface = face
     setTextColor(color)
     includeFontPadding = false
     maxLines = lines
     ellipsize = TextUtils.TruncateAt.END
+}
+
+/**
+ * 폭이 정해질 때마다 [fit] 으로 글자를 정하는 한 줄(책 상세의 카테고리 `소설·에세이·인문 외 2 ›`: 칸에 드는 만큼).
+ * 폭은 고정이고 한 줄이라 글자를 바꿔도 다시 배치하지 않는다(높이가 같다). 폭 제한 없이 재면 다 보이는 글자로.
+ */
+class FitText(context: Context, private val fit: Fit) : TextView(context) {
+    /** 글자 그리기([TextPaint])·쓸 수 있는 폭(px) → 보일 글자 */
+    fun interface Fit {
+        fun text(paint: android.text.TextPaint, width: Int): String
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val width = if (View.MeasureSpec.getMode(widthMeasureSpec) == View.MeasureSpec.UNSPECIFIED) Int.MAX_VALUE
+        else View.MeasureSpec.getSize(widthMeasureSpec) - compoundPaddingLeft - compoundPaddingRight
+        val t = fit.text(paint, width)
+        if (t != text.toString()) text = t
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    }
 }
 
 /** 가로 선. [inset] 이 true 면 좌우 여백만큼 들여 그린다. */

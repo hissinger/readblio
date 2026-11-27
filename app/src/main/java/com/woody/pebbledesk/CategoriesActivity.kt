@@ -66,16 +66,17 @@ class CategoriesActivity : EinkActivity() {
         val counts = Categories.bookCounts(this)
         titleCount.text = if (list.isEmpty()) "" else getString(R.string.category_count, list.size)
         empty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
-        rows.setRows(list.mapIndexed { i, c -> { row(c, i, list.size, counts[c.id] ?: 0) } })
+        val none = Categories.BookCount(0, 0, 0)
+        rows.setRows(list.mapIndexed { i, c -> { row(c, i, list.size, counts[c.id] ?: none) } })
     }
 
     // `↑ ↓` 는 줄 높이 전체, `↓` 는 오른쪽 끝까지([reachRowEnd]). 줄 누르기(카테고리 메뉴)는 이름·권수 쪽만.
-    private fun row(c: Category, i: Int, size: Int, books: Int): View = hbox().apply {
+    private fun row(c: Category, i: Int, size: Int, books: Categories.BookCount): View = hbox().apply {
         gravity = Gravity.CENTER_VERTICAL
         setPadding(dp(Ui.MARGIN), 0, 0, 0)
         addView(text(c.name, 22f), lp(WRAP, WRAP))
         if (c.excluded) addView(text(getString(R.string.category_excluded_tag), 15f, color = Ui.GRAY), lp(WRAP, WRAP).apply { marginStart = dp(10) })
-        addView(text(bookCount(books), 19f, color = Ui.GRAY).apply { gravity = Gravity.END },
+        addView(text(bookCount(books.books), 19f, color = Ui.GRAY).apply { gravity = Gravity.END },
             lp(0, WRAP, 1f).apply { marginStart = dp(16) })
         addView(orderArrow("↑", i > 0) { move(c, i, -1) }, lp(WRAP, MATCH))
         addView(orderArrow("↓", i < size - 1) { move(c, i, 1) }.reachRowEnd(), lp(WRAP, MATCH))
@@ -90,8 +91,8 @@ class CategoriesActivity : EinkActivity() {
     }
 
     /** 한 줄 메뉴: 이름 바꾸기 / 통계에서 빼기(다시 넣기) / 지우기 */
-    private fun menu(c: Category, books: Int) {
-        Sheet(this).header(c.name, bookCount(books))
+    private fun menu(c: Category, books: Categories.BookCount) {
+        Sheet(this).header(c.name, bookCount(books.books))
             .item(getString(R.string.category_rename)) {
                 Sheet(this).header(getString(R.string.category_rename))
                     .input(c.name, check = { sameName(it, except = c.id) }) { Categories.rename(this, c.id, it); render() }.show()
@@ -100,11 +101,29 @@ class CategoriesActivity : EinkActivity() {
                 Categories.setExcluded(this, c.id, !c.excluded); render()
             }
             .item(getString(R.string.category_delete)) {
-                confirm(getString(R.string.category_delete_confirm), if (books == 1) getString(R.string.category_delete_sub_one) else getString(R.string.category_delete_sub, books), getString(R.string.category_delete)) {
+                confirm(getString(R.string.category_delete_confirm), deleteNote(c, books), getString(R.string.category_delete)) {
                     Categories.delete(this, c.id); render()
                 }
             }
             .show()
+    }
+
+    /**
+     * 지우기 확인의 글: 통계에서 뺀 카테고리이고 지우면 통계에 나오는 책이 있으면 `통계에서 뺀 카테고리입니다. 지우면 책 6권의 읽은 시간이
+     * 통계에 나옵니다.`. 아니면 모두 이 카테고리만 붙은 책이면 `책 6권은 분류 없음이 됩니다.`, 다른 카테고리도 붙은 책이 있으면
+     * `책 6권에서 빠집니다. 그중 2권은 분류 없음이 됩니다.`(그런 책이 없으면 둘째 문장 없이), 끝에 `읽은 기록은 남습니다.`
+     * 붙은 책이 없으면 글 없이(제목만).
+     */
+    private fun deleteNote(c: Category, n: Categories.BookCount): String? {
+        if (n.books == 0) return null
+        if (c.excluded && n.counted > 0) return resources.getQuantityString(R.plurals.category_delete_counted, n.counted, n.counted)
+        val head = when {
+            n.only == n.books -> resources.getQuantityString(R.plurals.category_delete_none, n.books, n.books)
+            n.only == 0 -> resources.getQuantityString(R.plurals.category_delete_from, n.books, n.books)
+            else -> resources.getQuantityString(R.plurals.category_delete_from, n.books, n.books) + " " +
+                resources.getQuantityString(R.plurals.category_delete_some_none, n.only, n.only)
+        }
+        return head + " " + getString(R.string.category_delete_kept)
     }
 
     /** `12권`(영어는 한 권이면 `1 book`) */

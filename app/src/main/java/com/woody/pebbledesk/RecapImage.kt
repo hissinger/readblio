@@ -279,8 +279,8 @@ object RecapImage {
         /** 위 카드: 해 · 이름, `10월 독서 달력`, 권수 줄, 오른쪽 읽은 시간 */
         fun card() {
             gradientBox(RectF(M, TOP, W - M, TOP + cardH), 18f, k.band[0], k.band[1])
-            // 보기에서 카테고리를 골랐으면 그 이름을 붙인다(`2026 · PEBBLE DESK · 소설`, 공유한 그림만 보고도 알게)
-            text(listOfNotNull("${month.year} · PEBBLE DESK", m.filter).joinToString(" · "), M + 34, 70f, 19f, Ui.bold, k.gray)
+            // 보기에서 카테고리를 골랐으면 그 이름을 붙인다(`2026 · READBLIO · 소설`, 공유한 그림만 보고도 알게)
+            text(listOfNotNull("${month.year} · READBLIO", m.filter).joinToString(" · "), M + 34, 70f, 19f, Ui.bold, k.gray)
             text(ctx.getString(R.string.recap_image_title, month.format(fmt(R.string.recap_month_fmt))), M + 34, 100f, 52f, Ui.heavy, k.ink)
             val base = 40 + cardH - 36
             val n = m.books.size

@@ -224,7 +224,7 @@ class RecapTest {
         // 모르는 시간 15분(9월에도 60분: 올해 잔디)
         val all = days(records, mapOf("2026-10-06" to 15, "2026-09-01" to 60))
         val cats = listOf(Category(1, "소설", false), Category(2, "만화", true))
-        val books = mapOf("novel" to 1L, "comic" to 2L)
+        val books = mapOf("novel" to setOf(1L), "comic" to setOf(2L))
         fun month(picked: Set<Long>, name: String? = null) =
             Recap.build(oct, all, records, 30, DayOfWeek.MONDAY, StatsFilter(picked, cats, books), name)
 
@@ -245,6 +245,38 @@ class RecapTest {
         val none = month(setOf(Categories.NONE))
         assertEquals(listOf("plain"), none.books.map { it.book.id })
         assertEquals((40 + 30) * 60_000L, none.totalMs)
+    }
+
+    @Test fun `여러 카테고리의 책은 하나라도 고르면 한 번 들고, 전체에서는 하나라도 통계에서 뺐으면 빠진다`() {
+        // 데미안 소설·에세이, 수필 에세이, 원피스 소설·만화(통계에서 뺌), 무분류 없음
+        val demian = rec("demian", mapOf("2026-10-02" to 30))
+        val essay = rec("essay", mapOf("2026-10-02" to 20))
+        val onepiece = rec("onepiece", mapOf("2026-10-02" to 40))
+        val plain = rec("plain", mapOf("2026-10-03" to 10))
+        val records = listOf(demian, essay, onepiece, plain)
+        val all = days(records, mapOf("2026-10-04" to 5))
+        val cats = listOf(Category(1, "소설", false), Category(2, "에세이", false), Category(3, "만화", true))
+        val books = mapOf("demian" to setOf(1L, 2L), "essay" to setOf(2L), "onepiece" to setOf(1L, 3L))
+        fun month(picked: Set<Long>) = Recap.build(oct, all, records, 30, DayOfWeek.MONDAY, StatsFilter(picked, cats, books), null)
+        // 같은 날 처음 읽은 책끼리의 순서는 여기서 보지 않는다
+        fun ids(picked: Set<Long>) = month(picked).books.map { it.book.id }.toSet()
+
+        // 전체: 만화가 붙은 원피스는 빠지고, 모르는 시간은 든다
+        assertEquals(setOf("demian", "essay", "plain"), ids(emptySet()))
+        assertEquals((30 + 20 + 10 + 5) * 60_000L, month(emptySet()).totalMs)
+        // 소설: 데미안·원피스(만화도 붙었지만 소설로 고르면 보인다)
+        assertEquals(setOf("demian", "onepiece"), ids(setOf(1L)))
+        assertEquals((30 + 40) * 60_000L, month(setOf(1L)).totalMs)
+        // 소설·에세이: 데미안은 한 번만
+        assertEquals(setOf("demian", "essay", "onepiece"), ids(setOf(1L, 2L)))
+        assertEquals((30 + 20 + 40) * 60_000L, month(setOf(1L, 2L)).totalMs)
+        assertEquals((30 + 20 + 40) * 60_000L, month(setOf(1L, 2L)).yearDayMs.values.sum())
+        // 만화만
+        assertEquals(40 * 60_000L, month(setOf(3L)).totalMs)
+        // 분류 없음: 카테고리 없는 책만
+        assertEquals(setOf("plain"), ids(setOf(Categories.NONE)))
+        // 통계에서 빼지 않은 것을 다 고르면 전체(모르는 시간까지)
+        assertEquals((30 + 20 + 10 + 5) * 60_000L, month(setOf(1L, 2L, Categories.NONE)).totalMs)
     }
 
     @Test fun `앞쪽 끝은 기록 시작한 달과 처음 완독한 달 중 이른 달이고 기록에서 지운 책은 세지 않는다`() {
