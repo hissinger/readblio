@@ -428,7 +428,7 @@
     <string name="guide_added_search_open">Added only for books opened with Read now in search</string>
     <string name="guide_added_expired">Added only for expired loans</string>
     <string name="guide_added_epub">Added for EPUB only</string>
-    <string name="guide_added_epub_comics">Added for EPUB and comics only</string>
+    <string name="guide_added_epub_comics_pdf">Added for EPUB, comics and PDF only</string>
     <string name="guide_n_comic_archives">CBR and CB7 once you get the comic cover unpacking tool in Settings › Reading</string>
     <string name="guide_added_book_files">Added when Read book files is on</string>
     <string name="guide_n_reading_menu">While reading, added when you open the menu</string>
