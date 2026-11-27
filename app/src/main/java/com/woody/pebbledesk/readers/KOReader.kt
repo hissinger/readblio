@@ -40,8 +40,8 @@ open class KOReaderApp(pkg: String) : ReaderApp(
     override val readsContent get() = false
     /** 켜야 책이 들어오는 앱이라 시작하기에서 먼저 */
     override val fileOrder get() = 0
-    /** 만화(CBZ·CBR·CB7)도 연다: 표지는 그 파일의 첫 그림(KOReader 가 그리는 첫 쪽과 같다) */
-    override val fileCovers get() = BookFiles.WITH_COMICS
+    /** 만화(CBZ·CBR·CB7)·PDF 도 연다: 표지는 만화는 그 파일의 첫 그림, PDF 는 첫 쪽(KOReader 가 그리는 첫 쪽과 같다) */
+    override val fileCovers get() = KOREADER_COVERS
 
     override fun newAdapter(): ReaderAdapter = KOReaderReader(this)
 
@@ -144,6 +144,9 @@ class KOReaderReader(private val ko: KOReaderApp) : ScreenReader(ko) {
 
 /** GitHub 판 */
 object KOReader : KOReaderApp("org.koreader.launcher")
+
+/** 두 판이 함께 쓰는 표지 길(한 번만 만든다) */
+private val KOREADER_COVERS = BookFiles.withPdf(BookFiles.WITH_COMICS)
 
 /** 두 판의 패키지 */
 private val KOREADER_PKGS get() = setOf(KOReader.pkg, KOReaderFdroid.pkg)

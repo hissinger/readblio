@@ -74,9 +74,10 @@ class FileCoverTest {
     }
 
     @Test fun `만화 묶음의 첫 그림을 쓰는 앱은 그 앱 파일에서 고른다`() {
-        val on = com.woody.pebbledesk.readers.ReaderApps.ALL.filter { it.fileCovers === com.woody.pebbledesk.readers.BookFiles.WITH_COMICS }.map { it.pkg }.toSet()
+        val comic = cbz().path
+        val on = com.woody.pebbledesk.readers.ReaderApps.ALL.filter { it.fileCovers.has(app, comic) }.map { it.pkg }.toSet()
         assertEquals(setOf("org.koreader.launcher", "org.koreader.launcher.fdroid", "com.onyx.kreader", "com.ezne.easyview.n", "com.ezne.easyview.free",
-            "com.ezne.easyview.pro", "com.inno.woojoo"), on)
+            "com.ezne.easyview.pro", "com.inno.woojoo", "com.foobnix.pdf.reader", "com.foobnix.pro.pdf.reader"), on)
     }
 
     @Test fun `PDF 는 열지 않고 머리로만 있다고 보고, 못 그린 PDF 는 그 뒤 없다고 답한다`() {
@@ -93,10 +94,10 @@ class FileCoverTest {
         assertFalse(covers.has(app, pdf))
     }
 
-    @Test fun `PDF 첫 쪽까지 쓰는 앱은 Librera 둘뿐이다`() {
+    @Test fun `PDF 첫 쪽까지 쓰는 앱은 Librera·KOReader 의 두 판씩이다`() {
         val pdf = File(tmp.root, "a.pdf").apply { writeText("x") }.path
         val on = com.woody.pebbledesk.readers.ReaderApps.ALL.filter { it.fileCovers.slow(pdf) }.map { it.pkg }.toSet()
-        assertEquals(setOf("com.foobnix.pdf.reader", "com.foobnix.pro.pdf.reader"), on)
+        assertEquals(setOf("com.foobnix.pdf.reader", "com.foobnix.pro.pdf.reader", "org.koreader.launcher", "org.koreader.launcher.fdroid"), on)
     }
 
     @Test fun `책 파일 읽기가 꺼져 있을 때 적은 파일도 허용한 뒤 그릴 때 꺼낸다`() {
