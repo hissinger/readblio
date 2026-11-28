@@ -2,7 +2,7 @@
 
 Formerly Pebble Desk (up to 1.8.1).
 
-**An E Ink launcher for Android e-readers.** Books you open in Kindle, Libby, KOReader and other reading apps appear on your home screen, and reading time is kept for every book. → [readblio.github.io](https://readblio.github.io/en/)
+**An E Ink launcher for Android e-readers.** Books you open in Kindle, Libby, KOReader and other reading apps appear on your home screen, and reading time is kept for every book. → [readblio.com](https://readblio.com/en/)
 
 [한국어](README.ko.md)
 
