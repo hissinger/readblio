@@ -415,6 +415,7 @@
     <string name="guide_wattpad">Wattpad</string>
     <string name="guide_eco">이씨오 범용뷰어 3.0</string>
     <string name="guide_bookcube">북큐브</string>
+    <string name="guide_pocketbook">PocketBook</string>
     <string name="guide_librera_pro">Librera Pro</string>
     <string name="guide_librerax">LibreraX</string>
     <string name="guide_permissions">필요한 권한</string>
@@ -526,6 +527,9 @@
     <string name="guide_n_bookcube_title">\'표지형\'으로 연 책은 메뉴를 띄우면 들어옵니다</string>
     <string name="guide_n_bookcube_pdf">PDF 책은 내서재로 돌아오거나 메뉴를 띄우면 들어옵니다</string>
     <string name="guide_note_bookcube">웹소설은 화마다 한 권으로 들어옵니다. 서점에서 바로 보는 웹툰은 들어오지 않습니다.</string>
+    <string name="guide_t_pocketbook_list">Books 탭은 목록 보기(위 돋보기 옆 단추 › 목록 그림)로 두세요. 격자 보기와 홈의 \'Last added books\' 줄에는 제목이 없어 읽다가 메뉴를 띄워야 책이 들어옵니다.</string>
+    <string name="guide_n_pocketbook_title">격자 보기·\'Last added books\' 에서 연 책은 메뉴를 띄우면 들어옵니다</string>
+    <string name="guide_added_pocketbook_list">Books 탭 목록 보기·홈의 \'Last opened book\' 칸에 보이면 들어옵니다</string>
     <string name="guide_note_wattpad">이야기 하나를 책 한 권으로 봅니다(화마다 따로 책을 만들지 않습니다).</string>
     <string name="guide_note_librera">Play 스토어 무료판은 라이브러리에서 연 책과 메뉴를 띄운 책만 들어옵니다.</string>
     <string name="book_files">책 파일 읽기</string>

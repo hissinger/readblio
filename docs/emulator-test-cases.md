@@ -399,6 +399,7 @@ ANDROID_SERIAL=emulator-5554 tools/emu/watch-cycle.sh <결과 폴더> [<비교�
   - `eco`(이씨오 범용뷰어 3.0, `CremaPebble_A11_Play` 에 Play 로 깔고 도서관 로그인·대출한 책: 서재 첫 칸 → 읽는 화면 → 메뉴 → 뒤로 두 번. 읽는 화면이 화면 캡처를 막아 2-viewer 사진은 없다).
   - `bookcube`·`bookcube-lend`(북큐브, `CremaPebble_A11_Play` 에 Play 로 깔고 내서재 `리스트형`. `bookcube` 는 서재 첫 칸(최근 읽은 책) → 두 쪽 넘기기 → 메뉴(따로 액티비티) → 서재, `bookcube-lend` 는 도서관 탭에서 대출해 받지 않은 책을 서재 끝까지 밀어 맨 아래 칸 → 받기(약 90초) → 같은 순서. 읽는 화면이 화면 캡처를 막아 2-menu 사진은 비어 있다. mobile-mcp·`uiautomator` 가 붙어 있으면 접근성 서비스가 풀려 아무것도 적히지 않는다).
   - `bookcube-serial`(북큐브 웹소설, 북큐브 계정으로 무료 화를 받아 둔 것: 맨 위 작품 칸 → 같은 화면의 화 첫 칸 → 읽는 화면 → 메뉴 → 서재. 화마다 한 권 `작품 N화`, 저자는 작품 칸에서, 진행률은 그 화의 %).
+  - `pocketbook`(PocketBook reader, `CremaPebble_A11` 에 Play 판 APK 를 깔고 `/sdcard/Books` 에 EPUB 셋, Books 탭 목록 보기: Books 탭 둘째 칸 → 두 쪽 넘기기 → 메뉴 → 서재. 그 에뮬은 monkey 가 물리 키가 없다고 멈춰 순서가 실행 화면을 `am start` 로 연다).
   - `readest`: `CremaPebble_A11_Play_Readest`. `kindle`(서재 칸 두 권 번갈아·메뉴 진행률)·문리더 유료판(`MN_PKG=com.flyersoft.moonreaderp`): `CremaPebble_A11`(킨들 로그인, 홈은 `cmd package set-home-activity` 로 이 앱).
   - 새 책 순서(`kohome`)는 한 번만 되므로 빌드마다 다른 파일(`ko-a`/`ko-b`…, 제목만 다른 EPUB)로 돌리고 제목을 바꿔 비교한다. 이지뷰어 서재는 위 도구 줄이 보였다 안 보였다 해 `easyview2` 의 ▶ 자리가 칸에 걸리기도 한다.
 - 로그인이 필요한 한국 이북 앱(교보도서관·교보eBook·밀리·알라딘·부커스·리디·YES24)은 어느 에뮬에도 로그인돼 있지 않아 단위 테스트와 실기기로 본다.

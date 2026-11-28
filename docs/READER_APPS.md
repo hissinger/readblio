@@ -35,6 +35,7 @@ Readblio 가 이북 앱에서 무엇을 알아내고 무엇을 할 수 있는지
 | Wattpad `wp.wattpad`(웹 소설, 로그인 필요. 한국 Play 스토어에 없음) | `wp.wattpad.reader.ReaderActivity` | O `wattpad://story/<이야기 번호>`(읽던 자리. 번호는 공개 검색으로) | 그냥 열면 이어 보기 | ? | 앱 전용 저장소 (미확인) |
 | 이씨오 범용뷰어 3.0 `com.mackerly.eco.ecobookviewer3`(도서관 전자책 대출. Play 라이선스 확인이 있어 Play 스토어 없는 기기에서는 열리지 않음) | `com.mackerly.eco.viewer.ViewerActivity` | X (책 정보를 앱 안 화면끼리만 넘긴다) | 그냥 열면 내 서재(로그인한 도서관) | X | 없음(웹 뷰어 `epub.eco.co.kr` 로 그때그때 받는다) |
 | 북큐브 `com.bookcube.bookplayer`(북큐브네트웍스 전자책 서점·웹소설·웹툰. `도서관` 탭으로 공공·대학 전자도서관 대출도. 웹툰은 서점 웹 화면에서 바로 본다) | `com.bookcube.ui.Epub30ViewerActivity`·`PdfViewerActivityGL`(옛 PDF 뷰어 `PdfViewerActivity`. 메뉴는 따로 `EpubMenuActivity`·`PdfMenuActivityGL`) | ? | 그냥 열면 내서재(설정 › 앱 실행 시 메인 설정) | ? | `Android/data`(`bookimg`·`bookshelf`) |
+| PocketBook reader `com.obreey.reader`(Pocketbook International, 내 파일·PocketBook Cloud·스토어 책. 한국어 화면 없음) | `com.obreey.bookviewer.ReaderActivity`(책 종류와 상관없이 하나) | X (`LauncherBookOpenActivity` 는 PocketBook 안의 책 번호가 있어야, 파일은 `file://` 를 `StartActivity` 로) | O (그냥 열면 홈 탭) | ? | 사용자가 둔 곳(공유 저장소). 책 DB 는 안드로이드 11 부터 앱 전용 |
 | YES24 `com.yes24.ebook.einkstore`(my YES, 시스템 앱. USB 디버깅 중에는 쓸 수 없음) | O | X (스토어 상세만) | O | X | `Android/data` |
 
 - 사용 기록에는 **앱·화면 이름과 시각만** 남는다. 어떤 책인지는 알 수 없다.
@@ -99,6 +100,7 @@ Readblio 가 이북 앱에서 무엇을 알아내고 무엇을 할 수 있는지
 | Wattpad | 서재·이야기 화면 | 서재·이야기 화면·읽는 화면(화 처음의 툴바) | 서재(목록 보기)·이야기 화면 | 읽는 화면(화 이름) | X |
 | 이씨오 범용뷰어 3.0(EPUB 책만) | 서재 | 읽는 화면(옆 메뉴 표지 단추) | 읽는 화면(옆 메뉴 표지 단추) | 읽는 화면(장 순서) | 서재 |
 | 북큐브 | 북큐브 검색(인터넷이 안 되면 서재, 딱지째) | 서재(리스트형)·메뉴 | 서재(리스트형) | 서재·읽는 화면(EPUB 하단 좌/우 정보)·메뉴 | 서재(리스트형) |
+| PocketBook | 서재(목록 보기)·홈 'Last opened book' | 서재(목록 보기)·홈 'Last opened book'·메뉴 | 서재(목록 보기)·홈 'Last opened book' | 서재·메뉴 | X |
 
 #### 아이리더 기본 리더 `com.zhangyue.iReader.Eink`
 
@@ -153,6 +155,16 @@ Readblio 가 이북 앱에서 무엇을 알아내고 무엇을 할 수 있는지
 - **웹소설**: 화 하나가 책 파일 하나라 화마다 한 권(`포식으로 레벨업하는 군주님 2화`, 진행률은 그 화의 %). 내서재에는 작품 칸(`총 2화 ›`)이 있고 누르면 같은 화면에 화 칸(`… - 2화`)이 뜬다. 저자는 앞서 본 작품 칸에서 붙인다.
 - **서점에서 바로 연 책·`다음 권`·`다음 화`**: 서재 칸을 거치지 않아 메뉴를 띄울 때까지 책 모름(메뉴 제목을 읽으면 열린 때부터 그 책).
 - **웹툰**: 넣지 않는다(사용자가 정함). 내서재로 받지 않고 서점 웹 화면 안에서 보며, 뷰어에는 `1화`·`이전화`·`다음화` 뿐이다.
+
+### PocketBook `com.obreey.reader`
+
+- **권한**: 공통.
+- **할 것**: Books 탭 보기를 목록으로 둔다(위 돋보기 옆 단추 `View`, 창 맨 위에 글자 없이 격자·목록 그림 둘). 격자 보기와 홈 탭의 `Last added books` 줄은 칸에 표지만 있어 그렇게 연 책은 읽다가 메뉴(가운데 누르기)를 띄워야 들어온다.
+- **표지**: 서재(Books 탭 목록 보기·홈 `Last opened book`) 칸에서 잘라 온다(안드로이드 11 부터). 칸의 `thumbnail` 묶음은 둘레에 흰 여백이 있어 그 안의 그림(`android:id/icon`) 자리만 자른다. 책 파일 경로를 알 길이 없어(칸·책 정보 화면에 없고, 책 DB 는 앱 전용 폴더) 책 파일에서 꺼내지 않는다.
+- **제목·저자**: 서재 칸의 `tv_title`·`tv_authors`(EPUB 정보의 제목·저자). 메뉴 위 막대 `title_view_book` 으로도 안다(저자는 없다). 그렇게 넣은 책도 뒤에 목록 보기·`Last opened book` 칸에 보이면 저자·표지가 붙는다(에뮬에서 『표지 있는 책』).
+- **진행률**: 서재 칸 `tv_progress`(`25%`, 막 연 책은 빈 글자)와 메뉴의 `tv_progress`(`(30%)`)·쪽 `tv_pages`(`6 / 20`). 읽는 화면에는 글자가 없어(접근성 요소 `Reading screen` 하나) 메뉴를 띄우거나 서재로 돌아올 때 들어온다. 서재의 % 는 메뉴보다 조금 낮다(같은 쪽에서 메뉴 30%, 서재 25%): 앱이 보여 주는 대로 둔다.
+- **반납일**: 없다(Adobe DRM 대출 책의 칸은 보지 못했다, 미확인).
+- **홈에서 열기**: 앱을 연다(홈 탭의 `Last opened book` 이 맨 앞).
 
 ### LibreraX `com.librerax`
 
@@ -1011,6 +1023,15 @@ Bilingify 의 오픈소스 리더(https://github.com/readest/readest, Tauri). �
   - 웹툰(『사상최강의 데릴사위』 1화): 서점 웹 화면(`BookShelfActivity` 안, HTML `view-header`·`viewer`·`view-footer`)에서 바로 본다. 위 막대에 `1화` 뿐(작품 제목은 그 전 작품 화면에만), 그림은 설명이 uuid. 사용자가 제외하기로 했다.
   - 표지 원본(같은 날): 딱지 `list_icon`(`list_file_type_icon`·`list_img_ribbon_icon`)과 표지 `list_img` 는 다른 요소지만 화면 캡처에는 겹쳐 찍힌다. 앱 코드(`hyoyeon.job.BookImgDownloader`)의 표지 주소 `bookimg.bookcube.com/{150|200|270}/<책번호 앞 4자리>/<책번호>.jpg`(웹소설 `serialimg…`). 책번호는 서재 화면에 없고 앱 데이터(`Android/data/…/bookimg`)는 읽을 수 없어, 공개 검색(서점 `site=book`, 웹소설 `site=novel`)의 결과 칸(표지 그림 대체 글 = 제목, 글자 줄 제목·저자·출판사)에서 찾는다. 에뮬에서 『세상 편한 집밥』(181200079, 270×309)·『포식으로 레벨업하는 군주님 2화』(작품 sf6719, 270×411)가 딱지 없는 원본으로 바뀌었다.
   - 시험 중 알게 된 것: mobile-mcp(mobilecli `DeviceServer`)·`uiautomator` 가 UiAutomation 을 잡고 있는 동안 다른 접근성 서비스가 풀린다(`dumpsys accessibility` 의 `Bound services:{}`). 그 프로세스를 끝내면 다시 붙는다.
+
+### PocketBook reader `com.obreey.reader` (2026-11-28, 에뮬레이터 `CremaPebble_A11`(안드로이드 11), Play 스토어 5.66.2.44246 (56600200), minSdk 26·targetSdk 36, **지원**)
+
+- **받기**: Play 스토어(Pocketbook International SA, 1천만 회 이상, 무료)로 `Pixel_Tablet` 에 깔아 분할 APK 셋(base·arm64·xhdpi)을 꺼내 `CremaPebble_A11` 에 깔았다. 처음 열 때 개인정보처리방침·이용약관 동의 창, 첫 책을 열면 손가락 안내 화면(움직이는 동안 `uiautomator dump` 가 실패한다). 앱 화면에 한국어가 없다.
+- **코드**(jadx): 홈 탭 `bookshelf.ui.home.HomeActivity`, Books 탭 `bookshelf.ui.library.LibraryActivity`, 읽는 화면 `com.obreey.bookviewer.ReaderActivity`. 책 DB `books.db` 는 `AppDirs.getDatabaseDirectory`: 앱 데이터 `databases` 또는 `<sdCardDir>/<외부 자원 폴더>` 인데 `StartActivity` 가 `sdCardDir` 을 `getExternalFilesDir`(`Android/data/com.obreey.reader/files`)로 두어 안드로이드 11 부터 읽을 수 없다. Provider(`prefs`·`appwidgets` 표지·`opds`)는 모두 내보내지 않는다. `LauncherBookOpenActivity`(내보냄)는 `open_by_id` 에 PocketBook 의 책 번호를 받아 그 경로를 `file://` 로 `StartActivity` 에 넘긴다.
+- **화면**(uiautomator): 홈 탭 `Last opened book` 칸 `cardContent` 에 `thumbnail`(속 그림 `android:id/icon`)·`tv_title`·`tv_authors`·`tv_format`·`tv_progress`, `Last added books` 줄은 `thumbnail` 만. Books 탭 목록 보기 칸 `root_layout` 에 같은 이름(`swipe_view` › `book_item`), 격자 보기(`GridView books`)는 `thumbnail` 만. 읽는 화면은 `the_frame`(`Reading screen`) 하나, 가운데를 누르면 같은 창에 위 막대 `ll_top`(`title_view_book`)·아래 `tv_pages` `1 / 20`·`tv_progress` `(5%)`·설정 단추 줄(이름 `tv_title` `Text`·`View`…).
+- **Readblio**(`readers/PocketBook.kt`, 바탕 `ScreenReader` 그대로): 요소 이름 선언과 표지 자리(`thumbnail` 안 그림)만. 홈을 잠깐만 보고 `Last opened book` 을 누르기도 해서 표지는 바로 자르되 찍은 뒤 다시 읽어 자리가 같은 칸만(`eagerCovers`·`recheckCovers`).
+  - 에뮬레이터에서 확인(`tools/emu/watch-flows/pocketbook.sh`): Books 탭 목록 보기 칸을 누르자 『은빛 마법사의 각성 (1화 ~ 2화)』가 새 책으로 들어오고 표지는 여백 없이 잘렸다. 메뉴에서 30%, 서재로 돌아오자 25%. 홈 탭 `Last opened book` 칸으로 다시 열자 맨 앞으로, `Last added books` 의 표지만 있는 칸으로 연 『표지 있는 책』은 메뉴를 띄우자 그 제목으로 들어왔다(저자 없이).
+  - 이미 다른 앱(KOReader)으로 넣은 같은 제목·저자의 책(`시험 책`·`홍길동`)은 그 책으로 잡혔다(공통 규칙).
 
 ### Fabularium `io.davidar.fabularium` (2026-11-12, 에뮬레이터 `CremaPebble_A11`(안드로이드 11), F-Droid 1.5.1 (27), minSdk 16·targetSdk 28, **지원하지 않기로 함**)
 
