@@ -36,6 +36,7 @@ import com.woody.pebbledesk.readers.MoonReaderPro
 import com.woody.pebbledesk.readers.MyYes
 import com.woody.pebbledesk.readers.NeoReader
 import com.woody.pebbledesk.readers.PlayBooks
+import com.woody.pebbledesk.readers.PocketBook
 import com.woody.pebbledesk.readers.ReaderApps
 import com.woody.pebbledesk.readers.ReaderApp
 import com.woody.pebbledesk.readers.Readest
@@ -244,6 +245,11 @@ internal object ReaderGuide {
             cover = yes(R.string.guide_n_bookcube_cover), title = yes(R.string.guide_n_bookcube_title),
             author = Field(R.string.guide_added_bookcube_list), progress = yes(R.string.guide_n_bookcube_pdf), due = Field(R.string.guide_added_bookcube_list),
             note = R.string.guide_note_bookcube,
+        )),
+        App(listOf(R.string.guide_pocketbook), listOf(PocketBook), Info(
+            listOf(R.string.guide_t_pocketbook_list, R.string.guide_t_progress_menu),
+            cover = Field(R.string.guide_added_pocketbook_list), title = yes(R.string.guide_n_pocketbook_title), author = Field(R.string.guide_added_pocketbook_list),
+            progress = READING_MENU, due = NO,
         )),
     )
 }

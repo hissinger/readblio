@@ -412,6 +412,7 @@
     <string name="guide_wattpad">Wattpad</string>
     <string name="guide_eco">ECO Viewer 3.0</string>
     <string name="guide_bookcube">Bookcube</string>
+    <string name="guide_pocketbook">PocketBook</string>
     <string name="guide_librera_pro">Librera Pro</string>
     <string name="guide_librerax">LibreraX</string>
     <string name="guide_permissions">Permissions</string>
@@ -522,6 +523,9 @@
     <string name="guide_n_bookcube_title">For books opened in \'표지형\' (cover) view, added when you open the menu</string>
     <string name="guide_n_bookcube_pdf">For PDF books, added when you return to 내서재 or open the menu</string>
     <string name="guide_note_bookcube">Web novels come in one book per episode. Webtoons viewed in the store aren\'t added.</string>
+    <string name="guide_t_pocketbook_list">Keep the Books tab in list view (button next to the magnifier at the top › list icon). Grid view and the home \'Last added books\' row show no titles, so books opened there come in only when you open the menu while reading.</string>
+    <string name="guide_n_pocketbook_title">For books opened from grid view or \'Last added books\', added when you open the menu</string>
+    <string name="guide_added_pocketbook_list">Added once the book shows in the Books tab list view or the home \'Last opened book\'</string>
     <string name="guide_note_wattpad">Each story counts as one book (parts don\'t become separate books).</string>
     <string name="guide_note_librera">The free version from the Play Store adds only books opened from the Library or with the menu open.</string>
     <string name="book_files">Read book files</string>
