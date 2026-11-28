@@ -7,17 +7,17 @@
 글은 여기서 고친다(홈페이지에서 직접 고치면 다음에 돌릴 때 되돌아간다). 사실(안드로이드 9+ = minSdk 28,
 인터넷은 표지 검색(한국어 제목은 YES24, 그 밖은 Apple Books·Open Library)·GitHub 새 버전 확인·만화 표지 풀기 도구 받기뿐,
 기록은 기기 안)은 코드와 docs/DEVICES.md 에서 확인한 것. 바뀌면 같이 고친다. 판 번호·날짜는 app/build.gradle.kts 와 그 판의 git 태그에서.
-주소 BASE 는 GitHub Pages(readblio/readblio.github.io) 기준. 1.8.1 까지의 이름 Pebble Desk 도 함께 적어 옛 이름으로 찾는 사람이 닿게 한다.
+주소 BASE 는 readblio.com(GitHub Pages readblio/readblio.github.io 의 사용자 지정 도메인, 2026-11-28 부터. readblio.github.io 는 GitHub 가 이리로 넘겨 준다) 기준. 1.8.1 까지의 이름 Pebble Desk 도 함께 적어 옛 이름으로 찾는 사람이 닿게 한다.
 """
 import json
 import re
 import subprocess
 
-BASE = "https://readblio.github.io/"
+BASE = "https://readblio.com/"
 REPO = "https://github.com/hissinger/readblio"
 OLD_NAME = "Pebble Desk"  # 1.8.1 까지의 이름
 # Cloudflare Web Analytics(쿠키 없음): 방문 수·페이지·들어온 곳·나라·기기 종류. 토큰은 공개 값(페이지에 그대로 실린다)
-CF_BEACON = "5c96e192fbe9450a8ab2f5bb8f2502ae"  # readblio.github.io 용(옛 pebbledesk.github.io 는 1896b359…)
+CF_BEACON = "5b1e7c707fc543a09681d700cc5949f8"  # readblio.com 사이트(2026-11-29 부터. readblio.github.io 때는 5c96e192…, 옛 pebbledesk.github.io 는 1896b359…)
 RELEASES = REPO + "/releases/latest"
 LICENSE = REPO + "/blob/main/LICENSE"
 
